@@ -66,13 +66,6 @@ AMARETTO supports downloading and processing TCGA data from [Firehose](https://g
 
 ## Author Information
 
-| Magali Champion | Katie Planey | Olivier Gevaert
-|-----------------|--------------|----------------|
-| Stanford Center for Biomedical Informatics | |
-| Department of Medicine | |
-| 1265 Welch Road | |
-| Stanford CA, 94305-5479 | |
-
 <table>
   <tr>
     <th> Magali Champion </th>
