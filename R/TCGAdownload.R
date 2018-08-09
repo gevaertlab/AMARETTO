@@ -38,14 +38,15 @@ Download_CancerSite <- function(CancerSite,TargetDirectory,downloadData=TRUE) {
 	assays <- c("RNASeq2GeneNorm")
 
     #run the query
-    MAEO <- curatedTCGAData::curatedTCGAData(cancerSite, assays, FALSE)
+    MAEO <- curatedTCGAData::curatedTCGAData(CancerSite, assays, FALSE)
     saveRDS(MAEO, file=paste0(TargetDirectory, CancerSite, "_RNASeq_MAEO.rds"))
 
 	# get CNV GISTIC data.
 	dataType='analyses'
 	dataFileTag='CopyNumber_Gistic2.Level_4'
 	cat('Searching CNV data for:',CancerSite,'\n')
-	CNVdirectory=get_firehoseData(downloadData,saveDir=TargetDirectory,TCGA_acronym_uppercase=TCGA_acronym_uppercase,dataType=dataType,dataFileTag=dataFileTag)	
+	CNVdirectory=get_firehoseData(downloadData,saveDir=TargetDirectory,TCGA_acronym_uppercase=TCGA_acronym_uppercase,dataType=dataType,dataFileTag=dataFileTag)
+	setwd("..")
 	return(list(MAdirectory=TargetDirectory,CNVdirectory=CNVdirectory))
 }
 
@@ -167,6 +168,7 @@ get_firehoseData <- function(downloadData=TRUE,saveDir = "./",TCGA_acronym_upper
 	
 		#final download url
 		gdacURL <- paste(gdacURL,fileName,sep="")
+		print(fileName)
 	
 		# Beed the savedir when we don't download !!!!!!!!
 		saveDir <- paste(saveDir,"gdac_",lastDateCompress,'/',sep="")
@@ -185,12 +187,13 @@ get_firehoseData <- function(downloadData=TRUE,saveDir = "./",TCGA_acronym_upper
 			#this assumes a tar.gz file.
 			if(fileType=="tar.gz" && untarUngzip) {					
 				cat("\tUnpacking data.\n")
-				tarfile=paste0(saveDir,fileName)
+				#tarfile=paste0(saveDir,fileName)
+				tarfile=fileName
 				untar(tarfile)
 				  
 				#remove tarred file
 				fileToRemove <- strsplit2(gdacURL,"/")[ ,ncol(strsplit2(gdacURL,"/"))]
-				file.remove(paste0(saveDir,fileToRemove))
+				file.remove(paste0(fileToRemove))
 		
 			} else if(untarUngzip) {		
 				warning("File expansion/opening only built in for tar.gz files at the moment.\n")		
@@ -213,11 +216,10 @@ get_firehoseData <- function(downloadData=TRUE,saveDir = "./",TCGA_acronym_upper
 			finalDir <- substr(finalDir,start=0,stop=(nchar(finalDir)-1))
 			finalDir <- paste0(saveDir,finalDir)	
 		}
+
     	DownloadedFile=paste0(finalDir,'/')
     	return(DownloadedFile)
     } else{
     	return(cat(paste0("No data correspond to cancer ",TCGA_acronym_uppercase,"\n")))
     }
 }
-
-

@@ -18,7 +18,7 @@ Preprocess_CancerSite <- function(CancerSite,DataSetDirectories) {
 
 	# Processing MA data, special case for OV and GBM where no RNA seq data is available             
 	cat("Loading mRNA data.\n")    
-    if (is.null(MAEO)) {   
+    if (!is.null(MAEO)) {   
       MA_TCGA=Preprocess_MAdata(CancerSite,MAEO_ge)
     } else {
       stop("No RNASeq MAEO object found.\n")
@@ -41,7 +41,8 @@ Preprocess_CancerSite <- function(CancerSite,DataSetDirectories) {
 		colnames(CGH_Data$CGH_Data_Segmented)=paste(SampleNames,'-01',sep='')
 	}        
 	cat("\tBatch correction.\n")
-	CNV_TCGA=TCGA_BatchCorrection_MolecularData(CGH_Data$CGH_Data_Segmented,BatchData,MinPerBatch)    
+	#CNV_TCGA=TCGA_BatchCorrection_MolecularData(CGH_Data$CGH_Data_Segmented,BatchData,MinPerBatch)
+	CNV_TCGA=CGH_Data$CGH_Data_Segmented
 	Genes=rownames(CNV_TCGA)
 	SplitGenes=strsplit2(Genes,'\\|')
 	rownames(CNV_TCGA)=SplitGenes[,1]      
@@ -168,7 +169,7 @@ Preprocess_MAdata <- function(CancerSite,MAEO_ge) {
 		MA_TCGA=MA_TCGA[,Samplegroups$Primary]
 	}          
 	cat("\tBatch correction.\n")
-	MA_TCGA=TCGA_BatchCorrection_MolecularData(MA_TCGA,BatchData,MinPerBatch)
+	#MA_TCGA=TCGA_BatchCorrection_MolecularData(MA_TCGA,BatchData,MinPerBatch)
 	
 	cat("\tProcessing gene ids and merging.\n")
 	Genes=rownames(MA_TCGA)
@@ -574,6 +575,7 @@ it.sol  <- function(sdat,g.hat,d.hat,g.bar,t2,a,b,conv=.0001){
 	d.old <- d.hat
 	change <- 1
 	count <- 0
+	print(change>conv)
 	while(change>conv){
 		g.new <- postmean(g.hat,g.bar,n,d.old,t2)
 		sum2 <- apply((sdat-g.new%*%t(rep(1,ncol(sdat))))^2, 1, sum,na.rm=TRUE)
