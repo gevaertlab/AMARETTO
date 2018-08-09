@@ -34,35 +34,20 @@ Download_CancerSite <- function(CancerSite,TargetDirectory,downloadData=TRUE) {
 	# Settings
 	TCGA_acronym_uppercase=toupper(CancerSite)
 	
-	# get RNA seq data (GBM does not have much RNAseq data.)
-	dataType='stddata'	
-	dataFileTag='mRNAseq_Preprocess.Level_3'	 
+	# set MAEO assays
+	assays <- c("RNASeq2GeneNorm")
 
-	#special case for GBM and OV, not enough RNAseq data, so using the microarray data instead
-	if (CancerSite=="GBM") { 	             
-		dataFileTag=c('Merge_transcriptome__agilentg4502a_07_1__unc_edu__Level_3__unc_lowess_normalization_gene_level__data','Merge_transcriptome__agilentg4502a_07_2__unc_edu__Level_3__unc_lowess_normalization_gene_level__data')        	         
-	} else if(CancerSite=="OV") {	               
-		dataFileTag='Merge_transcriptome__agilentg4502a_07_3__unc_edu__Level_3__unc_lowess_normalization_gene_level__data'        
-	}	
-	cat('Searching MA data for:',CancerSite,"\n")
-	if (length(dataFileTag)==1) {	  
-			MAdirectory=get_firehoseData(downloadData,saveDir=TargetDirectory,TCGA_acronym_uppercase=TCGA_acronym_uppercase,dataFileTag=dataFileTag)    	
-		} else {	    
-			MAdirectory=c()	  
-		for (i in 1:length(dataFileTag)) {
-			MAdirectory=c(MAdirectory,get_firehoseData(downloadData,saveDir=TargetDirectory,TCGA_acronym_uppercase=TCGA_acronym_uppercase,dataFileTag=dataFileTag[i]))	 
-		}        
-	}
-	
+    #run the query
+    MAEO <- curatedTCGAData::curatedTCGAData(cancerSite, assays, FALSE)
+    saveRDS(MAEO, file=paste0(TargetDirectory, CancerSite, "_RNASeq_MAEO.rds"))
+
 	# get CNV GISTIC data.
 	dataType='analyses'
 	dataFileTag='CopyNumber_Gistic2.Level_4'
 	cat('Searching CNV data for:',CancerSite,'\n')
 	CNVdirectory=get_firehoseData(downloadData,saveDir=TargetDirectory,TCGA_acronym_uppercase=TCGA_acronym_uppercase,dataType=dataType,dataFileTag=dataFileTag)	
-	return(list(MAdirectory=MAdirectory,CNVdirectory=CNVdirectory))
+	return(list(MAdirectory=TargetDirectory,CNVdirectory=CNVdirectory))
 }
-
-
 
 get_firehoseData <- function(downloadData=TRUE,saveDir = "./",TCGA_acronym_uppercase = "LUAD",dataType="stddata",dataFileTag = "mRNAseq_Preprocess.Level_3",
                              FFPE=FALSE,fileType= "tar.gz",  gdacURL= "http://gdac.broadinstitute.org/runs/",untarUngzip=TRUE,printDisease_abbr=FALSE){  
