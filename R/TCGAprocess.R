@@ -7,64 +7,22 @@ Preprocess_CancerSite <- function(CancerSite,DataSetDirectories) {
 	data(BatchData)
 	MinPerBatch=5    
 	
-	# Processing MA data, special case for OV and GBM where no RNA seq data is available
-	if (CancerSite=="OV" || CancerSite=="GBM") { 
-		MAstring='transcriptome__agilent'
-	} else {
-		MAstring='mRNAseq_RSEM_normalized_log2.txt'
-	}               
-	cat("Loading mRNA data.\n")
-	if (length(DataSetDirectories$MAdirectory)>1) {      		
-	    cat("\tFound multiple MA data sets.\n")
-	    DataSets=list()
-	    GeneLists=list()
-	    SampleLists=list()                
-	    MetaBatchData=data.frame()
-		for (i in 1:length(DataSetDirectories$MAdirectory)) {        
-			cat("\tProcessing data set",i,"\n")
-			MAfiles=dir(DataSetDirectories$MAdirectory[i])
-			MatchedFile=grep(MAstring,MAfiles)        
-			if (length(MatchedFile)>0) {        
-			DataSets[[i]]=Preprocess_MAdata(CancerSite,DataSetDirectories$MAdirectory[i],MAfiles[MatchedFile])
-			GeneLists[[i]]=rownames(DataSets[[i]])
-			SampleLists[[i]]=colnames(DataSets[[i]])
-			
-			# growing a batch data object
-			currentBatch=matrix(i,length(colnames(DataSets[[i]])),1)                
-			currentBatchData=data.frame(ArrayName=colnames(DataSets[[i]]),SampleName=colnames(DataSets[[i]]),Batch=currentBatch)
-			MetaBatchData=rbind(MetaBatchData,currentBatchData)
-			} else {
-			cat("MA file not found for this cancer.\n")
-			}           
-		}
-	    # combine data sets with Combat. 
-	    cat("Combining data sets.\n")
-	    # overlap genes
-	    OverlapProbes=Reduce(intersect,GeneLists)
-	    OverlapSamples=Reduce(intersect,SampleLists)    
-	    if (length(OverlapSamples)>0) {
-	      cat('There is overlap between samples. No solution yet.\n')           
-	    }        
-	    for (i in 1:length(DataSetDirectories$MAdirectory)) {
-	      DataSets[[i]]=DataSets[[i]][OverlapProbes,]
-	    }
-	    # combat on data sets. 
-	    MA_TCGA=Reduce(cbind,DataSets)
-	    MA_TCGA=TCGA_BatchCorrection_MolecularData(MA_TCGA,MetaBatchData,MinPerBatch)    
-    
-  	} else {
-    
-	    MAfiles=dir(DataSetDirectories$MAdirectory)
-	    MatchedFile=grep(MAstring,MAfiles)        
-	    if (length(MatchedFile)>0) {   
-	      
-	      MA_TCGA=Preprocess_MAdata(CancerSite,DataSetDirectories$MAdirectory,MAfiles[MatchedFile])
-	      
-	    } else {
-	      
-	      stop("MA file not found for this cancer.\n")
-	    }           
-  	}         
+	##### MAE additions -Lucas #####
+	# load in MAEO
+	MAEO <- readRDS(paste0(DataSetDirectories[1], "/", CancerSite, "_RNASeq_MAEO.rds"))
+	query1 <- grep("RNASeq", names(experiments(MAEO)))
+	MAEO_ge <- as.matrix(assay(MAEO[[query1]]))
+	MAEO_ge <- apply(MAEO_ge, 2, log2)
+	MAEO_ge[is.infinite(MAEO_ge) & MAEO_ge<0] <- 0
+	################################
+
+	# Processing MA data, special case for OV and GBM where no RNA seq data is available             
+	cat("Loading mRNA data.\n")    
+    if (!is.null(MAEO)) {   
+      MA_TCGA=Preprocess_MAdata(CancerSite,MAEO_ge)
+    } else {
+      stop("No RNASeq MAEO object found.\n")
+    }                   
   
 	# Processing CNV data
 	cat("Loading CNV data.\n")
@@ -83,7 +41,8 @@ Preprocess_CancerSite <- function(CancerSite,DataSetDirectories) {
 		colnames(CGH_Data$CGH_Data_Segmented)=paste(SampleNames,'-01',sep='')
 	}        
 	cat("\tBatch correction.\n")
-	CNV_TCGA=TCGA_BatchCorrection_MolecularData(CGH_Data$CGH_Data_Segmented,BatchData,MinPerBatch)    
+	#CNV_TCGA=TCGA_BatchCorrection_MolecularData(CGH_Data$CGH_Data_Segmented,BatchData,MinPerBatch)
+	CNV_TCGA=CGH_Data$CGH_Data_Segmented
 	Genes=rownames(CNV_TCGA)
 	SplitGenes=strsplit2(Genes,'\\|')
 	rownames(CNV_TCGA)=SplitGenes[,1]      
@@ -197,12 +156,12 @@ TCGA_Load_GISTICdata <- function (GisticDirectory) {
 	return(list(CGH_Data_Segmented=CGH_Data,CGH_Data_Thresholded=CGH_Data_Thresholded,AMPgenes=AMPgenes,DELgenes=DELgenes))
 }
 
-Preprocess_MAdata <- function(CancerSite,Directory,File) {    
+Preprocess_MAdata <- function(CancerSite,MAEO_ge) {    
 	data(BatchData)
 	MinPerBatch=5   
 	
 	cat("\tMissing value estimation.\n")
-	MA_TCGA=TCGA_Load_MolecularData(paste(Directory,File,sep=''))        
+	MA_TCGA=TCGA_Load_MolecularData(MAEO_ge)        
 	Samplegroups=TCGA_GENERIC_GetSampleGroups(colnames(MA_TCGA))        
 	if (CancerSite =='LAML') {
 		MA_TCGA=MA_TCGA[,Samplegroups$PeripheralBloodCancer]
@@ -210,7 +169,7 @@ Preprocess_MAdata <- function(CancerSite,Directory,File) {
 		MA_TCGA=MA_TCGA[,Samplegroups$Primary]
 	}          
 	cat("\tBatch correction.\n")
-	MA_TCGA=TCGA_BatchCorrection_MolecularData(MA_TCGA,BatchData,MinPerBatch)
+	#MA_TCGA=TCGA_BatchCorrection_MolecularData(MA_TCGA,BatchData,MinPerBatch)
 	
 	cat("\tProcessing gene ids and merging.\n")
 	Genes=rownames(MA_TCGA)
@@ -223,8 +182,11 @@ Preprocess_MAdata <- function(CancerSite,Directory,File) {
 }
 
 
-TCGA_Load_MolecularData <- function (Filename) {     
-    MET_Data=read.csv(Filename,sep="\t",row.names=1,header=TRUE,na.strings=c("NA","null"))
+TCGA_Load_MolecularData <- function (MAEO_ge) { 
+	##### MAE additions -Lucas #####
+	#conforming
+	MET_Data <- MAEO_ge
+	################################
 
 	if (rownames(MET_Data)[1]=='Composite Element REF') {
 		cat("Removing first row with text stuff.\n")
@@ -613,6 +575,7 @@ it.sol  <- function(sdat,g.hat,d.hat,g.bar,t2,a,b,conv=.0001){
 	d.old <- d.hat
 	change <- 1
 	count <- 0
+	print(change>conv)
 	while(change>conv){
 		g.new <- postmean(g.hat,g.bar,n,d.old,t2)
 		sum2 <- apply((sdat-g.new%*%t(rep(1,ncol(sdat))))^2, 1, sum,na.rm=TRUE)
