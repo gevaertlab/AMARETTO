@@ -43,6 +43,11 @@ The algorithm:
  
 AMARETTO supports downloading and processing TCGA data from [Firehose](https://gdac.broadinstitute.org/).
 
+## Running AMARETTO
+
+* [*Introduction to AMARETTO*](https://nbviewer.jupyter.org/github/gevaertlab/AMARETTO/blob/develop/files/AMARETTO_vignette.pdf) provides a comprehensive example of the AMARETTO workflow with detailed  explanations of each function.</br> 
+
+
 ## References
 
 >Champion, M., Brennan, K., Croonenborghs, T., Gentles, A. J., Pochet, N., & Gevaert, O. (2018). Module Analysis Captures Pancancer Genetically and Epigenetically Deregulated Cancer Driver Genes for Smoking and Antiviral Response. EBioMedicine, 27, 156–166. doi:10.1016/j.ebiom.2017.11.028
