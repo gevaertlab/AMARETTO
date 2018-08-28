@@ -23,9 +23,7 @@ Integrating an increasing number of available multi-omics cancer data remains on
 - [Citation](#citation)
 - [License](#license)
 
-## Getting Started
-
-__Installation__
+## Installation
 
 Install from the GitHub repository using devtools:
 
@@ -33,7 +31,9 @@ Install from the GitHub repository using devtools:
     library(devtools)
     devtools::install_github("gevaertlab/AMARETTO")
 
-__Help__ 
+## Running AMARETTO
+
+* [*Introduction to AMARETTO*](https://nbviewer.jupyter.org/github/gevaertlab/AMARETTO/blob/develop/files/AMARETTO_vignette.pdf) provides a comprehensive example of the AMARETTO workflow with detailed  explanations of each function.</br> 
 
 Detailed information on `AMARETTO` package functions can be obtained in the help files. For example, to view the help file for the function `AMARETTO` in a R session, use `?AMARETTO`.
 
@@ -49,9 +49,6 @@ The algorithm:
  
 AMARETTO supports downloading and processing TCGA data from [Firehose](https://gdac.broadinstitute.org/).
 
-## Running AMARETTO
-
-* [*Introduction to AMARETTO*](https://nbviewer.jupyter.org/github/gevaertlab/AMARETTO/blob/develop/files/AMARETTO_vignette.pdf) provides a comprehensive example of the AMARETTO workflow with detailed  explanations of each function.</br> 
 
 
 ## References
