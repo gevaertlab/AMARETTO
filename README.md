@@ -5,7 +5,7 @@
   <a href="https://github.com/gevaertlab/AMARETTO">
     <img height="150" src="https://github.com/gevaertlab/AMARETTO/blob/develop/files/logo.jpg">
   </a>
-  <h1 align="center">AMARETTO</h1>
+  <h1 align="center"></h1>
 </p>
 
 
