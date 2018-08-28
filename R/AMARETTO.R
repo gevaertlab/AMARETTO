@@ -1,48 +1,52 @@
-AMARETTO_Initialize <- function(MA_matrix,CNV_matrix,MET_matrix,NrModules,
-           VarPercentage,PvalueThreshold=0.001,RsquareThreshold=0.1,pmax=10,NrCores=1,OneRunStop=0){
-    
-    if(is.null(CNV_matrix))  
-    {
-      if (ncol(MA_matrix)<2 || ncol(MET_matrix)==1){
-        stop("AMARETTO cannot be run with less than two samples.\n")
-      }
-    }
-    
-    if(is.null(MET_matrix)) {
-      if (ncol(MA_matrix)<2 || ncol(CNV_matrix)==1 ){
-        stop("AMARETTO cannot be run with less than two samples.\n")
-      }
-    }
-    
-    if(!is.null(MA_matrix) & !is.null(CNV_matrix) & !is.null(MET_matrix)) {
-      if (ncol(MA_matrix)<2 || ncol(CNV_matrix)==1 || ncol(MET_matrix)==1){
-        stop("AMARETTO cannot be run with less than two samples.\n")
-      }
-    }
-    
-    # Fixing default paramters
-    AutoRegulation=2; Lambda2=0.0001; alpha=1-1e-06
-    # Creating the parameters structure
-    Parameters <- list(AutoRegulation=AutoRegulation,OneRunStop=OneRunStop,Lambda2=Lambda2,Mode='larsen',pmax=pmax,alpha=alpha)
-    # Create cancer drivers
-    RegulatorInfo=CreateRegulatorData(MA_matrix=MA_matrix,CNV_matrix=CNV_matrix,MET_matrix=MET_matrix,PvalueThreshold=PvalueThreshold,RsquareThreshold=RsquareThreshold)
-    if (length(RegulatorInfo)>1){
-      RegulatorData=RegulatorInfo$RegulatorData
-      Alterations = RegulatorInfo$Alterations
-      
-      # Selecting gene expression data and Clustering
-      MA_matrix_Var=geneFiltering('MAD',MA_matrix,VarPercentage)
-      MA_matrix_Var=t(scale(t(MA_matrix_Var)))
-      if (NrModules>=nrow(MA_matrix_Var)){
-        stop(paste0("The number of modules is too large compared to the number of genes. Choose a number of modules smaller than ",nrow(MA_matrix_Var),".\n"))
-      }
-      KmeansResults=kmeans(MA_matrix_Var,NrModules,iter.max=100)
-      Clusters=as.numeric(KmeansResults$cluster)
-      names(Clusters) <- rownames(MA_matrix_Var)
-      
-      return(list(MA_matrix_Var=MA_matrix_Var,RegulatorData=RegulatorData,RegulatorAlterations=Alterations,ModuleMembership=Clusters,Parameters=Parameters,NrCores=NrCores))
+AMARETTO_Initialize <- function(MA_matrix=MA_matrix,CNV_matrix=NULL,MET_matrix=NULL, Driver_list = NULL,NrModules,
+                                VarPercentage,PvalueThreshold=0.001,RsquareThreshold=0.1,pmax=10,NrCores=1,OneRunStop=0){
+  
+  if(is.null(MET_matrix) & is.null(CNV_matrix) & is.null(Driver_list)) {
+    stop("Please select the correct input data types")
+  }
+  if(is.null(CNV_matrix)  & is.null(Driver_list))  
+  {
+    if (ncol(MA_matrix)<2 || ncol(MET_matrix)==1){
+      stop("AMARETTO cannot be run with less than two samples.\n")
     }
   }
+  
+  if(is.null(MET_matrix)  & is.null(Driver_list)) {
+    if (ncol(MA_matrix)<2 || ncol(CNV_matrix)==1 ){
+      stop("AMARETTO cannot be run with less than two samples.\n")
+    }
+  }
+  
+  if(!is.null(MA_matrix) & !is.null(CNV_matrix) & !is.null(MET_matrix)  & !is.null(Driver_list)) {
+    if (ncol(MA_matrix)<2 || ncol(CNV_matrix)==1 || ncol(MET_matrix)==1){
+      stop("AMARETTO cannot be run with less than two samples.\n")
+    }
+  }
+  # Fixing default paramters
+  AutoRegulation=2; Lambda2=0.0001; alpha=1-1e-06
+  # Creating the parameters structure
+  Parameters <- list(AutoRegulation=AutoRegulation,OneRunStop=OneRunStop,Lambda2=Lambda2,Mode='larsen',pmax=pmax,alpha=alpha)
+  # Create cancer drivers
+  RegulatorInfo=CreateRegulatorData(MA_matrix=MA_matrix,CNV_matrix=CNV_matrix,MET_matrix=MET_matrix,Driver_list=Driver_list,PvalueThreshold=PvalueThreshold,RsquareThreshold=RsquareThreshold)
+  if (length(RegulatorInfo)>1){
+    RegulatorData=RegulatorInfo$RegulatorData
+    Alterations = RegulatorInfo$Alterations
+    
+    # Selecting gene expression data and Clustering
+    MA_matrix_Var=geneFiltering('MAD',MA_matrix,VarPercentage)
+    MA_matrix_Var=t(scale(t(MA_matrix_Var)))
+    if (NrModules>=nrow(MA_matrix_Var)){
+      stop(paste0("The number of modules is too large compared to the number of genes. Choose a number of modules smaller than ",nrow(MA_matrix_Var),".\n"))
+    }
+    KmeansResults=kmeans(MA_matrix_Var,NrModules,iter.max=100)
+    Clusters=as.numeric(KmeansResults$cluster)
+    names(Clusters) <- rownames(MA_matrix_Var)
+    
+    return(list(MA_matrix_Var=MA_matrix_Var,RegulatorData=RegulatorData,RegulatorAlterations=Alterations,ModuleMembership=Clusters,Parameters=Parameters,NrCores=NrCores))
+  }
+}
+
+
 AMARETTO_Run <- function(AMARETTOinit) {
     if (length(AMARETTOinit)==0){
          cat('For cancer ',CancerSite,' no drivers were find during the initialization step of AMARETTO')
@@ -687,83 +691,96 @@ AMARETTO_CreateRegulatorPrograms <- function(AMARETTOinit,AMARETTOresults) {
     return(RegulatorProgramData)
 }
 
-CreateRegulatorData <- 
-  function(MA_matrix,CNV_matrix,MET_matrix,PvalueThreshold=0.001,RsquareThreshold=0.1) {
+CreateRegulatorData <- function(MA_matrix=MA_matrix,CNV_matrix=NULL,MET_matrix=NULL, Driver_list = NULL,PvalueThreshold=0.001,RsquareThreshold=0.1) {
+  # Driver list data
+  if(!is.null(Driver_list))
+  {
+    MET_matrix <- matrix(numeric(0),0,0) ;  CNV_matrix <- matrix(numeric(0),0,0) # ignore the rest input matrices
+    DriversList <- Driver_Genes[[Driver_list]]
+    DriversList <- intersect(DriversList, rownames(MA_matrix))
+    cat('\tFound',length(DriversList),'driver genes from the input list.\n')
     
-    ### adding null CNV dataset
-    if(is.null(CNV_matrix))  CNV_matrix <- matrix(0, nrow = 0, ncol = 0)
-    
-    # First removing genes with constant CNV status.
-    if (nrow(CNV_matrix)>1){
-      GeneVariances=rowVars(CNV_matrix)
-      CNV_matrix=CNV_matrix[GeneVariances>=0.0001,]
-    }
-    if (nrow(CNV_matrix)>0){
-      CNV_matrix=FindTranscriptionallyPredictive_CNV(MA_matrix,CNV_matrix,PvalueThreshold=PvalueThreshold,RsquareThreshold=RsquareThreshold)
-    }
-    
-    cat('\tFound',length(rownames(CNV_matrix)),'CNV driver genes.\n')
-    
-    ### adding null MET dataset
-    if(is.null(MET_matrix))  MET_matrix <- matrix(0, nrow = 0, ncol = 0)
-    # based on MethylMix we have the following regulators
-    if (nrow(MET_matrix)>1){
-      GeneVariances=rowVars(MET_matrix)
-      MET_matrix=MET_matrix[GeneVariances>=0.0001,]
-    }
-    
-    MET_drivers <- intersect(rownames(MET_matrix),rownames(MA_matrix))
-    #MET_matrix=FindTranscriptionallyPredictive_MET(MET_matrix,CNV_matrix,PvalueThreshold=PvalueThreshold,RsquareThreshold=RsquareThreshold)
-    cat('\tFound',length(MET_drivers),'MethylMix driver genes.\n')
-    
-    # set of drivers
-    Drivers <- unique(c(rownames(CNV_matrix),MET_drivers))
-    
-    # regulator data
-    if (length(Drivers)==0){
-      cat("AMARETTO doesn't find any driver genes.")
-      return("No driver")
-    } else {
-      if (length(Drivers)==1){
-        RegulatorData_temp <- matrix(0,1,ncol(MA_matrix))
-        colnames(RegulatorData_temp) <- colnames(MA_matrix)
-        rownames(RegulatorData_temp) <- Drivers
-        RegulatorData_temp[1,] <- MA_matrix[Drivers,]
-        RegulatorData <- RegulatorData_temp
-      } else {
-        RegulatorData=MA_matrix[Drivers,]
-      }
-      RegulatorData=t(scale(t(RegulatorData)))
-      
-      # alterations of all these drivers
-      MET_aberrations <- matrix(0,ncol=3,nrow=length(MET_drivers))
-      colnames(MET_aberrations) <- c("Hypo-methylated","No_change","Hyper-methylated")
-      rownames(MET_aberrations) <- MET_drivers
-      if  (length(MET_drivers)>0){
-        MET_aberrations[,1] <- rowSums(MET_matrix[MET_drivers,]>0)/ncol(MET_matrix)
-        MET_aberrations[,2] <- rowSums(MET_matrix[MET_drivers,]<0)/ncol(MET_matrix)
-        MET_aberrations[,3] <- rowSums(MET_matrix[MET_drivers,]==0)/ncol(MET_matrix)
-      }
-      
-      CNV_alterations <- matrix(0,ncol=3,nrow=nrow(CNV_matrix))
-      colnames(CNV_alterations) <- c("Amplification","No_change","Deletion")
-      rownames(CNV_alterations) <- rownames(CNV_matrix)
-      if (nrow(CNV_alterations)>0){
-        CNV_alterations[,1] <- rowSums(CNV_matrix>0)/ncol(CNV_matrix)
-        CNV_alterations[,2] <- rowSums(CNV_matrix<0)/ncol(CNV_matrix)
-        CNV_alterations[,3] <- rowSums(CNV_matrix==0)/ncol(CNV_matrix)
-      }
-      
-      Alterations <- matrix(0,nrow=length(Drivers),ncol=2)
-      colnames(Alterations) <- c("CNV","MET")
-      rownames(Alterations) <- Drivers
-      Alterations[which(Drivers%in% rownames(CNV_matrix)),1] <- rep(1,length(which(Drivers%in% rownames(CNV_matrix))))
-      Alterations[which(Drivers%in% rownames(MET_matrix)),2] <- rep(1,length(which(Drivers%in% rownames(MET_matrix))))
-      
-      Alterations <- list(MET=MET_aberrations,CNV=CNV_alterations,Summary=Alterations)
-      return(list(RegulatorData=RegulatorData,Alterations=Alterations))
-    }
   }
+  if(is.null(Driver_list)) DriversList <- NULL
+  ### adding null CNV dataset
+  if(is.null(CNV_matrix))  CNV_matrix <- matrix(0, nrow = 0, ncol = 0)
+  
+  # First removing genes with constant CNV status.
+  if (nrow(CNV_matrix)>1){
+    GeneVariances=rowVars(CNV_matrix)
+    CNV_matrix=CNV_matrix[GeneVariances>=0.0001,]
+  }
+  if (nrow(CNV_matrix)>0){
+    CNV_matrix=FindTranscriptionallyPredictive_CNV(MA_matrix,CNV_matrix,PvalueThreshold=PvalueThreshold,RsquareThreshold=RsquareThreshold)
+  }
+  
+  cat('\tFound',length(rownames(CNV_matrix)),'CNV driver genes.\n')
+  
+  ### adding null MET dataset
+  if(is.null(MET_matrix))  MET_matrix <- matrix(0, nrow = 0, ncol = 0)
+  # based on MethylMix we have the following regulators
+  if (nrow(MET_matrix)>1){
+    GeneVariances=rowVars(MET_matrix)
+    MET_matrix=MET_matrix[GeneVariances>=0.0001,]
+  }
+  
+  MET_drivers <- intersect(rownames(MET_matrix),rownames(MA_matrix))
+  #MET_matrix=FindTranscriptionallyPredictive_MET(MET_matrix,CNV_matrix,PvalueThreshold=PvalueThreshold,RsquareThreshold=RsquareThreshold)
+  cat('\tFound',length(MET_drivers),'MethylMix driver genes.\n')
+  # set of drivers
+  Drivers <- unique(c(rownames(CNV_matrix),MET_drivers,DriversList))
+  # regulator data
+  if (length(Drivers)==0){
+    cat("AMARETTO doesn't find any driver genes.")
+    return("No driver")
+  } else {
+    if (length(Drivers)==1){
+      RegulatorData_temp <- matrix(0,1,ncol(MA_matrix))
+      colnames(RegulatorData_temp) <- colnames(MA_matrix)
+      rownames(RegulatorData_temp) <- Drivers
+      RegulatorData_temp[1,] <- MA_matrix[Drivers,]
+      RegulatorData <- RegulatorData_temp
+    } else {
+      RegulatorData=MA_matrix[Drivers,]
+    }
+    RegulatorData=t(scale(t(RegulatorData)))
+    
+    # alterations of all these drivers
+    MET_aberrations <- matrix(0,ncol=3,nrow=length(MET_drivers))
+    colnames(MET_aberrations) <- c("Hypo-methylated","No_change","Hyper-methylated")
+    rownames(MET_aberrations) <- MET_drivers
+    if  (length(MET_drivers)>0){
+      MET_aberrations[,1] <- rowSums(MET_matrix[MET_drivers,]>0)/ncol(MET_matrix)
+      MET_aberrations[,2] <- rowSums(MET_matrix[MET_drivers,]<0)/ncol(MET_matrix)
+      MET_aberrations[,3] <- rowSums(MET_matrix[MET_drivers,]==0)/ncol(MET_matrix)
+    }
+    
+    CNV_alterations <- matrix(0,ncol=3,nrow=nrow(CNV_matrix))
+    colnames(CNV_alterations) <- c("Amplification","No_change","Deletion")
+    rownames(CNV_alterations) <- rownames(CNV_matrix)
+    if (nrow(CNV_alterations)>0){
+      CNV_alterations[,1] <- rowSums(CNV_matrix>0)/ncol(CNV_matrix)
+      CNV_alterations[,2] <- rowSums(CNV_matrix<0)/ncol(CNV_matrix)
+      CNV_alterations[,3] <- rowSums(CNV_matrix==0)/ncol(CNV_matrix)
+    }
+    
+    driverList_alterations <- matrix(0,ncol=1,nrow=length(DriversList))
+    colnames(driverList_alterations) <- Driver_list
+    rownames(driverList_alterations) <- DriversList
+    driverList_alterations[,Driver_list] <-1
+    
+    Alterations <- matrix(0,nrow=length(Drivers),ncol=3)
+    colnames(Alterations) <- c("CNV","MET","Driver List")
+    rownames(Alterations) <- Drivers
+    
+    Alterations[which(Drivers%in% rownames(CNV_matrix)),1] <- rep(1,length(which(Drivers%in% rownames(CNV_matrix))))
+    Alterations[which(Drivers%in% rownames(MET_matrix)),2] <- rep(1,length(which(Drivers%in% rownames(MET_matrix))))
+    Alterations[which(Drivers%in% rownames(driverList_alterations)),3] <- rep(1,length(which(Drivers %in% rownames(driverList_alterations))))
+    
+    Alterations <- list(MET=MET_aberrations,CNV=CNV_alterations,Driver_list = driverList_alterations,Summary=Alterations)
+    return(list(RegulatorData=RegulatorData,Alterations=Alterations))
+  }
+}
 
 FindTranscriptionallyPredictive_CNV<- function(MA_matrix,CNV_matrix,PvalueThreshold=0.001,RsquareThreshold=0.1) {
   
