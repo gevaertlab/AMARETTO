@@ -55,35 +55,6 @@ AMARETTO supports downloading and processing TCGA data from [Firehose](https://g
 
 >Champion, M., Brennan, K., Croonenborghs, T., Gentles, A. J., Pochet, N., & Gevaert, O. (2018). Module Analysis Captures Pancancer Genetically and Epigenetically Deregulated Cancer Driver Genes for Smoking and Antiviral Response. EBioMedicine, 27, 156–166. doi:10.1016/j.ebiom.2017.11.028
 
-## Author Information
-
-<table>
-  <tr>
-    <th> Magali Champion </th>
-    <th> Katie Planey </th>
-    <th> Olivier Gevaert </th>
-  </tr>
-  <tr>
-    <td colspan="3" align="center"> Stanford Center for Biomedical Informatics
-    Department of Medicine </td>
-  </tr>
-  <tr>
-  	<td colspan="3" align="center"> Department of Medicine </td>
-  </tr>
-  <tr>
-  	<td colspan="3" align="center"> 1265 Welch Road </td>
-  </tr>
-  <tr>
-  	<td colspan="3" align="center"> Stanford CA, 94305-5479 </td>
-  </tr>
-</table>
-
-## Citation
-
-If you use AMARETTO in your work, please cite:
-
-> Champion, M., Brennan, K., Croonenborghs, T., Gentles, A. J., Pochet, N., & Gevaert, O. (2018). Module Analysis Captures Pancancer Genetically and Epigenetically Deregulated Cancer Driver Genes for Smoking and Antiviral Response. R package version 0.99.1.
-
 > Gevaert O, Villalobos V, Sikic BI, Plevritis SK. Identification of ovarian cancer driver genes by using module network integration of multi-omics data. Interface Focus. 5(2) (2013)
 
 ## License
