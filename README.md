@@ -19,8 +19,6 @@ Integrating an increasing number of available multi-omics cancer data remains on
 - [Getting Started](#getting-started)
 - [Introduction](#introduction)
 - [References](#references)
-- [Author Information](#author-information)
-- [Citation](#citation)
 - [License](#license)
 
 ## Installation
