@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/badge/license-GPL-yellow.svg)](https://opensource.org/licenses/GPL-2.0)
 [![Version](https://img.shields.io/badge/version-0.99.1-lightgrey.svg)]()
 
-Capturing pancancer genetically and epigenetically driver genes.
+Integrating an increasing number of available multi-omics cancer data remains one of the main challenges to improve our understanding of cancer. One of the main challenges is using multi-omics data for identifying novel cancer driver genes. We have developed an algorithm, called AMARETTO, that integrates copy number, DNA methylation and gene expression data to identify a set of driver genes by analyzing cancer samples and connects them to clusters of co-expressed genes, which we define as modules. We applied AMARETTO in a pancancer setting to identify cancer driver genes and their modules on multiple cancer sites. AMARETTO captures modules enriched in angiogenesis, cell cycle and EMT, and modules that accurately predict survival and molecular subtypes. This allows AMARETTO to identify novel cancer driver genes directing canonical cancer pathways.
 
 ## Table of Contents
 
@@ -21,28 +21,11 @@ Capturing pancancer genetically and epigenetically driver genes.
 
 __Installation__
 
-To install the _AMARETTO_ package, clone the GitHub directory:
+Install from the GitHub repository using devtools:
 
-```{bash, eval=FALSE}
-// bash
-git clone https://github.com/gevaertlab/AMARETTO
-```
-Then install the package from source within R.
-
-```{r, eval=FALSE}
-// R
-install.packages("AMARETTO", repos = NULL, type="source")
-```
-
-
-__Loading__
-
-To load the `AMARETTO` package in your R session:
-
-```{r, eval=FALSE}
-// R
-library(AMARETTO)
-```
+    install.packages("devtools")
+    library(devtools)
+    devtools::install_github("gevaertlab/AMARETTO")
 
 __Help__ 
 
