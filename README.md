@@ -1,7 +1,13 @@
 [//]: # (TODO: Bioconductor support?)
 [//]: # (TODO: Some examples)
 
-# AMARETTO
+<p align="center">
+  <a href="https://github.com/gevaertlab/AMARETTO">
+    <img height="150" src="https://github.com/gevaertlab/AMARETTO/blob/develop/files/logo.jpg">
+  </a>
+  <h1 align="center">AMARETTO</h1>
+</p>
+
 
 [![License](https://img.shields.io/badge/license-GPL-yellow.svg)](https://opensource.org/licenses/GPL-2.0)
 [![Version](https://img.shields.io/badge/version-0.99.1-lightgrey.svg)]()
