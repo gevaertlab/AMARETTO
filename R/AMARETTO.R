@@ -692,15 +692,7 @@ AMARETTO_CreateRegulatorPrograms <- function(AMARETTOinit,AMARETTOresults) {
 }
 
 CreateRegulatorData <- function(MA_matrix=MA_matrix,CNV_matrix=NULL,MET_matrix=NULL, Driver_list = NULL,PvalueThreshold=0.001,RsquareThreshold=0.1) {
-  # Driver list data
-  if(!is.null(Driver_list))
-  {
-    MET_matrix <- matrix(numeric(0),0,0) ;  CNV_matrix <- matrix(numeric(0),0,0) # ignore the rest input matrices
-    DriversList <- Driver_Genes[[Driver_list]]
-    DriversList <- intersect(DriversList, rownames(MA_matrix))
-    cat('\tFound',length(DriversList),'driver genes from the input list.\n')
-    
-  }
+  
   if(is.null(Driver_list)) DriversList <- NULL
   ### adding null CNV dataset
   if(is.null(CNV_matrix))  CNV_matrix <- matrix(0, nrow = 0, ncol = 0)
@@ -727,6 +719,17 @@ CreateRegulatorData <- function(MA_matrix=MA_matrix,CNV_matrix=NULL,MET_matrix=N
   MET_drivers <- intersect(rownames(MET_matrix),rownames(MA_matrix))
   #MET_matrix=FindTranscriptionallyPredictive_MET(MET_matrix,CNV_matrix,PvalueThreshold=PvalueThreshold,RsquareThreshold=RsquareThreshold)
   cat('\tFound',length(MET_drivers),'MethylMix driver genes.\n')
+  
+  # Driver list data
+  if(!is.null(Driver_list))
+  {
+    #MET_matrix <- matrix(numeric(0),0,0) ;  CNV_matrix <- matrix(numeric(0),0,0) # ignore the rest input matrices
+    DriversList <- Driver_Genes[[Driver_list]]
+    DriversList <- intersect(DriversList, rownames(MA_matrix))
+    cat('\tFound',length(DriversList),'driver genes from the input list.\n')
+    
+  }
+  
   # set of drivers
   Drivers <- unique(c(rownames(CNV_matrix),MET_drivers,DriversList))
   # regulator data
