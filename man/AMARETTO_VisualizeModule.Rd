@@ -3,10 +3,10 @@
 \title{
 Visualize AMARETTO module}
 \description{
-Plot a heatmap of the regulator and passenger gene expression levels for a certain AMARETTO module.
+Plot a heatmap of the regulator and passenger gene expression levels for a certain AMARETTO module. Methylation and CNV profiles of driver genes can be included as well as sample annotations.
 }
 \usage{
-AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, CNV_matrix, MET_matrix, ModuleNr)
+AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, CNV_matrix, MET_matrix, ModuleNr, SAMPLE_annotation, ID, order_samples)
 }
 
 \arguments{
@@ -14,17 +14,27 @@ AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, CNV_matrix, MET_matrix, 
 		Output from AMARETTO_Initialize().
 }
   \item{AMARETTOresults}{
-		Output from AMARETTO_Run().}
+		Output from AMARETTO_Run().
+ }
   \item{CNV_matrix}{
-  CNV matrix, with genes in rows and samples in columns.
+  CNV matrix, with genes in rows and samples in columns. When absent, CNV profiles are not added.
 }
   \item{MET_matrix}{
-  Methylation matrix, with genes in rows and samples in columns.
+  Methylation matrix, with genes in rows and samples in columns. When absent, methylation profiles are not added.
 }
   \item{ModuleNr}{
 		Module number. Selecting a module with a high R squared is a good rule 
 		of thumb, as this represents a module that may be tightly regulated.
 }
+ \item{SAMPLE_annotation}{
+  A matrix or dataframe with sample annotations (samples as rows) is optional to add.
+}
+ \item{ID}{
+ The name of the column with the IDs matching those in the data matrixes.
+ }
+ \item{order_samples}{
+ Samples can be ordered on mean expression (standard) or clustering (use ="clust") of the module.
+ }
 }
 \value{
 	Does not return output, but plots heatmap to screen.
@@ -63,5 +73,5 @@ AMARETTOresults<-AMARETTO_Run(AMARETTOinit)
 ModuleNr=2
 AMARETTO_VisualizeModule(AMARETTOinit,AMARETTOresults=AMARETTOresults,
  CNV_matrix=ProcessedDataLAML$CNV_TCGA,MET_matrix=ProcessedDataLAML$MET_TCGA,
- ModuleNr  =ModuleNr) 
+ ModuleNr=ModuleNr) 
 }
