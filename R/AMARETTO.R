@@ -734,7 +734,7 @@ CreateRegulatorData <- function(MA_matrix=MA_matrix,CNV_matrix=NULL,MET_matrix=N
   #Drivers <- unique(c(rownames(CNV_matrix),MET_drivers,DriversList))
   if(is.null(Driver_list))  Drivers <- unique(c(rownames(CNV_matrix),MET_drivers,DriversList))
   dataset_drivers <- unique(c(rownames(CNV_matrix),MET_drivers))
-  if(!is.null(Driver_list) & method=="union")  Drivers <- unique(dataset_drivers,DriversList)
+  if(!is.null(Driver_list) & method=="union")  Drivers <- union(dataset_drivers,DriversList)
   if(!is.null(Driver_list) & method=="intersect")  Drivers <- intersect(dataset_drivers,DriversList)
   
   cat('\tFound a total of',length(Drivers),'unique drivers with your selected method.\n')
