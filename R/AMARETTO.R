@@ -459,22 +459,22 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NUL
   if (ModuleNr>AMARETTOresults$NrModules){
     stop('\tCannot plot Module',ModuleNr,' since the total number of modules is',AMARETTOresults$N,'.\n')
   }
-  ModuleData=AMARETTOinit$MA_matrix_Var[AMARETTOresults$ModuleMembership==ModuleNr,]
-  ModuleRegulators = AMARETTOresults$AllRegulators[which(AMARETTOresults$RegulatoryPrograms[ModuleNr,] != 0)]
-  RegulatorData=AMARETTOinit$RegulatorData[ModuleRegulators,]
-  ModuleGenes=rownames(ModuleData)
+  ModuleData<-AMARETTOinit$MA_matrix_Var[AMARETTOresults$ModuleMembership==ModuleNr,]
+  ModuleRegulators <- AMARETTOresults$AllRegulators[which(AMARETTOresults$RegulatoryPrograms[ModuleNr,] != 0)]
+  RegulatorData <- AMARETTOinit$RegulatorData[ModuleRegulators,]
+  ModuleGenes <- rownames(ModuleData)
   cat('Module',ModuleNr,'has',length(rownames(ModuleData)),'genes and',length(ModuleRegulators),'regulators for',length(colnames(ModuleData)),'samples.\n')
   
   # create annotations
-  Alterations<- rownames_to_column(as.data.frame(AMARETTOinit$RegulatorAlterations$Summary),"HGNC_symbol") %>% rename(DriverList="Driver List") %>% filter(HGNC_symbol %in% ModuleRegulators)
-  Alterations<- Alterations %>% mutate(CNVMet_Alterations=case_when(MET==1 & CNV==1~"Methylation and copy number alterations",
+  Alterations<- rownames_to_column(as.data.frame(AMARETTOinit$RegulatorAlterations$Summary),"HGNC_symbol") %>% dplyr::rename(DriverList="Driver List") %>% dplyr::filter(HGNC_symbol %in% ModuleRegulators)
+  Alterations<- Alterations %>% dplyr::mutate(CNVMet_Alterations=case_when(MET==1 & CNV==1~"Methylation and copy number alterations",
                                                                     CNV==1~"Copy number alterations",
                                                                     MET==1~"Methylation aberrations",
                                                                     MET==0 & CNV==0 ~"Not Altered"),
                                        DriversList_Alterations=case_when(DriverList==0~"Driver not predefined",
                                                                          DriverList==1~"Driver predefined"))
   
-  ha_drivers <- HeatmapAnnotation(df = column_to_rownames(Alterations,"HGNC_symbol") %>% select(CNVMet_Alterations,DriversList_Alterations), col = list(CNVMet_Alterations= c("Copy number alterations"="#eca400","Methylation aberrations"="#006992","Methylation and copy number alterations"="#d95d39","Not Altered"="lightgray"),DriversList_Alterations=c("Driver not predefined"="lightgray","Driver predefined"="#588B5B")),which = "column", height = unit(0.3, "cm"),name="",
+  ha_drivers <- HeatmapAnnotation(df = column_to_rownames(Alterations,"HGNC_symbol") %>% dplyr::select(CNVMet_Alterations,DriversList_Alterations), col = list(CNVMet_Alterations= c("Copy number alterations"="#eca400","Methylation aberrations"="#006992","Methylation and copy number alterations"="#d95d39","Not Altered"="lightgray"),DriversList_Alterations=c("Driver not predefined"="lightgray","Driver predefined"="#588B5B")),which = "column", height = unit(0.3, "cm"),name="",
                                   annotation_legend_param = list(title_gp = gpar(fontsize = 8),labels_gp = gpar(fontsize = 6)))
   
   if (is.null(MET_matrix) && is.null(CNV_matrix)){
@@ -501,13 +501,13 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NUL
   
   ClustRegulatorData <- t(RegulatorData[,overlapping_samples_clust])
   ClustModuleData <- t(ModuleData[,overlapping_samples_clust])
-  Regwidth=ncol(ClustRegulatorData)*0.5
+  Regwidth <- ncol(ClustRegulatorData)*0.5
   ha_Reg <- Heatmap(ClustRegulatorData, name = "Gene Expression", column_title = "Regulator Genes\nExpression",cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = gpar(fontsize = 6),top_annotation = ha_drivers,
                     column_title_gp = gpar(fontsize = 6, fontface = "bold"), col=colorRamp2(c(-max(abs(ClustRegulatorData)), 0, max(abs(ClustRegulatorData))), c("darkblue", "white", "darkred")),heatmap_legend_param = list(color_bar = "continuous",legend_direction = "horizontal",title_gp = gpar(fontsize = 8),labels_gp = gpar(fontsize = 6)), width = unit(Regwidth, "cm"))
   
-  if(length(ClustModuleData)<20){
+  if(length(ClustModuleData)<50){
     fontsizeMo=6
-  } else if (length(ClustModuleData)<100){
+  } else if (length(ClustModuleData)<200){
     fontsizeMo=4
   } else {fontsizeMo=2}
   
@@ -520,7 +520,7 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NUL
     METreg <- intersect(rownames(AMARETTOinit$RegulatorAlterations$MET),ModuleRegulators)
     print("MET regulators will be included when available")
     if (length(METreg)>0){
-      METData2 = METData = MET_matrix[unlist(Alterations %>% filter(MET==1) %>% select(HGNC_symbol)),overlapping_samples_clust]
+      METData2 = METData = MET_matrix[unlist(Alterations %>% dplyr::filter(MET==1) %>% dplyr::select(HGNC_symbol)),overlapping_samples_clust]
       METData2[which(METData>0)] <- "Hyper-methylated"  # hyper
       METData2[which(METData<0)] <- "Hypo-methylated"  # hypo
       METData2[which(METData==0)] <- "Not altered" # nothing 
@@ -538,7 +538,7 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NUL
     CNVreg <- intersect(rownames(AMARETTOinit$RegulatorAlterations$CNV),ModuleRegulators)
     print("CNV regulators will be included when available")
     if (length(CNVreg)>0){
-      CNVData2 = CNVData = CNV_matrix[unlist(Alterations %>% filter(CNV==1) %>% select(HGNC_symbol)),overlapping_samples_clust] 
+      CNVData2 = CNVData = CNV_matrix[unlist(Alterations %>% dplyr::filter(CNV==1) %>% dplyr::select(HGNC_symbol)),overlapping_samples_clust] 
       CNVData2[which(CNVData>=0.1)] <- "Amplified"  # amplification
       CNVData2[which(CNVData<=(-0.1))] <- "Deleted"  # deletion
       CNVData2[which(CNVData<0.1 & CNVData>(-0.1))] <- "Not altered" # nothing
@@ -554,7 +554,7 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NUL
   
   if (!is.null(SAMPLE_annotation)){
     if (ID %in% colnames(SAMPLE_annotation)){
-      SAMPLE_annotation_fil<-as.data.frame(SAMPLE_annotation) %>% filter(!!as.name(ID) %in% overlapping_samples_clust)
+      SAMPLE_annotation_fil<-as.data.frame(SAMPLE_annotation) %>% dplyr::filter(!!as.name(ID) %in% overlapping_samples_clust)
       suppressWarnings(SAMPLE_annotation_fil<-left_join(as.data.frame(overlapping_samples_clust),SAMPLE_annotation_fil,by=c("overlapping_samples_clust"=ID)))
       SAMPLE_annotation_fil<-column_to_rownames(SAMPLE_annotation_fil,"overlapping_samples_clust")
       cat(nrow(SAMPLE_annotation_fil),"samples have an annotation.\n")
