@@ -1,48 +1,52 @@
-AMARETTO_Initialize <- function(MA_matrix,CNV_matrix,MET_matrix,NrModules,
-           VarPercentage,PvalueThreshold=0.001,RsquareThreshold=0.1,pmax=10,NrCores=1,OneRunStop=0){
-    
-    if(is.null(CNV_matrix))  
-    {
-      if (ncol(MA_matrix)<2 || ncol(MET_matrix)==1){
-        stop("AMARETTO cannot be run with less than two samples.\n")
-      }
-    }
-    
-    if(is.null(MET_matrix)) {
-      if (ncol(MA_matrix)<2 || ncol(CNV_matrix)==1 ){
-        stop("AMARETTO cannot be run with less than two samples.\n")
-      }
-    }
-    
-    if(!is.null(MA_matrix) & !is.null(CNV_matrix) & !is.null(MET_matrix)) {
-      if (ncol(MA_matrix)<2 || ncol(CNV_matrix)==1 || ncol(MET_matrix)==1){
-        stop("AMARETTO cannot be run with less than two samples.\n")
-      }
-    }
-    
-    # Fixing default paramters
-    AutoRegulation=2; Lambda2=0.0001; alpha=1-1e-06
-    # Creating the parameters structure
-    Parameters <- list(AutoRegulation=AutoRegulation,OneRunStop=OneRunStop,Lambda2=Lambda2,Mode='larsen',pmax=pmax,alpha=alpha)
-    # Create cancer drivers
-    RegulatorInfo=CreateRegulatorData(MA_matrix=MA_matrix,CNV_matrix=CNV_matrix,MET_matrix=MET_matrix,PvalueThreshold=PvalueThreshold,RsquareThreshold=RsquareThreshold)
-    if (length(RegulatorInfo)>1){
-      RegulatorData=RegulatorInfo$RegulatorData
-      Alterations = RegulatorInfo$Alterations
-      
-      # Selecting gene expression data and Clustering
-      MA_matrix_Var=geneFiltering('MAD',MA_matrix,VarPercentage)
-      MA_matrix_Var=t(scale(t(MA_matrix_Var)))
-      if (NrModules>=nrow(MA_matrix_Var)){
-        stop(paste0("The number of modules is too large compared to the number of genes. Choose a number of modules smaller than ",nrow(MA_matrix_Var),".\n"))
-      }
-      KmeansResults=kmeans(MA_matrix_Var,NrModules,iter.max=100)
-      Clusters=as.numeric(KmeansResults$cluster)
-      names(Clusters) <- rownames(MA_matrix_Var)
-      
-      return(list(MA_matrix_Var=MA_matrix_Var,RegulatorData=RegulatorData,RegulatorAlterations=Alterations,ModuleMembership=Clusters,Parameters=Parameters,NrCores=NrCores))
+AMARETTO_Initialize <- function(MA_matrix=MA_matrix,CNV_matrix=NULL,MET_matrix=NULL, Driver_list = NULL,NrModules,
+                                VarPercentage,PvalueThreshold=0.001,RsquareThreshold=0.1,pmax=10,NrCores=1,OneRunStop=0, method= "union"){
+  
+  if(is.null(MET_matrix) & is.null(CNV_matrix) & is.null(Driver_list)) {
+    stop("Please select the correct input data types")
+  }
+  if(is.null(CNV_matrix)  & is.null(Driver_list))  
+  {
+    if (ncol(MA_matrix)<2 || ncol(MET_matrix)==1){
+      stop("AMARETTO cannot be run with less than two samples.\n")
     }
   }
+  
+  if(is.null(MET_matrix)  & is.null(Driver_list)) {
+    if (ncol(MA_matrix)<2 || ncol(CNV_matrix)==1 ){
+      stop("AMARETTO cannot be run with less than two samples.\n")
+    }
+  }
+  
+  if(!is.null(MA_matrix) & !is.null(CNV_matrix) & !is.null(MET_matrix)  & !is.null(Driver_list)) {
+    if (ncol(MA_matrix)<2 || ncol(CNV_matrix)==1 || ncol(MET_matrix)==1){
+      stop("AMARETTO cannot be run with less than two samples.\n")
+    }
+  }
+  # Fixing default paramters
+  AutoRegulation=2; Lambda2=0.0001; alpha=1-1e-06
+  # Creating the parameters structure
+  Parameters <- list(AutoRegulation=AutoRegulation,OneRunStop=OneRunStop,Lambda2=Lambda2,Mode='larsen',pmax=pmax,alpha=alpha)
+  # Create cancer drivers
+  RegulatorInfo=CreateRegulatorData(MA_matrix=MA_matrix,CNV_matrix=CNV_matrix,MET_matrix=MET_matrix,Driver_list=Driver_list,PvalueThreshold=PvalueThreshold,RsquareThreshold=RsquareThreshold,method=method)
+  if (length(RegulatorInfo)>1){
+    RegulatorData=RegulatorInfo$RegulatorData
+    Alterations = RegulatorInfo$Alterations
+    
+    # Selecting gene expression data and Clustering
+    MA_matrix_Var=geneFiltering('MAD',MA_matrix,VarPercentage)
+    MA_matrix_Var=t(scale(t(MA_matrix_Var)))
+    if (NrModules>=nrow(MA_matrix_Var)){
+      stop(paste0("The number of modules is too large compared to the number of genes. Choose a number of modules smaller than ",nrow(MA_matrix_Var),".\n"))
+    }
+    KmeansResults=kmeans(MA_matrix_Var,NrModules,iter.max=100)
+    Clusters=as.numeric(KmeansResults$cluster)
+    names(Clusters) <- rownames(MA_matrix_Var)
+    
+    return(list(MA_matrix_Var=MA_matrix_Var,RegulatorData=RegulatorData,RegulatorAlterations=Alterations,ModuleMembership=Clusters,Parameters=Parameters,NrCores=NrCores))
+  }
+}
+
+
 AMARETTO_Run <- function(AMARETTOinit) {
     if (length(AMARETTOinit)==0){
          cat('For cancer ',CancerSite,' no drivers were find during the initialization step of AMARETTO')
@@ -450,202 +454,117 @@ AMARETTO_EvaluateTestSet <- function(AMARETTOresults,MA_Data_TestSet,RegulatorDa
     return(stats)
 }
 
-AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,CNV_matrix,MET_matrix,ModuleNr) {
-    # getting the data
-    if (ModuleNr>AMARETTOresults$NrModules){
-        cat('\tCannot plot Module',ModuleNr,'since the total number of modules is',AMARETTOresults$N,'.\n')
+AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET_matrix=NULL,ModuleNr,SAMPLE_annotation=NULL,ID=NULL,order_samples=NULL) {
+  # getting the data
+  if (ModuleNr>AMARETTOresults$NrModules){
+    stop('\tCannot plot Module',ModuleNr,' since the total number of modules is',AMARETTOresults$N,'.\n')
+  }
+  ModuleData<-AMARETTOinit$MA_matrix_Var[AMARETTOresults$ModuleMembership==ModuleNr,]
+  ModuleRegulators <- AMARETTOresults$AllRegulators[which(AMARETTOresults$RegulatoryPrograms[ModuleNr,] != 0)]
+  RegulatorData <- AMARETTOinit$RegulatorData[ModuleRegulators,]
+  ModuleGenes <- rownames(ModuleData)
+  cat('Module',ModuleNr,'has',length(rownames(ModuleData)),'genes and',length(ModuleRegulators),'regulators for',length(colnames(ModuleData)),'samples.\n')
+  
+  # create annotations
+  Alterations<- rownames_to_column(as.data.frame(AMARETTOinit$RegulatorAlterations$Summary),"HGNC_symbol") %>% dplyr::rename(DriverList="Driver List") %>% dplyr::filter(HGNC_symbol %in% ModuleRegulators)
+  Alterations<- Alterations %>% dplyr::mutate(CNVMet_Alterations=case_when(MET==1 & CNV==1~"Methylation and copy number alterations",
+                                                                    CNV==1~"Copy number alterations",
+                                                                    MET==1~"Methylation aberrations",
+                                                                    MET==0 & CNV==0 ~"Not Altered"),
+                                       DriversList_Alterations=case_when(DriverList==0~"Driver not predefined",
+                                                                         DriverList==1~"Driver predefined"))
+  
+  ha_drivers <- HeatmapAnnotation(df = column_to_rownames(Alterations,"HGNC_symbol") %>% dplyr::select(CNVMet_Alterations,DriversList_Alterations), col = list(CNVMet_Alterations= c("Copy number alterations"="#eca400","Methylation aberrations"="#006992","Methylation and copy number alterations"="#d95d39","Not Altered"="lightgray"),DriversList_Alterations=c("Driver not predefined"="lightgray","Driver predefined"="#588B5B")),which = "column", height = unit(0.3, "cm"),name="",
+                                  annotation_legend_param = list(title_gp = gpar(fontsize = 8),labels_gp = gpar(fontsize = 6)))
+  
+  if (is.null(MET_matrix) && is.null(CNV_matrix)){
+    overlapping_samples<-colnames(ModuleData)
+  } else if(is.null(MET_matrix)){
+    overlapping_samples<-Reduce(intersect, list(colnames(CNV_matrix),colnames(ModuleData)))
+  } else if(is.null(CNV_matrix)){
+    overlapping_samples<-Reduce(intersect, list(colnames(MET_matrix),colnames(ModuleData)))
+  } else {
+    overlapping_samples<-Reduce(intersect, list(colnames(CNV_matrix),colnames(MET_matrix),colnames(ModuleData)))
+  }
+  
+  #Clustering the samples based on target genes
+  
+  if(is.null(order_samples)){
+    overlapping_samples_clust<-overlapping_samples[order(colMeans(ModuleData[,overlapping_samples]))]
+  }else if(order_samples=="clust"){
+    SampleClustering<-hclust(dist(t(ModuleData[,overlapping_samples])), method = "complete", members = NULL)
+    overlapping_samples_clust<-overlapping_samples[SampleClustering$order]
+  }else {
+    print("ordering type not recognized, samples will be orderd based on mean expression of the module genes")
+    overlapping_samples_clust<-overlapping_samples[order(colMeans(ModuleData[,overlapping_samples]))]
+  }
+  
+  ClustRegulatorData <- t(RegulatorData[,overlapping_samples_clust])
+  ClustModuleData <- t(ModuleData[,overlapping_samples_clust])
+  Regwidth <- ncol(ClustRegulatorData)*0.5
+  ha_Reg <- Heatmap(ClustRegulatorData, name = "Gene Expression", column_title = "Regulator Genes\nExpression",cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = gpar(fontsize = 6),top_annotation = ha_drivers,
+                    column_title_gp = gpar(fontsize = 6, fontface = "bold"), col=colorRamp2(c(-max(abs(ClustRegulatorData)), 0, max(abs(ClustRegulatorData))), c("darkblue", "white", "darkred")),heatmap_legend_param = list(color_bar = "continuous",legend_direction = "horizontal",title_gp = gpar(fontsize = 8),labels_gp = gpar(fontsize = 6)), width = unit(Regwidth, "cm"))
+  
+  if(length(ClustModuleData)<50){
+    fontsizeMo=6
+  } else if (length(ClustModuleData)<200){
+    fontsizeMo=4
+  } else {fontsizeMo=2}
+  
+  ha_Module <- Heatmap(ClustModuleData, name = "", column_title = "Target Genes\nExpression",cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = gpar(fontsize = fontsizeMo),show_heatmap_legend = FALSE,
+                       column_title_gp = gpar(fontsize = 6, fontface = "bold"), col=colorRamp2(c(-max(abs(ClustModuleData)), 0, max(abs(ClustModuleData))), c("darkblue", "white", "darkred")),heatmap_legend_param = list(color_bar = "continuous",legend_direction = "horizontal",title_gp = gpar(fontsize = 8),labels_gp = gpar(fontsize = 6)))
+  
+  ha_list<- ha_Reg + ha_Module
+  
+  if (!is.null(MET_matrix)){
+    METreg <- intersect(rownames(AMARETTOinit$RegulatorAlterations$MET),ModuleRegulators)
+    print("MET regulators will be included when available")
+    if (length(METreg)>0){
+      METData2 = METData = MET_matrix[unlist(Alterations %>% dplyr::filter(MET==1) %>% dplyr::select(HGNC_symbol)),overlapping_samples_clust]
+      METData2[which(METData>0)] <- "Hyper-methylated"  # hyper
+      METData2[which(METData<0)] <- "Hypo-methylated"  # hypo
+      METData2[which(METData==0)] <- "Not altered" # nothing 
+      METData2<-t(METData2)
+      Metwidth=ncol(METData2)*0.5
+      #number of colors
+      Met_col=structure(c("#006992","#d95d39","white"),names=c("Hyper-methylated","Hypo-methylated","Not altered"))
+      ha_Met <- Heatmap(METData2, name = "Methylation State", column_title = "Methylation State", cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = gpar(fontsize = 6),show_heatmap_legend = TRUE,
+                        column_title_gp = gpar(fontsize = 6, fontface = "bold"), col = Met_col, width = unit(Metwidth, "cm"),heatmap_legend_param = list(title_gp = gpar(fontsize = 8),labels_gp = gpar(fontsize = 6)))
+      ha_list<- ha_Met + ha_list
     }
-    else {
-        ModuleData=AMARETTOinit$MA_matrix_Var[AMARETTOresults$ModuleMembership==ModuleNr,]
-        currentRegulators = AMARETTOresults$AllRegulators[which(AMARETTOresults$RegulatoryPrograms[ModuleNr,] != 0)]
-        RegulatorData=AMARETTOinit$RegulatorData[currentRegulators,]
-        ModuleGenes=rownames(ModuleData)
-        cat('Module',ModuleNr,'has',length(rownames(ModuleData)),'genes and',length(currentRegulators),'regulators for',length(colnames(ModuleData)),'samples.\n')
+  } 
   
-        # Clustering the module itself
-        SampleClustering=hclust(dist(t(ModuleData)), method = "complete", members = NULL)    
-        GeneClustering=hclust(dist(ModuleData), method = "complete", members = NULL)
-        ClustRegulatorData <- RegulatorData[,SampleClustering$order]
-        ClustModuleData <- ModuleData[GeneClustering$order,SampleClustering$order]
-        ClustCombinedData <- rbind(ClustModuleData,ClustRegulatorData)
-  
-        # create annotations 
-        Alterations <- rep(0,nrow(ClustCombinedData))
-        Alterations[(nrow(ModuleData)+1):nrow(ClustCombinedData)] <- rowSums(cbind(10*AMARETTOinit$RegulatorAlterations$Summary[currentRegulators,1],AMARETTOinit$RegulatorAlterations$Summary[currentRegulators,2]))
-        if (length(which(Alterations==11))>0){
-            if (length(which(Alterations==1))>0){
-                if (length(which(Alterations==10))>0){
-                    case = 1 # everything
-                } else {
-                    case = 2 # both and MET
-                }
-            } else {
-                if (length(which(Alterations==10))>0){
-                    case = 3 #both and CNV
-                } else {
-                    case =4 #Both only
-                }
-            }
-        } else {
-            if (length(which(Alterations==1))>0){
-                if (length(which(Alterations==10))>0){
-                    case = 5 # CNV and MET
-                } else {
-                    case = 6 # MET only
-                }
-            } else {
-                if (length(which(Alterations==10))>0){
-                    case = 7 # CNV only
-                }
-            }
-        }
-        Alterations[which(Alterations==1)] <- rep("Methylation aberrations",length(which(Alterations==1)))
-        Alterations[which(Alterations=="10")] <- rep("Copy number alterations",length(which(Alterations=="10")))
-        Alterations[which(Alterations=="11")] <- rep("Both methylation and copy number alterations",length(which(Alterations=="11")))
-        Alterations[which(Alterations=="0")] <- rep(" ",length(which(Alterations=="0")))
-        Alterations <- data.frame(Alterations)
-  
-        if (case==1){
-            ha = HeatmapAnnotation(df = Alterations, col = list(Alterations= c("Copy number alterations"="gray","Amplified gene"="sienna1","Deleted gene "="cyan"," "="white","Methylation aberrations"="black","Hyper-methylated gene" = "yellow","Hypo-methylated gene" = "cornflowerblue"," "= "white","Both methylation and copy number alterations"="bisque4")),
-                 which = "row", width = unit(1, "cm"),name="")
-        } 
-        if (case==2){
-            ha = HeatmapAnnotation(df = Alterations, col = list(Alterations= c("Both methylation and copy number alterations"="bisque4"," "="white","Amplified gene"="sienna1","Deleted gene "="cyan"," "="white","Methylation aberrations"="black","Hyper-methylated gene" = "yellow","Hypo-methylated gene" = "cornflowerblue")),
-                 which = "row", width = unit(1, "cm"),name="")
-        }
-        if (case==3){
-            ha = HeatmapAnnotation(df = Alterations, col = list(Alterations= c("Copy number alterations"="gray","Amplified gene"="sienna1","Deleted gene "="cyan"," "="white","Both methylation and copy number alterations"="bisque4"," "="white","Hyper-methylated gene" = "yellow","Hypo-methylated gene" = "cornflowerblue")),
-                 which = "row", width = unit(1, "cm"),name="")
-        }
-        if (case==4){
-            ha = HeatmapAnnotation(df = Alterations, col = list(Alterations= c("Both methylation and copy number alterations"="bisque4"," "="white","Amplified gene"="sienna1","Deleted gene "="cyan"," "="white","Hyper-methylated gene" = "yellow","Hypo-methylated gene" = "cornflowerblue")),
-                 which = "row", width = unit(1, "cm"),name="")
-        }
-        if (case==5){
-            ha = HeatmapAnnotation(df = Alterations, col = list(Alterations= c("Copy number alterations"="gray","Amplified gene"="sienna1","Deleted gene "="cyan"," "="white","Methylation aberrations"="black","Hyper-methylated gene" = "yellow","Hypo-methylated gene" = "cornflowerblue")),
-                 which = "row", width = unit(1, "cm"),name="")
-        }
-        if (case==6){
-            ha = HeatmapAnnotation(df = Alterations, col = list(Alterations= c("Methylation aberrations"="black","Hyper-methylated gene" = "yellow","Hypo-methylated gene" = "cornflowerblue"," "="white")),
-                 which = "row", width = unit(1, "cm"),name="")
-        }
-        if (case==7){
-            ha = HeatmapAnnotation(df = Alterations, col = list(Alterations= c("Copy number alterations"="gray","Amplified gene"="sienna1","Deleted gene "="cyan"," "="white")),
-                 which = "row", width = unit(1, "cm"),name="")
-        }
-        CNVreg <- intersect(rownames(AMARETTOinit$RegulatorAlterations$CNV),currentRegulators)
-        METreg <- intersect(rownames(AMARETTOinit$RegulatorAlterations$MET),currentRegulators)
-        if (length(CNVreg)>0){
-            CNVData <- matrix(0,nrow=length(CNVreg),ncol=ncol(ModuleData))
-            colnames(CNVData) <- colnames(ModuleData)[SampleClustering$order]
-            rownames(CNVData) <- CNVreg
-            CNVData[,colnames(CNV_matrix)] <- CNV_matrix[rownames(CNVData),]  
-            CNVData[which(CNVData>0)] <- "Amplified"  # amplification
-            CNVData[which(CNVData<0)] <- "Deleted"  # deletion
-            CNVData[which(CNVData==0)] <- " " # nothing      
-
-            if (length(METreg)>0){  
-                METData <- matrix(0,nrow=length(METreg),ncol=ncol(ModuleData))
-                colnames(METData) <- colnames(ModuleData)[SampleClustering$order]
-                rownames(METData) <- METreg
-                METData[,colnames(MET_matrix)] <- MET_matrix[rownames(METData),]  
-                METData[which(METData>0)] <- "Hyper-methylated"  # hyper
-                METData[which(METData<0)] <- "Hypo-methylated"  # hypo
-                METData[which(METData==0)] <- " " # nothing      
-                Genes <- data.frame(t(METData),No=rep(" ",ncol(ModuleData)),t(CNVData))
-            } else {
-                Genes <- data.frame(No=rep(" ",ncol(ModuleData)),t(CNVData))
-            }
-        } else {
-            METData <- matrix(0,nrow=length(METreg),ncol=ncol(ModuleData))
-            colnames(METData) <- colnames(ModuleData)[SampleClustering$order]
-            rownames(METData) <- METreg
-            METData[,colnames(MET_matrix)] <- MET_matrix[rownames(METData),]  
-            METData[which(METData>0)] <- "Hyper-methylated"  # hyper
-            METData[which(METData<0)] <- "Hypo-methylated"  # hypo
-            METData[which(METData==0)] <- " " # nothing      
-            Genes <- data.frame(t(METData),No=rep(" ",ncol(ModuleData)))
-        }
-        ColAnnotation <- c("Hyper-methylated" = "yellow", "Hypo-methylated" = "cornflowerblue"," "="white","Amplified"="sienna1","Deleted"="cyan")
-        ColAnnotation <- rep(list(ColAnnotation),ncol(Genes))
-        names(ColAnnotation) <- colnames(Genes)
-        haRow = HeatmapAnnotation(df=Genes ,name="test",
-             col = ColAnnotation,which="column",show_legend=FALSE)
-  
-        # plotting
-        heatmap <- Heatmap(ClustCombinedData, name = "Gene expression", column_title = paste('Module',ModuleNr), cluster_rows=FALSE,cluster_columns=FALSE,show_column_dend=FALSE,show_column_names=FALSE,row_names_gp=gpar(col=c(rep("white",nrow(ModuleData)),rep("black",nrow(RegulatorData))),fontsize=10),
-              column_title_gp = gpar(fontsize = 20, fontface = "bold"),split=c(rep("Module Genes",nrow(ModuleData)),rep(" Regulators",nrow(RegulatorData))),gap = unit(5, "mm"),
-              #  col=colorRamp2(c(-max(abs(CombinedData)), 0, max(abs(CombinedData))), c("green", "black", "red")))
-              col=colorRamp2(c(-max(abs(ClustCombinedData)), 0, max(abs(ClustCombinedData))), c("green", "black", "red")),heatmap_legend_param = list(color_bar = "continuous"),top_annotation=haRow)
-        draw(heatmap+ha)
-  
-        #    nf <- layout(matrix(c(1,2),2,1, byrow=T), widths=c(6),heights=c(2,3), respect=T)
-        #    layout.show(nf)
-        #    image(1:length(colnames(ModuleData)),1:length(currentRegulators),t(RegulatorData[,SampleClustering$order]),col=rev(brewer.pal(11,"RdBu")),xlab='',ylab='',main=paste('Module',ModuleNr),axes=FALSE)
-        #    axis(LEFT<-2, at=1:length(currentRegulators), labels=currentRegulators, las= 2,cex.axis=0.7)        
-        #    image(1:length(colnames(ModuleData)),1:length(ModuleGenes),t(ModuleData[GeneClustering$order,SampleClustering$order]),col=rev(brewer.pal(11,"RdBu")),xlab='Samples',ylab='ModuleGenes',main='',axes=FALSE)
-        #axis(LEFT<-2,at=1:length(ModuleGenes), labels=ModuleGenes, las= 2,cex.axis=0.7)    
-        if (length(CNVreg)>0){
-            if (length(METreg)>0){
-                MeanMET <- floor(nrow(METData)/2)+1
-                MeanCNV <- floor(nrow(CNVData)/2)+1+nrow(METData)+1
-                for(an in colnames(Genes)) {
-                    decorate_annotation(an, {
-                        if (an=="No"){
-                            grid.text(an, unit(1, "npc") + unit(2, "mm"), 0.5, default.units = "npc", just = "left",gp=gpar(fontsize=10,col="white"))
-                        } else {
-                            # annotation names on the right
-                            grid.text(an, unit(1, "npc") + unit(2, "mm"), 0.5, default.units = "npc", just = "left",gp=gpar(fontsize=10,col="black"))
-                        }
-                        if (an==colnames(Genes)[MeanMET]){
-                            grid.text("MET", unit(0, "npc") - unit(2, "mm"), 0.5, default.units = "npc", just = c("center","bottom"),rot=90)
-                        }
-                        if (an==colnames(Genes)[MeanCNV]){
-                            grid.text("CNV", unit(0, "npc") - unit(2, "mm"), 0.5, default.units = "npc", just = c("center","bottom"),rot=90)
-                        }
-                        # annotation names on the left
-                        # grid.text(an, unit(0, "npc") - unit(2, "mm"), 0.5, default.units = "npc", just = "right")
-                    })
-                }
-            } else {
-                MeanCNV <- floor(nrow(CNVData)/2)+1+1
-                for(an in colnames(Genes)) {
-                    decorate_annotation(an, {
-                    if (an=="No"){
-                        grid.text(an, unit(1, "npc") + unit(2, "mm"), 0.5, default.units = "npc", just = "left",gp=gpar(fontsize=10,col="white"))
-                    } else { 
-                        # annotation names on the right
-                        grid.text(an, unit(1, "npc") + unit(2, "mm"), 0.5, default.units = "npc", just = "left",gp=gpar(fontsize=10,col="black"))
-                    }
-                    if (an==colnames(Genes)[MeanCNV]){
-                        grid.text("CNV", unit(0, "npc") - unit(2, "mm"), 0.5, default.units = "npc", just = c("center","bottom"),rot=90)
-                    }
-                    # annotation names on the left
-                    # grid.text(an, unit(0, "npc") - unit(2, "mm"), 0.5, default.units = "npc", just = "right")
-                })
-            }
-        }
-    } else {
-        if (length(METreg)>0){
-            MeanMET <- floor(nrow(METData)/2)+1+1
-                for(an in colnames(Genes)) {
-                    decorate_annotation(an, {         
-                        if (an=="No"){
-                            grid.text(an, unit(1, "npc") + unit(2, "mm"), 0.5, default.units = "npc", just = "left",gp=gpar(fontsize=10,col="white"))
-                        } else {
-                            # annotation names on the right
-                            grid.text(an, unit(1, "npc") + unit(2, "mm"), 0.5, default.units = "npc", just = "left",gp=gpar(fontsize=10,col="black"))
-                        }
-                        if (an==colnames(Genes)[MeanMET]){
-                            grid.text("MET", unit(0, "npc") - unit(2, "mm"), 0.5, default.units = "npc", just = c("center","bottom"),rot=90)
-                        }
-                        # annotation names on the left
-                        # grid.text(an, unit(0, "npc") - unit(2, "mm"), 0.5, default.units = "npc", just = "right")
-                    })
-                }
-            }
-        }  
+  if (!is.null(CNV_matrix)){
+    CNVreg <- intersect(rownames(AMARETTOinit$RegulatorAlterations$CNV),ModuleRegulators)
+    print("CNV regulators will be included when available")
+    if (length(CNVreg)>0){
+      CNVData2 = CNVData = CNV_matrix[unlist(Alterations %>% dplyr::filter(CNV==1) %>% dplyr::select(HGNC_symbol)),overlapping_samples_clust] 
+      CNVData2[which(CNVData>=0.1)] <- "Amplified"  # amplification
+      CNVData2[which(CNVData<=(-0.1))] <- "Deleted"  # deletion
+      CNVData2[which(CNVData<0.1 & CNVData>(-0.1))] <- "Not altered" # nothing
+      CNVData2<-t(CNVData2)
+      CNVwidth=ncol(CNVData2)*0.5
+      #number of colors
+      CNV_col=structure(c("#006992","#d95d39","white"),names=c("Deleted","Amplified","Not altered"))
+      ha_CNV <- Heatmap(CNVData2, name = "CNV State", column_title = "CNV State", cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = gpar(fontsize = 6),show_heatmap_legend = TRUE,
+                        column_title_gp = gpar(fontsize = 6, fontface = "bold"),col = CNV_col,width = unit(CNVwidth, "cm"),heatmap_legend_param = list(title_gp = gpar(fontsize = 8),labels_gp = gpar(fontsize = 6)))
+      ha_list<-ha_CNV + ha_list
     }
+  }
+  
+  if (!is.null(SAMPLE_annotation)){
+    if (ID %in% colnames(SAMPLE_annotation)){
+      SAMPLE_annotation_fil<-as.data.frame(SAMPLE_annotation) %>% dplyr::filter(!!as.name(ID) %in% overlapping_samples_clust)
+      suppressWarnings(SAMPLE_annotation_fil<-left_join(as.data.frame(overlapping_samples_clust),SAMPLE_annotation_fil,by=c("overlapping_samples_clust"=ID)))
+      SAMPLE_annotation_fil<-column_to_rownames(SAMPLE_annotation_fil,"overlapping_samples_clust")
+      cat(nrow(SAMPLE_annotation_fil),"samples have an annotation.\n")
+      cat(ncol(SAMPLE_annotation_fil),"annotations are added")
+      ha_anot<-Heatmap(SAMPLE_annotation_fil, name="Sample Annotation", column_title = "Sample\nAnnotation", column_title_gp = gpar(fontsize = 6, fontface = "bold"), show_row_names=FALSE,width = unit(4, "mm"),column_names_gp = gpar(fontsize = 6),col=distinctColorPalette(nrow(unique(SAMPLE_annotation_fil))),heatmap_legend_param = list(title_gp = gpar(fontsize = 8),labels_gp = gpar(fontsize = 6)))
+      ha_list<-ha_list + ha_anot
+    } else {print("The ID is not identified as a column name in the annotation")}
+  }
+  
+  ComplexHeatmap::draw(ha_list,heatmap_legend_side = "bottom",annotation_legend_side="bottom")
 }
 
 AMARETTO_CreateModuleData <- function(AMARETTOinit,AMARETTOresults) {
@@ -687,83 +606,106 @@ AMARETTO_CreateRegulatorPrograms <- function(AMARETTOinit,AMARETTOresults) {
     return(RegulatorProgramData)
 }
 
-CreateRegulatorData <- 
-  function(MA_matrix,CNV_matrix,MET_matrix,PvalueThreshold=0.001,RsquareThreshold=0.1) {
-    
-    ### adding null CNV dataset
-    if(is.null(CNV_matrix))  CNV_matrix <- matrix(0, nrow = 0, ncol = 0)
-    
-    # First removing genes with constant CNV status.
-    if (nrow(CNV_matrix)>1){
-      GeneVariances=rowVars(CNV_matrix)
-      CNV_matrix=CNV_matrix[GeneVariances>=0.0001,]
-    }
-    if (nrow(CNV_matrix)>0){
-      CNV_matrix=FindTranscriptionallyPredictive_CNV(MA_matrix,CNV_matrix,PvalueThreshold=PvalueThreshold,RsquareThreshold=RsquareThreshold)
-    }
-    
-    cat('\tFound',length(rownames(CNV_matrix)),'CNV driver genes.\n')
-    
-    ### adding null MET dataset
-    if(is.null(MET_matrix))  MET_matrix <- matrix(0, nrow = 0, ncol = 0)
-    # based on MethylMix we have the following regulators
-    if (nrow(MET_matrix)>1){
-      GeneVariances=rowVars(MET_matrix)
-      MET_matrix=MET_matrix[GeneVariances>=0.0001,]
-    }
-    
-    MET_drivers <- intersect(rownames(MET_matrix),rownames(MA_matrix))
-    #MET_matrix=FindTranscriptionallyPredictive_MET(MET_matrix,CNV_matrix,PvalueThreshold=PvalueThreshold,RsquareThreshold=RsquareThreshold)
-    cat('\tFound',length(MET_drivers),'MethylMix driver genes.\n')
-    
-    # set of drivers
-    Drivers <- unique(c(rownames(CNV_matrix),MET_drivers))
-    
-    # regulator data
-    if (length(Drivers)==0){
-      cat("AMARETTO doesn't find any driver genes.")
-      return("No driver")
-    } else {
-      if (length(Drivers)==1){
-        RegulatorData_temp <- matrix(0,1,ncol(MA_matrix))
-        colnames(RegulatorData_temp) <- colnames(MA_matrix)
-        rownames(RegulatorData_temp) <- Drivers
-        RegulatorData_temp[1,] <- MA_matrix[Drivers,]
-        RegulatorData <- RegulatorData_temp
-      } else {
-        RegulatorData=MA_matrix[Drivers,]
-      }
-      RegulatorData=t(scale(t(RegulatorData)))
-      
-      # alterations of all these drivers
-      MET_aberrations <- matrix(0,ncol=3,nrow=length(MET_drivers))
-      colnames(MET_aberrations) <- c("Hypo-methylated","No_change","Hyper-methylated")
-      rownames(MET_aberrations) <- MET_drivers
-      if  (length(MET_drivers)>0){
-        MET_aberrations[,1] <- rowSums(MET_matrix[MET_drivers,]>0)/ncol(MET_matrix)
-        MET_aberrations[,2] <- rowSums(MET_matrix[MET_drivers,]<0)/ncol(MET_matrix)
-        MET_aberrations[,3] <- rowSums(MET_matrix[MET_drivers,]==0)/ncol(MET_matrix)
-      }
-      
-      CNV_alterations <- matrix(0,ncol=3,nrow=nrow(CNV_matrix))
-      colnames(CNV_alterations) <- c("Amplification","No_change","Deletion")
-      rownames(CNV_alterations) <- rownames(CNV_matrix)
-      if (nrow(CNV_alterations)>0){
-        CNV_alterations[,1] <- rowSums(CNV_matrix>0)/ncol(CNV_matrix)
-        CNV_alterations[,2] <- rowSums(CNV_matrix<0)/ncol(CNV_matrix)
-        CNV_alterations[,3] <- rowSums(CNV_matrix==0)/ncol(CNV_matrix)
-      }
-      
-      Alterations <- matrix(0,nrow=length(Drivers),ncol=2)
-      colnames(Alterations) <- c("CNV","MET")
-      rownames(Alterations) <- Drivers
-      Alterations[which(Drivers%in% rownames(CNV_matrix)),1] <- rep(1,length(which(Drivers%in% rownames(CNV_matrix))))
-      Alterations[which(Drivers%in% rownames(MET_matrix)),2] <- rep(1,length(which(Drivers%in% rownames(MET_matrix))))
-      
-      Alterations <- list(MET=MET_aberrations,CNV=CNV_alterations,Summary=Alterations)
-      return(list(RegulatorData=RegulatorData,Alterations=Alterations))
-    }
+CreateRegulatorData <- function(MA_matrix=MA_matrix,CNV_matrix=NULL,MET_matrix=NULL, Driver_list = NULL,PvalueThreshold=0.001,RsquareThreshold=0.1,method=NULL) {
+  
+  if(is.null(Driver_list)) DriversList <- NULL
+  ### adding null CNV dataset
+  if(is.null(CNV_matrix))  CNV_matrix <- matrix(0, nrow = 0, ncol = 0)
+  
+  # First removing genes with constant CNV status.
+  if (nrow(CNV_matrix)>1){
+    GeneVariances=rowVars(CNV_matrix)
+    CNV_matrix=CNV_matrix[GeneVariances>=0.0001,]
   }
+  if (nrow(CNV_matrix)>0){
+    CNV_matrix=FindTranscriptionallyPredictive_CNV(MA_matrix,CNV_matrix,PvalueThreshold=PvalueThreshold,RsquareThreshold=RsquareThreshold)
+  }
+  
+  cat('\tFound',length(rownames(CNV_matrix)),'CNV driver genes.\n')
+  
+  ### adding null MET dataset
+  if(is.null(MET_matrix))  MET_matrix <- matrix(0, nrow = 0, ncol = 0)
+  # based on MethylMix we have the following regulators
+  if (nrow(MET_matrix)>1){
+    GeneVariances=rowVars(MET_matrix)
+    MET_matrix=MET_matrix[GeneVariances>=0.0001,]
+  }
+  
+  MET_drivers <- intersect(rownames(MET_matrix),rownames(MA_matrix))
+  #MET_matrix=FindTranscriptionallyPredictive_MET(MET_matrix,CNV_matrix,PvalueThreshold=PvalueThreshold,RsquareThreshold=RsquareThreshold)
+  cat('\tFound',length(MET_drivers),'MethylMix driver genes.\n')
+  
+  # Driver list data
+  if(!is.null(Driver_list))
+  {
+    #MET_matrix <- matrix(numeric(0),0,0) ;  CNV_matrix <- matrix(numeric(0),0,0) # ignore the rest input matrices
+    DriversList <- Driver_list
+    DriversList <- intersect(DriversList, rownames(MA_matrix))
+    cat('\tFound',length(DriversList),'driver genes from the input list.\n')
+    
+  }
+  
+  # set of drivers
+  #Drivers <- unique(c(rownames(CNV_matrix),MET_drivers,DriversList))
+  if(is.null(Driver_list))  Drivers <- unique(c(rownames(CNV_matrix),MET_drivers,DriversList))
+  dataset_drivers <- unique(c(rownames(CNV_matrix),MET_drivers))
+  if(!is.null(Driver_list) & method=="union")  Drivers <- union(dataset_drivers,DriversList)
+  if(!is.null(Driver_list) & method=="intersect")  Drivers <- intersect(dataset_drivers,DriversList)
+  
+  cat('\tFound a total of',length(Drivers),'unique drivers with your selected method.\n')
+  
+  # regulator data
+  if (length(Drivers)==0){
+    cat("AMARETTO doesn't find any driver genes.")
+    return("No driver")
+  } else {
+    if (length(Drivers)==1){
+      RegulatorData_temp <- matrix(0,1,ncol(MA_matrix))
+      colnames(RegulatorData_temp) <- colnames(MA_matrix)
+      rownames(RegulatorData_temp) <- Drivers
+      RegulatorData_temp[1,] <- MA_matrix[Drivers,]
+      RegulatorData <- RegulatorData_temp
+    } else {
+      RegulatorData=MA_matrix[Drivers,]
+    }
+    RegulatorData=t(scale(t(RegulatorData)))
+    
+    # alterations of all these drivers
+    MET_aberrations <- matrix(0,ncol=3,nrow=length(MET_drivers))
+    colnames(MET_aberrations) <- c("Hypo-methylated","No_change","Hyper-methylated")
+    rownames(MET_aberrations) <- MET_drivers
+    if  (length(MET_drivers)>0){
+      MET_aberrations[,1] <- rowSums(MET_matrix[MET_drivers,]>0)/ncol(MET_matrix)
+      MET_aberrations[,2] <- rowSums(MET_matrix[MET_drivers,]<0)/ncol(MET_matrix)
+      MET_aberrations[,3] <- rowSums(MET_matrix[MET_drivers,]==0)/ncol(MET_matrix)
+    }
+    
+    CNV_alterations <- matrix(0,ncol=3,nrow=nrow(CNV_matrix))
+    colnames(CNV_alterations) <- c("Amplification","No_change","Deletion")
+    rownames(CNV_alterations) <- rownames(CNV_matrix)
+    if (nrow(CNV_alterations)>0){
+      CNV_alterations[,1] <- rowSums(CNV_matrix>0)/ncol(CNV_matrix)
+      CNV_alterations[,2] <- rowSums(CNV_matrix<0)/ncol(CNV_matrix)
+      CNV_alterations[,3] <- rowSums(CNV_matrix==0)/ncol(CNV_matrix)
+    }
+    
+    driverList_alterations <- matrix(1,ncol=1,nrow=length(DriversList))
+    #colnames(driverList_alterations) <- Driver_list
+    rownames(driverList_alterations) <- DriversList
+    #driverList_alterations <-1
+    
+    Alterations <- matrix(0,nrow=length(Drivers),ncol=3)
+    colnames(Alterations) <- c("CNV","MET","Driver List")
+    rownames(Alterations) <- Drivers
+    
+    Alterations[which(Drivers%in% rownames(CNV_matrix)),1] <- rep(1,length(which(Drivers%in% rownames(CNV_matrix))))
+    Alterations[which(Drivers%in% rownames(MET_matrix)),2] <- rep(1,length(which(Drivers%in% rownames(MET_matrix))))
+    Alterations[which(Drivers%in% rownames(driverList_alterations)),3] <- rep(1,length(which(Drivers %in% rownames(driverList_alterations))))
+    
+    Alterations <- list(MET=MET_aberrations,CNV=CNV_alterations,Driver_list = driverList_alterations,Summary=Alterations)
+    return(list(RegulatorData=RegulatorData,Alterations=Alterations))
+  }
+}
 
 FindTranscriptionallyPredictive_CNV<- function(MA_matrix,CNV_matrix,PvalueThreshold=0.001,RsquareThreshold=0.1) {
   

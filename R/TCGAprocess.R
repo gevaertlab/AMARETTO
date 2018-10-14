@@ -41,7 +41,7 @@ Preprocess_CancerSite <- function(CancerSite,DataSetDirectories) {
 		colnames(CGH_Data$CGH_Data_Segmented)=paste(SampleNames,'-01',sep='')
 	}        
 	cat("\tBatch correction.\n")
-	#CNV_TCGA=TCGA_BatchCorrection_MolecularData(CGH_Data$CGH_Data_Segmented,BatchData,MinPerBatch)
+	CNV_TCGA=TCGA_BatchCorrection_MolecularData(CGH_Data$CGH_Data_Segmented,BatchData,MinPerBatch)
 	CNV_TCGA=CGH_Data$CGH_Data_Segmented
 	Genes=rownames(CNV_TCGA)
 	SplitGenes=strsplit2(Genes,'\\|')
@@ -169,7 +169,7 @@ Preprocess_MAdata <- function(CancerSite,MAEO_ge) {
 		MA_TCGA=MA_TCGA[,Samplegroups$Primary]
 	}          
 	cat("\tBatch correction.\n")
-	#MA_TCGA=TCGA_BatchCorrection_MolecularData(MA_TCGA,BatchData,MinPerBatch)
+	MA_TCGA=TCGA_BatchCorrection_MolecularData(MA_TCGA,BatchData,MinPerBatch)
 	
 	cat("\tProcessing gene ids and merging.\n")
 	Genes=rownames(MA_TCGA)
