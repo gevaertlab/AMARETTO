@@ -13,7 +13,7 @@ Preprocess_CancerSite <- function(CancerSite,DataSetDirectories) {
 	query1 <- grep("RNASeq", names(experiments(MAEO)))
 	MAEO_ge <- as.matrix(assay(MAEO[[query1]]))
 	MAEO_ge <- apply(MAEO_ge, 2, log2)
-	MAEO_ge[is.infinite(MAEO_ge) & MAEO_ge<0] <- 0
+	MAEO_ge[is.infinite(MAEO_ge) & MAEO_ge<0] <- NA
 	################################
 
 	# Processing MA data, special case for OV and GBM where no RNA seq data is available             
@@ -575,7 +575,7 @@ it.sol  <- function(sdat,g.hat,d.hat,g.bar,t2,a,b,conv=.0001){
 	d.old <- d.hat
 	change <- 1
 	count <- 0
-	print(change>conv)
+	#print(change>conv)
 	while(change>conv){
 		g.new <- postmean(g.hat,g.bar,n,d.old,t2)
 		sum2 <- apply((sdat-g.new%*%t(rep(1,ncol(sdat))))^2, 1, sum,na.rm=TRUE)
