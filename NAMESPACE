@@ -1,4 +1,4 @@
-export(AMARETTO_Initialize,AMARETTO_Run,AMARETTO_EvaluateTestSet,AMARETTO_VisualizeModule,CreateRegulatorData,get_firehoseData,Preprocess_CancerSite,Download_CancerSite,Save_CancerSite)
+export(AMARETTO_Initialize,AMARETTO_Run,AMARETTO_EvaluateTestSet,AMARETTO_VisualizeModule,CreateRegulatorData,get_firehoseData,Preprocess_CancerSite,Download_CancerSite,Save_CancerSite,amaretto_html_report)
 import(impute,foreach,glmnet,parallel,RColorBrewer,BiocStyle,circlize,ComplexHeatmap,tidyverse,randomcoloR)
 importFrom(doParallel,registerDoParallel)
 importFrom(matrixStats,rowMads,rowVars)
