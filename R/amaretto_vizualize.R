@@ -28,7 +28,7 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NUL
   cat('Module',ModuleNr,'has',length(rownames(ModuleData)),'genes and',length(ModuleRegulators),'regulators for',length(colnames(ModuleData)),'samples.\n')
   
   # create annotations
-  Alterations<- rownames_to_column(as.data.frame(AMARETTOinit$RegulatorAlterations$Summary),"HGNC_symbol") %>% dplyr::rename(DriverList="Driver List") %>% dplyr::filter(HGNC_symbol %in% ModuleRegulators)
+  Alterations<- tibble::rownames_to_column(as.data.frame(AMARETTOinit$RegulatorAlterations$Summary),"HGNC_symbol") %>% dplyr::rename(DriverList="Driver List") %>% dplyr::filter(HGNC_symbol %in% ModuleRegulators)
   Alterations<- Alterations %>% dplyr::mutate(CNVMet_Alterations=case_when(MET==1 & CNV==1~"Methylation and copy number alterations",
                                                                            CNV==1~"Copy number alterations",
                                                                            MET==1~"Methylation aberrations",
