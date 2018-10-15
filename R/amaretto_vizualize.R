@@ -4,18 +4,20 @@
 #' @param AMARETTOresults List output from AMARETTO_Run().
 #' @param CNV_matrix CNV matrix, with genes in rows and samples in columns.
 #' @param MET_matrix Methylation matrix, with genes in rows and samples in columns.
-#' @param ModuleNr Module number to vizualize
-#' @param SAMPLE_annotation 
-#' @param ID 
-#' @param order_samples 
-#' @import dplyr
-#' @import tibble
+#' @param ModuleNr Module number to visualize
+#' @param SAMPLE_annotation Matrix or Dataframe with sample annotation
+#' @param ID Column used as sample name
+#' @param order_samples Order samples in heatmap by mean or by clustering
+#' @import tidyverse
+#' @import randomcoloR
+#' @import RColorBrewer
 #' @import ComplexHeatmap
 #' @import circlize
 #' @return
 #' @export
 #'
 #' @examples
+
 AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET_matrix=NULL,ModuleNr,SAMPLE_annotation=NULL,ID=NULL,order_samples=NULL) {
   # getting the data
   if (ModuleNr>AMARETTOresults$NrModules){
@@ -82,7 +84,8 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NUL
     METreg <- intersect(rownames(AMARETTOinit$RegulatorAlterations$MET),ModuleRegulators)
     print("MET regulators will be included when available")
     if (length(METreg)>0){
-      METData2 = METData = MET_matrix[unlist(Alterations %>% dplyr::filter(MET==1) %>% dplyr::select(HGNC_symbol)),overlapping_samples_clust]
+      MET_matrix = as.data.frame(MET_matrix)
+      METData2 = METData = as.matrix(MET_matrix[unlist(Alterations %>% dplyr::filter(MET==1) %>% dplyr::select(HGNC_symbol)),overlapping_samples_clust])
       METData2[which(METData>0)] <- "Hyper-methylated"  # hyper
       METData2[which(METData<0)] <- "Hypo-methylated"  # hypo
       METData2[which(METData==0)] <- "Not altered" # nothing 
@@ -100,7 +103,8 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NUL
     CNVreg <- intersect(rownames(AMARETTOinit$RegulatorAlterations$CNV),ModuleRegulators)
     print("CNV regulators will be included when available")
     if (length(CNVreg)>0){
-      CNVData2 = CNVData = CNV_matrix[unlist(Alterations %>% dplyr::filter(CNV==1) %>% dplyr::select(HGNC_symbol)),overlapping_samples_clust] 
+      CNV_matrix = as.data.frame(CNV_matrix)
+      CNVData2 = CNVData = as.matrix(CNV_matrix[unlist(Alterations %>% dplyr::filter(CNV==1) %>% dplyr::select(HGNC_symbol)),overlapping_samples_clust]) 
       CNVData2[which(CNVData>=0.1)] <- "Amplified"  # amplification
       CNVData2[which(CNVData<=(-0.1))] <- "Deleted"  # deletion
       CNVData2[which(CNVData<0.1 & CNVData>(-0.1))] <- "Not altered" # nothing
@@ -125,6 +129,5 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NUL
       ha_list<-ha_list + ha_anot
     } else {print("The ID is not identified as a column name in the annotation")}
   }
-  
   ComplexHeatmap::draw(ha_list,heatmap_legend_side = "bottom",annotation_legend_side="bottom")
 }
