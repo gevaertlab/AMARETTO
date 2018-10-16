@@ -18,13 +18,13 @@ AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults,
 
 \item{MET_matrix}{Methylation matrix, with genes in rows and samples in columns.}
 
-\item{ModuleNr}{Module number to vizualize}
+\item{ModuleNr}{Module number to visualize}
 
-\item{SAMPLE_annotation}{}
+\item{SAMPLE_annotation}{Matrix or Dataframe with sample annotation}
 
-\item{ID}{}
+\item{ID}{Column used as sample name}
 
-\item{order_samples}{}
+\item{order_samples}{Order samples in heatmap by mean or by clustering}
 }
 \description{
 AMARETTO_VisualizeModule
