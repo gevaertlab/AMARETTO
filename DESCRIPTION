@@ -7,7 +7,8 @@ Author: Magali Champion, Katie Planey and Olivier Gevaert
 Maintainer: Olivier Gevaert <olivier.gevaert@gmail.com>
 Depends: R (>= 3.1.0), RCurl,limma, foreach, parallel, doParallel,
         glmnet, matrixStats, RColorBrewer, impute,Matrix,BiocStyle,
-        stringr, ComplexHeatmap, circlize, R.utils, randomcoloR
+        stringr, ComplexHeatmap, circlize, R.utils, randomcoloR,
+        curatedTCGAData, tidyverse
 Description: Module network discovery using gene expression, CNV, and methylation data.
 License: GPL-2
 LazyLoad: yes
