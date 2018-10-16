@@ -9,6 +9,8 @@
 #' @import RCurl
 #' @import curatedTCGAData
 #' @import limma
+#' @importFrom RCurl getURL
+#' @importFrom limma strsplit2
 #' @export 
 #' 
 #' @examples

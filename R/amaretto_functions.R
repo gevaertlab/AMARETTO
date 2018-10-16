@@ -14,8 +14,9 @@
 #' @param NrCores A numeric variable indicating the number of computer/server cores to use for paralellelization. Default is 1, i.e. no parallelization. Please check your computer or server's computing capacities before increasing this number.  Parallelization is done via the RParallel package. Mac vs. Windows environments may behave differently when using parallelization. 
 #' @param method Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.
 #' @export
-#' @import metaMA
-#' @import matrixStats
+#' @import matrixStats 
+#' @importFrom matrixStats rowVars
+#' @importFrom matrixStats rowMads
 #' @examples 
 #' 
 #' AMARETTOinit <- AMARETTO_Initialize(MA_matrix=MA_matrix, CNV_matrix= CNV_matrix,MET_matrix= MET_matrix, Driver_list = NULL, NrModules= Nr, VarPercentage= Var, 
@@ -77,6 +78,8 @@ AMARETTO_Initialize <- function(MA_matrix=MA_matrix,CNV_matrix=NULL,MET_matrix=N
 #' @import foreach
 #' @import glmnet
 #' @import parallel
+#' @importFrom doParallel registerDoParallel
+#' 
 #' @examples AMARETTOresults<-AMARETTO_Run(AMARETTOinit)
 
 AMARETTO_Run <- function(AMARETTOinit) {
