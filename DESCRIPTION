@@ -1,10 +1,18 @@
 Package: AMARETTO
-Title: What the Package Does (one line, title case)
-Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-Depends: R (>= 3.5.0)
-License: What license is it under?
-Encoding: UTF-8
-LazyData: true
-RoxygenNote: 6.1.0
+Type: Package
+Title: Multi-omics data fusion for cancer module discovery
+Version: 0.99.1
+Date: 2016-06-06
+Author: Magali Champion, Katie Planey and Olivier Gevaert
+Maintainer: Olivier Gevaert <olivier.gevaert@gmail.com>
+Depends: R (>= 3.1.0), RCurl,limma, foreach, parallel, doParallel,
+        glmnet, matrixStats, RColorBrewer, impute,Matrix,BiocStyle,
+        stringr, ComplexHeatmap, circlize, R.utils, randomcoloR
+Description: Module network discovery using gene expression, CNV, and methylation data.
+License: GPL-2
+LazyLoad: yes
+biocViews:
+        StatisticalMethod,DifferentialMethylation,GeneRegulation,GeneExpression,MethylationArray,Transcription,Preprocessing,BatchEffect,DataImport,mRNAMicroarray,MicroRNAArray,Regression,Clustering,RNASeq,CopyNumberVariation
+Suggests: testthat
+NeedsCompilation: no
+Packaged: 2016-06-08 11:54:24 UTC; mchampio
