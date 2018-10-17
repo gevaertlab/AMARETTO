@@ -16,10 +16,23 @@ Integrating an increasing number of available multi-omics cancer data remains on
 
 ## Table of Contents
 
-- [Getting Started](#getting-started)
 - [Introduction](#introduction)
+- [Installation](#installation)
+- [Running AMARETTO](#running-amaretto)
 - [References](#references)
 - [License](#license)
+
+## Introduction
+
+This repository contains the code accompanying the manuscript ["Module analysis captures pancancer genetically and epigenetically deregulated cancer driver genes for smoking and antiviral response"](https://www.sciencedirect.com/science/article/pii/S2352396417304723).
+We have developed an algorithm called AMARETTO to identify pancancer driver genes. AMARETTO integrates pancancer DNA copy number, DNA methylation, and gene expression data into modules to identify pancancer driver genes. 
+
+The algorithm: 
+* Step 1 identifies candidate cancer driver genes with tumor-specific DNA copy number or DNA methylation alterations compared to normal tissue. We used GISTIC to identify significantly and recurrently deleted or amplified regions in the genome. Similarly, we used MethylMix to identify recurrently hyper- or hypomethylated genes. 
+* Step 2 identifies cancer driver genes by modeling the relationship between (epi)genomic and transcriptomic data on an individual gene basis.
+* Step 3 uses the cancer driver genes identified from Step 2 and takes a global approach by dissecting global gene expression data into modules of co-expressed genes. Each module also has an associated regulatory program that connects the cancer driver genes from Step 1 with their downstream targets. This regulatory program is modeled using linear regression with elastic net regularization.
+ 
+AMARETTO supports downloading and processing TCGA data from [Firehose](https://gdac.broadinstitute.org/).
 
 ## Installation
 
@@ -34,20 +47,6 @@ Install from the GitHub repository using devtools:
 * The RUNNING_AMARETTO_EXAMPLE folder contains an example R script for a typical AMARETTO analysis. Please try!
 * [*Introduction to AMARETTO*](https://nbviewer.jupyter.org/github/gevaertlab/AMARETTO/blob/develop/files/AMARETTO_vignette.pdf) provides a comprehensive example of the AMARETTO workflow with detailed  explanations of each function.</br> 
 * Detailed information on `AMARETTO` package functions can be obtained in the help files. For example, to view the help file for the function `AMARETTO` in a R session, use `?AMARETTO`.
-
-## Introduction
-
-This repository contains the code accompanying the manuscript ["Module analysis captures pancancer genetically and epigenetically deregulated cancer driver genes for smoking and antiviral response"](https://www.sciencedirect.com/science/article/pii/S2352396417304723).
-We have developed an algorithm called AMARETTO to identify pancancer driver genes. AMARETTO integrates pancancer DNA copy number, DNA methylation, and gene expression data into modules to identify pancancer driver genes. 
-
-The algorithm: 
-* Step 1 identifies candidate cancer driver genes with tumor-specific DNA copy number or DNA methylation alterations compared to normal tissue. We used GISTIC to identify significantly and recurrently deleted or amplified regions in the genome. Similarly, we used MethylMix to identify recurrently hyper- or hypomethylated genes. 
-* Step 2 identifies cancer driver genes by modeling the relationship between (epi)genomic and transcriptomic data on an individual gene basis.
-* Step 3 uses the cancer driver genes identified from Step 2 and takes a global approach by dissecting global gene expression data into modules of co-expressed genes. Each module also has an associated regulatory program that connects the cancer driver genes from Step 1 with their downstream targets. This regulatory program is modeled using linear regression with elastic net regularization.
- 
-AMARETTO supports downloading and processing TCGA data from [Firehose](https://gdac.broadinstitute.org/).
-
-
 
 ## References
 
