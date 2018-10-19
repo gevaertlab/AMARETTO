@@ -14,7 +14,7 @@
 #-----------------------------------------------------------------------------------------
 install.packages("devtools")
 library(devtools)
-devtools::install_github("gevaertlab/AMARETTO")
+devtools::install_github("gevaertlab/AMARETTO",ref="master")
 library(AMARETTO)
 
 #-----------------------------------------------------------------------------------------
