@@ -56,3 +56,9 @@ AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults,AMARETTOinit$MA_T
 ModuleNr <- 1 #define the module number to visualize
 
 AMARETTO_VisualizeModule(AMARETTOinit,AMARETTOresults,ProcessedDataLAML$CNV,ProcessedDataLAML$MET,ModuleNr)
+
+#-----------------------------------------------------------------------------------------
+# 5. Get HTML report for AMARETTO modules
+#-----------------------------------------------------------------------------------------
+
+AMARETTO_htmlreport(AMARETTOinit,AMARETTOresults,CNV_matrix=ProcessedDataLAML$CNV,MET_matrix = ProcessedDataLAML$MET,VarPercentage=10,hyper_geo_test_bool=FALSE,output_address='./')
