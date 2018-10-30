@@ -2,17 +2,14 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{TCGA_GENERIC_MergeData}
 \alias{TCGA_GENERIC_MergeData}
-\title{Title}
+\title{TCGA_GENERIC_MergeData}
 \usage{
 TCGA_GENERIC_MergeData(NewIDListUnique, DataMatrix, MergeMethod)
 }
 \arguments{
-\item{NewIDListUnique}{}
-
-\item{DataMatrix}{}
-
 \item{MergeMethod}{}
 }
 \description{
-Title
+TCGA_GENERIC_MergeData
 }
+\keyword{internal}

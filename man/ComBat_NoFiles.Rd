@@ -2,31 +2,16 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{ComBat_NoFiles}
 \alias{ComBat_NoFiles}
-\title{Title}
+\title{ComBat_NoFiles}
 \usage{
 ComBat_NoFiles(dat, saminfo, type = "txt", write = FALSE,
   covariates = "all", par.prior = TRUE, filter = FALSE, skip = 0,
   prior.plots = FALSE)
 }
 \arguments{
-\item{dat}{}
-
-\item{saminfo}{}
-
-\item{type}{}
-
-\item{write}{}
-
-\item{covariates}{}
-
-\item{par.prior}{}
-
-\item{filter}{}
-
-\item{skip}{}
-
 \item{prior.plots}{}
 }
 \description{
-Title
+ComBat_NoFiles
 }
+\keyword{internal}

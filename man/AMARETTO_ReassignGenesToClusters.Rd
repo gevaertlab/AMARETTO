@@ -2,22 +2,15 @@
 % Please edit documentation in R/amaretto_run.R
 \name{AMARETTO_ReassignGenesToClusters}
 \alias{AMARETTO_ReassignGenesToClusters}
-\title{Title}
+\title{AMARETTO_ReassignGenesToClusters}
 \usage{
 AMARETTO_ReassignGenesToClusters(Data, RegulatorData, Beta, Clusters,
   AutoRegulation)
 }
 \arguments{
-\item{Data}{}
-
-\item{RegulatorData}{}
-
-\item{Beta}{}
-
-\item{Clusters}{}
-
 \item{AutoRegulation}{}
 }
 \description{
-Title
+AMARETTO_ReassignGenesToClusters
 }
+\keyword{internal}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{bprior}
 \alias{bprior}
-\title{Title}
+\title{bprior}
 \usage{
 bprior(gamma.hat)
 }
@@ -10,5 +10,6 @@ bprior(gamma.hat)
 \item{gamma.hat}{}
 }
 \description{
-Title
+bprior
 }
+\keyword{internal}

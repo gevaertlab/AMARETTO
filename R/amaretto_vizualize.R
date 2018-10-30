@@ -1,4 +1,5 @@
 #' AMARETTO_VisualizeModule
+#' 
 #' Function to visualize the gene modules
 #' @param AMARETTOinit List output from AMARETTO_Initialize().
 #' @param AMARETTOresults List output from AMARETTO_Run().

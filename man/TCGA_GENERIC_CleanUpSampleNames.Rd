@@ -2,15 +2,14 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{TCGA_GENERIC_CleanUpSampleNames}
 \alias{TCGA_GENERIC_CleanUpSampleNames}
-\title{Title}
+\title{TCGA_GENERIC_CleanUpSampleNames}
 \usage{
 TCGA_GENERIC_CleanUpSampleNames(GEN_Data, IDlength = 12)
 }
 \arguments{
-\item{GEN_Data}{}
-
 \item{IDlength}{}
 }
 \description{
-Title
+TCGA_GENERIC_CleanUpSampleNames
 }
+\keyword{internal}

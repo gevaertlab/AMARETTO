@@ -1,14 +1,13 @@
 #' AMARETTO_LarsenBased
 #'
-#' @param Data 
-#' @param Clusters 
-#' @param RegulatorData 
-#' @param Parameters 
-#' @param NrCores 
+#' @param Data
+#' @param Clusters
+#' @param RegulatorData
+#' @param Parameters
+#' @param NrCores
 #'
 #' @return
-#' @export
-#'
+#' @keywords internal
 #' @examples
 AMARETTO_LarsenBased <- function(Data,Clusters,RegulatorData,Parameters,NrCores){
   registerDoParallel(cores=NrCores)
@@ -43,8 +42,8 @@ AMARETTO_LarsenBased <- function(Data,Clusters,RegulatorData,Parameters,NrCores)
     }
     avg = sum / NrClusters
     printf("Average nr of regulators per module: %f \n",avg)
-    PreviousClusters = Clusters 
-    if (OneRunStop == 1){ break } 		
+    PreviousClusters = Clusters
+    if (OneRunStop == 1){ break }
     ptm <- proc.time()
     ReassignGenesToClusters <- AMARETTO_ReassignGenesToClusters(Data,RegulatorData,regulatoryPrograms$Beta,Clusters,AutoRegulation)
     ptm <- proc.time() - ptm
@@ -63,20 +62,19 @@ AMARETTO_LarsenBased <- function(Data,Clusters,RegulatorData,Parameters,NrCores)
   return(result)
 }
 
-#' Title
+#' AMARETTO_LearnRegulatoryProgramsLarsen
 #'
-#' @param Data 
-#' @param Clusters 
-#' @param RegulatorData 
-#' @param RegulatorSign 
-#' @param Lambda 
-#' @param AutoRegulation 
-#' @param alpha 
-#' @param pmax 
+#' @param Data
+#' @param Clusters
+#' @param RegulatorData
+#' @param RegulatorSign
+#' @param Lambda
+#' @param AutoRegulation
+#' @param alpha
+#' @param pmax
 #'
 #' @return
-#' @export
-#'
+#' @keywords internal
 #' @examples
 AMARETTO_LearnRegulatoryProgramsLarsen<-function(Data,Clusters,RegulatorData,RegulatorSign,Lambda,AutoRegulation,alpha,pmax){
   RegulatorData_rownames=rownames(RegulatorData)
@@ -119,18 +117,18 @@ AMARETTO_LearnRegulatoryProgramsLarsen<-function(Data,Clusters,RegulatorData,Reg
     }
     bestNonZeroLambda <- nonZeroLambdas[which(nonZeroCVMs==min(nonZeroCVMs,na.rm=TRUE))]
     b_o = coef(fit,s = bestNonZeroLambda)
-    b_opt <- c(b_o[2:length(b_o)]) 
-    if (AutoRegulation == 2){ 
+    b_opt <- c(b_o[2:length(b_o)])
+    if (AutoRegulation == 2){
       CurrentUsedRegulators = RegulatorData_rownames[which(b_opt!=0, arr.ind = T)]
       CurrentClusterMembers = Data_rownames[CurrentClusterPositions]
-      nrIterations = 0 
+      nrIterations = 0
       while (length(CurrentClusterMembers[CurrentClusterMembers %in% CurrentUsedRegulators]) != 0){
-        CurrentClusterMembers = setdiff(CurrentClusterMembers,CurrentUsedRegulators) 
+        CurrentClusterMembers = setdiff(CurrentClusterMembers,CurrentUsedRegulators)
         nrCurrentClusterMembers = length(CurrentClusterMembers)
         if (nrCurrentClusterMembers > 0){
           names = Data_rownames %in% CurrentClusterMembers
           if (length(which(names==TRUE))>1){
-            y = apply((Data[names,]),2,mean) 
+            y = apply((Data[names,]),2,mean)
           } else {
             y = Data[names,]
           }
@@ -153,7 +151,7 @@ AMARETTO_LearnRegulatoryProgramsLarsen<-function(Data,Clusters,RegulatorData,Reg
       }
       Report <- c(length(CurrentClusterPositions),length(CurrentClusterMembers),nrIterations)
     }
-    if (sum(RegulatorSign[which(RegulatorSign != 0)]) > 0){ 
+    if (sum(RegulatorSign[which(RegulatorSign != 0)]) > 0){
       RegulatorCheck = RegulatorSign * t(b_opt)
       WrongRegulators = which(RegulatorCheck < 0)
       if (length(WrongRegulators)  == 0){
@@ -163,7 +161,7 @@ AMARETTO_LearnRegulatoryProgramsLarsen<-function(Data,Clusters,RegulatorData,Reg
     if (AutoRegulation >= 1){
     } else {
       BetaSpecial[i] = b_opt
-      RegulatorPositions[i] = (RegulatorData_rownames %in% setdiff(RegulatorData_rownames,Data_rownames[CurrentClusterPositions])) 
+      RegulatorPositions[i] = (RegulatorData_rownames %in% setdiff(RegulatorData_rownames,Data_rownames[CurrentClusterPositions]))
     }
     list(b_opt,y,Report)
   }
@@ -188,17 +186,18 @@ AMARETTO_LearnRegulatoryProgramsLarsen<-function(Data,Clusters,RegulatorData,Reg
   return(result)
 }
 
-#' Title
+#' AMARETTO_ReassignGenesToClusters
 #'
-#' @param Data 
-#' @param RegulatorData 
-#' @param Beta 
-#' @param Clusters 
-#' @param AutoRegulation 
+#' @param Data
+#' @param RegulatorData
+#' @param Beta
+#' @param Clusters
+#' @param AutoRegulation
 #'
 #' @return
-#' @export
-#'
+#' @import Matrix
+#' @importFrom Matrix nnzero
+#' @keywords internal
 #' @examples
 AMARETTO_ReassignGenesToClusters <- function(Data,RegulatorData,Beta,Clusters,AutoRegulation){
   RegulatorData_rownames=rownames(RegulatorData)
@@ -218,8 +217,8 @@ AMARETTO_ReassignGenesToClusters <- function(Data,RegulatorData,Beta,Clusters,Au
     corr = data.matrix(Correlations,rownames.force = NA)
     MaxCorrelation = max(corr,na.rm=TRUE)
     MaxPosition = which(signif(corr,digits=7) == signif(MaxCorrelation,digits=7))
-    MaxPosition = MaxPosition[1] 
-    if (AutoRegulation > 0){ 
+    MaxPosition = MaxPosition[1]
+    if (AutoRegulation > 0){
       if (MaxPosition != OldModule){
         NrReassignGenes = NrReassignGenes + 1
       }
@@ -249,14 +248,13 @@ AMARETTO_ReassignGenesToClusters <- function(Data,RegulatorData,Beta,Clusters,Au
   return(result)
 }
 
-#' Title
+#' AMARETTO_CreateModuleData
 #'
-#' @param AMARETTOinit 
-#' @param AMARETTOresults 
+#' @param AMARETTOinit
+#' @param AMARETTOresults
 #'
 #' @return
-#' @export
-#'
+#' @keywords internal
 #' @examples
 AMARETTO_CreateModuleData <- function(AMARETTOinit,AMARETTOresults) {
   ModuleData=matrix(0,AMARETTOresults$NrModules,length(colnames(AMARETTOinit$MA_matrix_Var)))
@@ -273,14 +271,13 @@ AMARETTO_CreateModuleData <- function(AMARETTOinit,AMARETTOresults) {
   return(ModuleData)
 }
 
-#' Title
+#' AMARETTO_CreateRegulatorPrograms
 #'
-#' @param AMARETTOinit 
-#' @param AMARETTOresults 
+#' @param AMARETTOinit
+#' @param AMARETTOresults
 #'
 #' @return
-#' @export
-#'
+#' @keywords internal
 #' @examples
 AMARETTO_CreateRegulatorPrograms <- function(AMARETTOinit,AMARETTOresults) {
   RegulatorProgramData=matrix(0,AMARETTOresults$NrModules,length(colnames(AMARETTOinit$MA_matrix_Var)))

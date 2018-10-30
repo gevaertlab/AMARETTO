@@ -2,9 +2,7 @@
 % Please edit documentation in R/amaretto_initialize.R
 \name{CreateRegulatorData}
 \alias{CreateRegulatorData}
-\title{CreateRegulatorData
-Determine potential regulator genes.
-Function to identify which genes' CNV and/or methylation statuses significantly predict expression of that gene. Input is output from Preprocess_CancerSite(). This function is used by AMARETTO_Initialize().}
+\title{CreateRegulatorData}
 \usage{
 CreateRegulatorData(MA_matrix = MA_matrix, CNV_matrix = NULL,
   MET_matrix = NULL, Driver_list = NULL, PvalueThreshold = 0.001,
@@ -26,7 +24,6 @@ CreateRegulatorData(MA_matrix = MA_matrix, CNV_matrix = NULL,
 \item{method}{Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.}
 }
 \description{
-CreateRegulatorData
 Determine potential regulator genes.
 Function to identify which genes' CNV and/or methylation statuses significantly predict expression of that gene. Input is output from Preprocess_CancerSite(). This function is used by AMARETTO_Initialize().
 }

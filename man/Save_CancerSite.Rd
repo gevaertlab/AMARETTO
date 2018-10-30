@@ -2,20 +2,15 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{Save_CancerSite}
 \alias{Save_CancerSite}
-\title{Title}
+\title{Save_CancerSite}
 \usage{
 Save_CancerSite(CancerSite, TargetDirectory, DataSetDirectories,
   ProcessedData)
 }
 \arguments{
-\item{CancerSite}{}
-
-\item{TargetDirectory}{}
-
-\item{DataSetDirectories}{}
-
 \item{ProcessedData}{}
 }
 \description{
-Title
+Save_CancerSite
 }
+\keyword{internal}

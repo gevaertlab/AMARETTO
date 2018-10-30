@@ -2,15 +2,11 @@
 % Please edit documentation in R/amaretto_initialize.R
 \name{printf}
 \alias{printf}
-\title{printf
-Wrapper function for C-style formatted output.}
+\title{printf}
 \usage{
 printf(...)
 }
-\arguments{
-\item{...}{}
-}
 \description{
-printf
 Wrapper function for C-style formatted output.
 }
+\keyword{internal}

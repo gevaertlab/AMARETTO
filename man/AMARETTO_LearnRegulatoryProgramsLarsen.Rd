@@ -2,28 +2,15 @@
 % Please edit documentation in R/amaretto_run.R
 \name{AMARETTO_LearnRegulatoryProgramsLarsen}
 \alias{AMARETTO_LearnRegulatoryProgramsLarsen}
-\title{Title}
+\title{AMARETTO_LearnRegulatoryProgramsLarsen}
 \usage{
 AMARETTO_LearnRegulatoryProgramsLarsen(Data, Clusters, RegulatorData,
   RegulatorSign, Lambda, AutoRegulation, alpha, pmax)
 }
 \arguments{
-\item{Data}{}
-
-\item{Clusters}{}
-
-\item{RegulatorData}{}
-
-\item{RegulatorSign}{}
-
-\item{Lambda}{}
-
-\item{AutoRegulation}{}
-
-\item{alpha}{}
-
 \item{pmax}{}
 }
 \description{
-Title
+AMARETTO_LearnRegulatoryProgramsLarsen
 }
+\keyword{internal}

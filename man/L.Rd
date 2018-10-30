@@ -2,17 +2,14 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{L}
 \alias{L}
-\title{Title}
+\title{L}
 \usage{
 L(x, g.hat, d.hat)
 }
 \arguments{
-\item{x}{}
-
-\item{g.hat}{}
-
 \item{d.hat}{}
 }
 \description{
-Title
+likelihood function
 }
+\keyword{internal}

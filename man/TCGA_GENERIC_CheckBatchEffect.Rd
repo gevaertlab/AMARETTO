@@ -2,15 +2,14 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{TCGA_GENERIC_CheckBatchEffect}
 \alias{TCGA_GENERIC_CheckBatchEffect}
-\title{Title}
+\title{TCGA_GENERIC_CheckBatchEffect}
 \usage{
 TCGA_GENERIC_CheckBatchEffect(GEN_Data, BatchData)
 }
 \arguments{
-\item{GEN_Data}{}
-
 \item{BatchData}{}
 }
 \description{
-Title
+TCGA_GENERIC_CheckBatchEffect
 }
+\keyword{internal}

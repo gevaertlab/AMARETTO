@@ -1,19 +1,34 @@
 Package: AMARETTO
 Type: Package
-Title: Multi-omics data fusion for cancer module discovery
+Title: Multi-Omics Data Fusion For Cancer Module Discovery
 Version: 0.99.1
 Date: 2016-06-06
 Author: Magali Champion, Katie Planey and Olivier Gevaert
 Maintainer: Olivier Gevaert <olivier.gevaert@gmail.com>
-Depends: R (>= 3.1.0), RCurl,limma, foreach, parallel, doParallel,
+Depends: R (>= 3.5), RCurl,limma, foreach, parallel, doParallel,
         glmnet, matrixStats, RColorBrewer, impute,Matrix,BiocStyle,
         stringr, ComplexHeatmap, circlize, R.utils, randomcoloR,
-        curatedTCGAData, tidyverse
+        curatedTCGAData, tidyverse, callr, Rcpp, DT
 Description: Module network discovery using gene expression, CNV, and methylation data.
-License: GPL-2
+License: MIT + file LICENSE
 LazyLoad: yes
+Encoding: UTF-8
 biocViews:
-        StatisticalMethod,DifferentialMethylation,GeneRegulation,GeneExpression,MethylationArray,Transcription,Preprocessing,BatchEffect,DataImport,mRNAMicroarray,MicroRNAArray,Regression,Clustering,RNASeq,CopyNumberVariation
-Suggests: testthat
+        StatisticalMethod,DifferentialMethylation,GeneRegulation,GeneExpression,MethylationArray,Transcription,Preprocessing,BatchEffect,DataImport,mRNAMicroarray,MicroRNAArray,Regression,Clustering,RNASeq,CopyNumberVariation,Sequencing,Microarray,Normalization,Network,Bayesian,ExonArray,OneChannel,TwoChannel,ProprietaryPlatforms,AlternativeSplicing,DifferentialExpression,DifferentialSplicing,GeneSetEnrichment,MultipleComparison,QualityControl,TimeCourse
+Suggests: 
+    testthat,
+    MASS,
+    knitr,
+    rmarkdown
 NeedsCompilation: no
 Packaged: 2016-06-08 11:54:24 UTC; mchampio
+Imports: 
+    callr (>= 3.0.0.9001),
+    Rcpp
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.0
+LinkingTo: 
+    Rcpp
+VignetteBuilder: knitr
+Remotes: 
+    r-lib/callr

@@ -2,8 +2,7 @@
 % Please edit documentation in R/amaretto_vizualize.R
 \name{AMARETTO_VisualizeModule}
 \alias{AMARETTO_VisualizeModule}
-\title{AMARETTO_VisualizeModule
-Function to visualize the gene modules}
+\title{AMARETTO_VisualizeModule}
 \usage{
 AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults,
   CNV_matrix = NULL, MET_matrix = NULL, ModuleNr,
@@ -27,6 +26,5 @@ AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults,
 \item{order_samples}{Order samples in heatmap by mean or by clustering}
 }
 \description{
-AMARETTO_VisualizeModule
 Function to visualize the gene modules
 }

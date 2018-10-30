@@ -2,7 +2,7 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{TCGA_GENERIC_GetSampleGroups}
 \alias{TCGA_GENERIC_GetSampleGroups}
-\title{Title}
+\title{TCGA_GENERIC_GetSampleGroups}
 \usage{
 TCGA_GENERIC_GetSampleGroups(SampleNames)
 }
@@ -10,5 +10,6 @@ TCGA_GENERIC_GetSampleGroups(SampleNames)
 \item{SampleNames}{}
 }
 \description{
-Title
+TCGA_GENERIC_GetSampleGroups
 }
+\keyword{internal}

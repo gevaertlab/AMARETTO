@@ -2,7 +2,7 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{TCGA_Load_GISTICdata}
 \alias{TCGA_Load_GISTICdata}
-\title{Title}
+\title{TCGA_Load_GISTICdata}
 \usage{
 TCGA_Load_GISTICdata(GisticDirectory)
 }
@@ -10,5 +10,6 @@ TCGA_Load_GISTICdata(GisticDirectory)
 \item{GisticDirectory}{}
 }
 \description{
-Title
+TCGA_Load_GISTICdata
 }
+\keyword{internal}

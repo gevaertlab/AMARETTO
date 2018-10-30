@@ -1,6 +1,7 @@
-#' AMARETTO_Initialize
-#' Code used to initialize the seed clusters for an AMARETTO run. 
-#' Requires processed gene expression (rna-seq or microarray), CNV (usually from a GISTIC run), and methylation (from MethylMix, provided in this package) data. 
+#' AMARETTO_Initialize (version: reorder and filter MA_Matrix)
+#'
+#' Code used to initialize the seed clusters for an AMARETTO run.
+#' Requires processed gene expressiosn (rna-seq or microarray), CNV (usually from a GISTIC run), and methylation (from MethylMix, provided in this package) data.
 #' Uses the function CreateRegulatorData() and results are fed into the function AMARETTO_Run().
 #' @param MA_matrix Expression matrix, with genes in rows and samples in columns.
 #' @param CNV_matrix CNV matrix, with genes in rows and samples in columns.
@@ -11,28 +12,29 @@
 #' @param PvalueThreshold Threshold used to find relevant driver genes with CNV alterations: maximal p-value.
 #' @param RsquareThreshold Threshold used to find relevant driver genes with CNV alterations: minimal R-square value between CNV and gene expression data.
 #' @param pmax "pmax" variable for glmnet function from glmnet package; the maximum number of variables aver to be nonzero. Should not be changed by user unless she/he fully understands the AMARETTO algorithm and how its parameters choices affect model output.
-#' @param NrCores A numeric variable indicating the number of computer/server cores to use for paralellelization. Default is 1, i.e. no parallelization. Please check your computer or server's computing capacities before increasing this number.  Parallelization is done via the RParallel package. Mac vs. Windows environments may behave differently when using parallelization. 
+#' @param NrCores A numeric variable indicating the number of computer/server cores to use for paralellelization. Default is 1, i.e. no parallelization. Please check your computer or server's computing capacities before increasing this number.  Parallelization is done via the RParallel package. Mac vs. Windows environments may behave differently when using parallelization.
 #' @param method Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.
 #' @export
-#' @import matrixStats 
+#' @import matrixStats
+#' @import callr
+#' @import Rcpp
 #' @importFrom matrixStats rowVars
 #' @importFrom matrixStats rowMads
-#' @examples 
-#' 
-#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix=MA_matrix, CNV_matrix= CNV_matrix,MET_matrix= MET_matrix, Driver_list = NULL, NrModules= Nr, VarPercentage= Var, 
-#'                                     PvalueThreshold = 0.001, RsquareThreshold = 0.1, pmax = 10, 
+#' @examples
+#'
+#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix=MA_matrix, CNV_matrix= CNV_matrix,MET_matrix= MET_matrix, Driver_list = NULL, NrModules= Nr, VarPercentage= Var,
+#'                                     PvalueThreshold = 0.001, RsquareThreshold = 0.1, pmax = 10,
 #'                                     NrCores = 1, OneRunStop = 0)
-#'                                     
-#'  In absense of either of data matrix and providing a list of driver genes, perform a union/intersection of driver genes evaluated from input data matrices and custom drivers.                                    
-#'  AMARETTOinit <- AMARETTO_Initialize(MA_matrix=MA_matrix, CNV_matrix= NULL,MET_matrix= MET_matrix, Driver_list = custom_drivers, NrModules= Nr, VarPercentage= Var, 
-#'                                     PvalueThreshold = 0.001, RsquareThreshold = 0.1, pmax = 10, 
-#'                                     NrCores = 1, OneRunStop = 0 , method= "union")                                   
+#'
+#'  AMARETTOinit <- AMARETTO_Initialize(MA_matrix=MA_matrix, CNV_matrix= NULL,MET_matrix= MET_matrix, Driver_list = custom_drivers, NrModules= Nr, VarPercentage= Var,
+#'                                     PvalueThreshold = 0.001, RsquareThreshold = 0.1, pmax = 10,
+#'                                     NrCores = 1, OneRunStop = 0 , method= "union")
 AMARETTO_Initialize <- function(MA_matrix=MA_matrix,CNV_matrix=NULL,MET_matrix=NULL, Driver_list = NULL,NrModules,
                                 VarPercentage,PvalueThreshold=0.001,RsquareThreshold=0.1,pmax=10,NrCores=1,OneRunStop=0, method= "union"){
   if(is.null(MET_matrix) & is.null(CNV_matrix) & is.null(Driver_list)) {
     stop("Please select the correct input data types")
   }
-  if(is.null(CNV_matrix)  & is.null(Driver_list))  
+  if(is.null(CNV_matrix)  & is.null(Driver_list))
   {
     if (ncol(MA_matrix)<2 || ncol(MET_matrix)==1){
       stop("AMARETTO cannot be run with less than two samples.\n")
@@ -43,32 +45,34 @@ AMARETTO_Initialize <- function(MA_matrix=MA_matrix,CNV_matrix=NULL,MET_matrix=N
       stop("AMARETTO cannot be run with less than two samples.\n")
     }
   }
-  
+
   if(!is.null(MA_matrix) & !is.null(CNV_matrix) & !is.null(MET_matrix)  & !is.null(Driver_list)) {
     if (ncol(MA_matrix)<2 || ncol(CNV_matrix)==1 || ncol(MET_matrix)==1){
       stop("AMARETTO cannot be run with less than two samples.\n")
     }
   }
+  MA_matrix_Var=geneFiltering('MAD',MA_matrix,VarPercentage)
+  MA_matrix_Var=t(scale(t(MA_matrix_Var)))
+  if (NrModules>=nrow(MA_matrix_Var)){
+    stop(paste0("The number of modules is too large compared to the number of genes. Choose a number of modules smaller than ",nrow(MA_matrix_Var),".\n"))
+  }
+  KmeansResults=kmeans(MA_matrix_Var,NrModules,iter.max=100)
+  Clusters=as.numeric(KmeansResults$cluster)
+  names(Clusters) <- rownames(MA_matrix_Var)
   AutoRegulation=2; Lambda2=0.0001; alpha=1-1e-06
   Parameters <- list(AutoRegulation=AutoRegulation,OneRunStop=OneRunStop,Lambda2=Lambda2,Mode='larsen',pmax=pmax,alpha=alpha)
-  RegulatorInfo=CreateRegulatorData(MA_matrix=MA_matrix,CNV_matrix=CNV_matrix,MET_matrix=MET_matrix,Driver_list=Driver_list,PvalueThreshold=PvalueThreshold,RsquareThreshold=RsquareThreshold,method=method)
+  RegulatorInfo=CreateRegulatorData(MA_matrix=MA_matrix_Var,CNV_matrix=CNV_matrix,MET_matrix=MET_matrix,Driver_list=Driver_list,PvalueThreshold=PvalueThreshold,RsquareThreshold=RsquareThreshold,method=method)
   if (length(RegulatorInfo)>1){
     RegulatorData=RegulatorInfo$RegulatorData
     Alterations = RegulatorInfo$Alterations
-    MA_matrix_Var=geneFiltering('MAD',MA_matrix,VarPercentage)
-    MA_matrix_Var=t(scale(t(MA_matrix_Var)))
-    if (NrModules>=nrow(MA_matrix_Var)){
-      stop(paste0("The number of modules is too large compared to the number of genes. Choose a number of modules smaller than ",nrow(MA_matrix_Var),".\n"))
-    }
-    KmeansResults=kmeans(MA_matrix_Var,NrModules,iter.max=100)
-    Clusters=as.numeric(KmeansResults$cluster)
-    names(Clusters) <- rownames(MA_matrix_Var)
+
+
     return(list(MA_matrix_Var=MA_matrix_Var,RegulatorData=RegulatorData,RegulatorAlterations=Alterations,ModuleMembership=Clusters,Parameters=Parameters,NrCores=NrCores))
   }
 }
 
-
 #' AMARETTO_Run
+#'
 #' Function to run AMARETTO, a statistical algorithm to identify cancer drivers by integrating a variety of omics data from cancer and normal tissue.
 #' @param AMARETTOinit List output from AMARETTO_Initialize().
 #'
@@ -79,7 +83,7 @@ AMARETTO_Initialize <- function(MA_matrix=MA_matrix,CNV_matrix=NULL,MET_matrix=N
 #' @import glmnet
 #' @import parallel
 #' @importFrom doParallel registerDoParallel
-#' 
+#'
 #' @examples AMARETTOresults<-AMARETTO_Run(AMARETTOinit)
 
 AMARETTO_Run <- function(AMARETTOinit) {
@@ -100,6 +104,7 @@ AMARETTO_Run <- function(AMARETTOinit) {
 }
 
 #' AMARETTO_EvaluateTestSet
+#'
 #' Code to evaluate AMARETTO on a new gene expression test set. Uses output from AMARETTO_Run() and CreateRegulatorData().
 #' @param AMARETTOresults AMARETTO output from AMARETTO_Run().
 #' @param MA_Data_TestSet Gene expression matrix from a test set (that was not used in AMARETTO_Run()).
@@ -148,7 +153,7 @@ AMARETTO_EvaluateTestSet <- function(AMARETTOresults,MA_Data_TestSet,RegulatorDa
         Rsquare[i] = 1 - (SSres / SStot)
         RsquareAjusted[i] = Rsquare[i] - (nrPresentRegulators/(nrSamples - 1 - nrPresentRegulators))*(1-Rsquare[i])
         MSE = (1/nrSamples) * sum((predictions-outcome)^2)
-        
+
         stats[i,6] = totalWeightsPercentage
         stats[i,7] = Rsquare[i]
         stats[i,8] = RsquareAjusted[i]

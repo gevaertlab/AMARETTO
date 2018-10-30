@@ -2,7 +2,7 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{aprior}
 \alias{aprior}
-\title{Title}
+\title{aprior}
 \usage{
 aprior(gamma.hat)
 }
@@ -10,5 +10,6 @@ aprior(gamma.hat)
 \item{gamma.hat}{}
 }
 \description{
-Title
+Following four find empirical hyper-prior values
 }
+\keyword{internal}

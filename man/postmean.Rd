@@ -2,21 +2,14 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{postmean}
 \alias{postmean}
-\title{Title}
+\title{postmean}
 \usage{
 postmean(g.hat, g.bar, n, d.star, t2)
 }
 \arguments{
-\item{g.hat}{}
-
-\item{g.bar}{}
-
-\item{n}{}
-
-\item{d.star}{}
-
 \item{t2}{}
 }
 \description{
-Title
+postmean
 }
+\keyword{internal}

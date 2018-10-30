@@ -2,10 +2,7 @@
 % Please edit documentation in R/amaretto_functions.R
 \name{AMARETTO_Initialize}
 \alias{AMARETTO_Initialize}
-\title{AMARETTO_Initialize
-Code used to initialize the seed clusters for an AMARETTO run. 
-Requires processed gene expression (rna-seq or microarray), CNV (usually from a GISTIC run), and methylation (from MethylMix, provided in this package) data. 
-Uses the function CreateRegulatorData() and results are fed into the function AMARETTO_Run().}
+\title{AMARETTO_Initialize (version: reorder and filter MA_Matrix)}
 \usage{
 AMARETTO_Initialize(MA_matrix = MA_matrix, CNV_matrix = NULL,
   MET_matrix = NULL, Driver_list = NULL, NrModules, VarPercentage,
@@ -36,19 +33,17 @@ AMARETTO_Initialize(MA_matrix = MA_matrix, CNV_matrix = NULL,
 \item{method}{Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.}
 }
 \description{
-AMARETTO_Initialize
-Code used to initialize the seed clusters for an AMARETTO run. 
-Requires processed gene expression (rna-seq or microarray), CNV (usually from a GISTIC run), and methylation (from MethylMix, provided in this package) data. 
+Code used to initialize the seed clusters for an AMARETTO run.
+Requires processed gene expressiosn (rna-seq or microarray), CNV (usually from a GISTIC run), and methylation (from MethylMix, provided in this package) data.
 Uses the function CreateRegulatorData() and results are fed into the function AMARETTO_Run().
 }
 \examples{
 
-AMARETTOinit <- AMARETTO_Initialize(MA_matrix=MA_matrix, CNV_matrix= CNV_matrix,MET_matrix= MET_matrix, Driver_list = NULL, NrModules= Nr, VarPercentage= Var, 
-                                    PvalueThreshold = 0.001, RsquareThreshold = 0.1, pmax = 10, 
+AMARETTOinit <- AMARETTO_Initialize(MA_matrix=MA_matrix, CNV_matrix= CNV_matrix,MET_matrix= MET_matrix, Driver_list = NULL, NrModules= Nr, VarPercentage= Var,
+                                    PvalueThreshold = 0.001, RsquareThreshold = 0.1, pmax = 10,
                                     NrCores = 1, OneRunStop = 0)
-                                    
- In absense of either of data matrix and providing a list of driver genes, perform a union/intersection of driver genes evaluated from input data matrices and custom drivers.                                    
- AMARETTOinit <- AMARETTO_Initialize(MA_matrix=MA_matrix, CNV_matrix= NULL,MET_matrix= MET_matrix, Driver_list = custom_drivers, NrModules= Nr, VarPercentage= Var, 
-                                    PvalueThreshold = 0.001, RsquareThreshold = 0.1, pmax = 10, 
-                                    NrCores = 1, OneRunStop = 0 , method= "union")                                   
+
+ AMARETTOinit <- AMARETTO_Initialize(MA_matrix=MA_matrix, CNV_matrix= NULL,MET_matrix= MET_matrix, Driver_list = custom_drivers, NrModules= Nr, VarPercentage= Var,
+                                    PvalueThreshold = 0.001, RsquareThreshold = 0.1, pmax = 10,
+                                    NrCores = 1, OneRunStop = 0 , method= "union")
 }

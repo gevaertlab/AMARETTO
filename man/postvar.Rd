@@ -2,19 +2,14 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{postvar}
 \alias{postvar}
-\title{Title}
+\title{postvar}
 \usage{
 postvar(sum2, n, a, b)
 }
 \arguments{
-\item{sum2}{}
-
-\item{n}{}
-
-\item{a}{}
-
 \item{b}{}
 }
 \description{
-Title
+postvar
 }
+\keyword{internal}

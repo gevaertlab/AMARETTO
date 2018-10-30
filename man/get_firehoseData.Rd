@@ -12,26 +12,12 @@ get_firehoseData(downloadData = TRUE, saveDir = "./",
   printDisease_abbr = FALSE)
 }
 \arguments{
-\item{downloadData}{}
-
-\item{saveDir}{}
-
-\item{TCGA_acronym_uppercase}{}
-
-\item{dataType}{}
-
-\item{dataFileTag}{}
-
-\item{FFPE}{}
-
-\item{fileType}{}
-
-\item{gdacURL}{}
-
-\item{untarUngzip}{}
-
 \item{printDisease_abbr}{}
 }
 \description{
-get_firehoseData
+Downloading TCGA dataset via firehose
 }
+\examples{
+data_download <- get_firehoseData(downloadData=TRUE,saveDir = "./",TCGA_acronym_uppercase = "LUAD",dataType="stddata",dataFileTag = "mRNAseq_Preprocess.Level_3", FFPE=FALSE,fileType= "tar.gz",  gdacURL= "http://gdac.broadinstitute.org/runs/",untarUngzip=TRUE,printDisease_abbr=FALSE)
+}
+\keyword{internal}

@@ -4,7 +4,7 @@
 \name{Driver_Genes}
 \alias{Driver_Genes}
 \title{Driver_Genes}
-\format{An object of class \code{list} of length 2.}
+\format{An object of class \code{list} of length 10.}
 \source{
 \url{AMARETTO}
 }

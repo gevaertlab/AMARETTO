@@ -2,7 +2,7 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{design.mat}
 \alias{design.mat}
-\title{Title}
+\title{design.mat}
 \usage{
 design.mat(saminfo)
 }
@@ -10,5 +10,6 @@ design.mat(saminfo)
 \item{saminfo}{}
 }
 \description{
-Title
+design.mat
 }
+\keyword{internal}

@@ -2,13 +2,14 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{trim.dat}
 \alias{trim.dat}
-\title{Title}
+\title{trim.dat}
 \usage{
-trim.dat(dat)
+\method{trim}{dat}(dat)
 }
 \arguments{
 \item{dat}{}
 }
 \description{
-Title
+Trims the data of extra columns, note your array names cannot be named 'X' or start with 'X.'
 }
+\keyword{internal}

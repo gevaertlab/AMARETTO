@@ -2,27 +2,14 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{it.sol}
 \alias{it.sol}
-\title{Title}
+\title{it.sol}
 \usage{
 it.sol(sdat, g.hat, d.hat, g.bar, t2, a, b, conv = 1e-04)
 }
 \arguments{
-\item{sdat}{}
-
-\item{g.hat}{}
-
-\item{d.hat}{}
-
-\item{g.bar}{}
-
-\item{t2}{}
-
-\item{a}{}
-
-\item{b}{}
-
 \item{conv}{}
 }
 \description{
-Title
+Pass in entire data set, the design matrix for the entire data, the batch means, the batch variances, priors (m, t2, a, b), columns of the data  matrix for the batch. Uses the EM to find the parametric batch adjustments
 }
+\keyword{internal}

@@ -2,17 +2,14 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{int.eprior}
 \alias{int.eprior}
-\title{Title}
+\title{int.eprior}
 \usage{
 int.eprior(sdat, g.hat, d.hat)
 }
 \arguments{
-\item{sdat}{}
-
-\item{g.hat}{}
-
 \item{d.hat}{}
 }
 \description{
-Title
+Monte Carlo integration function to find the nonparametric adjustments
 }
+\keyword{internal}

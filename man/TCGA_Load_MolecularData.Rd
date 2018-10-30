@@ -2,7 +2,7 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{TCGA_Load_MolecularData}
 \alias{TCGA_Load_MolecularData}
-\title{Title}
+\title{TCGA_Load_MolecularData}
 \usage{
 TCGA_Load_MolecularData(MAEO_ge)
 }
@@ -10,5 +10,6 @@ TCGA_Load_MolecularData(MAEO_ge)
 \item{MAEO_ge}{}
 }
 \description{
-Title
+TCGA_Load_MolecularData
 }
+\keyword{internal}

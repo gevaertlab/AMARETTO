@@ -2,17 +2,14 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{TCGA_BatchCorrection_MolecularData}
 \alias{TCGA_BatchCorrection_MolecularData}
-\title{Title}
+\title{TCGA_BatchCorrection_MolecularData}
 \usage{
 TCGA_BatchCorrection_MolecularData(GEN_Data, BatchData, MinInBatch)
 }
 \arguments{
-\item{GEN_Data}{}
-
-\item{BatchData}{}
-
 \item{MinInBatch}{}
 }
 \description{
-Title
+TCGA_BatchCorrection_MolecularData
 }
+\keyword{internal}

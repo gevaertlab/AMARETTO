@@ -2,15 +2,14 @@
 % Please edit documentation in R/amaretto_run.R
 \name{AMARETTO_CreateRegulatorPrograms}
 \alias{AMARETTO_CreateRegulatorPrograms}
-\title{Title}
+\title{AMARETTO_CreateRegulatorPrograms}
 \usage{
 AMARETTO_CreateRegulatorPrograms(AMARETTOinit, AMARETTOresults)
 }
 \arguments{
-\item{AMARETTOinit}{}
-
 \item{AMARETTOresults}{}
 }
 \description{
-Title
+AMARETTO_CreateRegulatorPrograms
 }
+\keyword{internal}

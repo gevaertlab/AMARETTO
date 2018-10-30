@@ -2,8 +2,7 @@
 % Please edit documentation in R/amaretto_functions.R
 \name{AMARETTO_EvaluateTestSet}
 \alias{AMARETTO_EvaluateTestSet}
-\title{AMARETTO_EvaluateTestSet
-Code to evaluate AMARETTO on a new gene expression test set. Uses output from AMARETTO_Run() and CreateRegulatorData().}
+\title{AMARETTO_EvaluateTestSet}
 \usage{
 AMARETTO_EvaluateTestSet(AMARETTOresults, MA_Data_TestSet,
   RegulatorData_TestSet)
@@ -16,7 +15,6 @@ AMARETTO_EvaluateTestSet(AMARETTOresults, MA_Data_TestSet,
 \item{RegulatorData_TestSet}{Test regulator data from CreateRegulatorData().}
 }
 \description{
-AMARETTO_EvaluateTestSet
 Code to evaluate AMARETTO on a new gene expression test set. Uses output from AMARETTO_Run() and CreateRegulatorData().
 }
 \examples{

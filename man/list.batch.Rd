@@ -2,7 +2,7 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{list.batch}
 \alias{list.batch}
-\title{Title}
+\title{list.batch}
 \usage{
 list.batch(saminfo)
 }
@@ -10,5 +10,6 @@ list.batch(saminfo)
 \item{saminfo}{}
 }
 \description{
-Title
+Makes a list with elements pointing to which array belongs to which batch
 }
+\keyword{internal}

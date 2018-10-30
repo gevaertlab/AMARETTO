@@ -2,15 +2,14 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{Beta.NA}
 \alias{Beta.NA}
-\title{Title}
+\title{Beta.NA}
 \usage{
 Beta.NA(y, X)
 }
 \arguments{
-\item{y}{}
-
 \item{X}{}
 }
 \description{
-Title
+Beta.NA
 }
+\keyword{internal}

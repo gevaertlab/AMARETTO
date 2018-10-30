@@ -2,17 +2,16 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{AMARETTO_Preprocess}
 \alias{AMARETTO_Preprocess}
-\title{AMARETTO_Preprocess
-Wrapper code that analyzes process TCGA GISTIC (CNV) and gene expression (rna-seq or microarray) data  via one call}
+\title{AMARETTO_Preprocess}
 \usage{
 AMARETTO_Preprocess(CancerSite, DataSetDirectories)
 }
 \arguments{
-\item{CancerSite}{}
-
 \item{DataSetDirectories}{}
 }
 \description{
-AMARETTO_Preprocess
 Wrapper code that analyzes process TCGA GISTIC (CNV) and gene expression (rna-seq or microarray) data  via one call
+}
+\examples{
+ProcessedData <- AMARETTO_Preprocess(CancerSite,DataSetDirectories)
 }

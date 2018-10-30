@@ -2,15 +2,14 @@
 % Please edit documentation in R/amaretto_run.R
 \name{AMARETTO_CreateModuleData}
 \alias{AMARETTO_CreateModuleData}
-\title{Title}
+\title{AMARETTO_CreateModuleData}
 \usage{
 AMARETTO_CreateModuleData(AMARETTOinit, AMARETTOresults)
 }
 \arguments{
-\item{AMARETTOinit}{}
-
 \item{AMARETTOresults}{}
 }
 \description{
-Title
+AMARETTO_CreateModuleData
 }
+\keyword{internal}

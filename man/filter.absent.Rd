@@ -2,15 +2,14 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{filter.absent}
 \alias{filter.absent}
-\title{Title}
+\title{filter.absent}
 \usage{
-filter.absent(x, pct)
+\method{filter}{absent}(x, pct)
 }
 \arguments{
-\item{x}{}
-
 \item{pct}{}
 }
 \description{
-Title
+filters data based on presence/absence call
 }
+\keyword{internal}

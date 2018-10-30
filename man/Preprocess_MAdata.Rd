@@ -2,15 +2,14 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{Preprocess_MAdata}
 \alias{Preprocess_MAdata}
-\title{Title}
+\title{Preprocess_MAdata}
 \usage{
 Preprocess_MAdata(CancerSite, MAEO_ge)
 }
 \arguments{
-\item{CancerSite}{}
-
 \item{MAEO_ge}{}
 }
 \description{
-Title
+Preprocess_MAdata
 }
+\keyword{internal}

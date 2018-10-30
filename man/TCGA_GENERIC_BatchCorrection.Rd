@@ -2,15 +2,14 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{TCGA_GENERIC_BatchCorrection}
 \alias{TCGA_GENERIC_BatchCorrection}
-\title{Title}
+\title{TCGA_GENERIC_BatchCorrection}
 \usage{
 TCGA_GENERIC_BatchCorrection(GEN_Data, BatchData)
 }
 \arguments{
-\item{GEN_Data}{}
-
 \item{BatchData}{}
 }
 \description{
-Title
+TCGA_GENERIC_BatchCorrection
 }
+\keyword{internal}

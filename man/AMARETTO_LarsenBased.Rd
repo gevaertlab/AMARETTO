@@ -7,16 +7,9 @@
 AMARETTO_LarsenBased(Data, Clusters, RegulatorData, Parameters, NrCores)
 }
 \arguments{
-\item{Data}{}
-
-\item{Clusters}{}
-
-\item{RegulatorData}{}
-
-\item{Parameters}{}
-
 \item{NrCores}{}
 }
 \description{
 AMARETTO_LarsenBased
 }
+\keyword{internal}

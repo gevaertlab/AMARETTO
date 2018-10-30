@@ -2,17 +2,14 @@
 % Please edit documentation in R/amaretto_preprocess.R
 \name{build.design}
 \alias{build.design}
-\title{Title}
+\title{build.design}
 \usage{
 build.design(vec, des = NULL, start = 2)
 }
 \arguments{
-\item{vec}{}
-
-\item{des}{}
-
 \item{start}{}
 }
 \description{
-Title
+Next two functions make the design matrix (X) from the sample info file
 }
+\keyword{internal}
