@@ -1,0 +1,39 @@
+---
+title: <center>AMARETTO overview of all modules</center>
+output: 
+  html_document:
+    theme: cerulean
+    highlight: NULL
+---
+
+<center>
+## Run Information
+<br>
+Number of Samples (Expression) = `r nExp`  
+Number of Samples (Copy Number) = `r nCNV`  
+Number of Samples (Methylation) = `r nMET`  
+Number of Genes (`r VarPercentage`% most variable) = `r nGenes`  
+Number of Regulatory Modules = `r nMod`  
+<br><br>
+
+## Overview of Modules
+<br><br><br>
+```{r Modules,echo=FALSE}
+dt_overview
+```
+<br><br><br>
+
+## Gene to module assignment
+<br><br><br>
+```{r Genes,echo=FALSE}
+dt_genes
+```
+<br><br><br>
+
+## Genesets enriched in modules
+<br><br><br>
+```{r Genesets,echo=FALSE}
+dt_genesetsall
+```
+
+</center>
