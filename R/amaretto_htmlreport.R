@@ -20,6 +20,7 @@
 #' @import htmltools
 #' @import DT
 #' @import reshape2
+#' @import rmarkdown
 #' @return
 #' @export
 #'
@@ -38,8 +39,10 @@ AMARETTO_htmlreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
     }
   }
   #### Check Existance HyperGeometric test file ###
-  if (hyper_geo_test_bool==TRUE & !file.exists(hyper_geo_reference)){
+  if (hyper_geo_test_bool==TRUE){
+    if (!file.exists(hyper_geo_reference)){
     stop("GMT for hyper geometric test is not existing.\n")
+   }
   }
 
   report_address=paste0(output_address,"report_html/")
@@ -51,14 +54,15 @@ AMARETTO_htmlreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
   if (hyper_geo_test_bool){
     GmtFromModules(AMARETTOinit,AMARETTOresults)
     output_hgt<-HyperGTestGeneEnrichment(hyper_geo_reference, "./Modules_targets_only.gmt",NrCores)
+    GeneSetDescriptions<-GeneSetDescription(hyper_geo_reference)
   }
-  GeneSetDescriptions<-GeneSetDescription(hyper_geo_reference)
+  
   cat("The hyper geometric test results are calculated.\n")
 
   ###########################  Parallelizing :
   cluster <- makeCluster(c(rep("localhost", NrCores)), type = "SOCK")
   registerDoParallel(cluster,cores=NrCores)
-
+  full_path<-normalizePath(report_address)
   ####html file per module ####
   ### make this parallel
   ModuleOverviewTable<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT')) %dopar% {
@@ -93,17 +97,18 @@ AMARETTO_htmlreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
           autoWidth = TRUE,pageLength = 10,dom = 'Bfrtip',
           buttons = c('csv', 'excel', 'pdf'))) %>% formatSignif(c('p_value','padj','overlap_perc'),2)
       }
+      return(c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),nrow(output_hgt_filter %>% dplyr::filter(padj<0.05))))
     } else {
       dt_genesets<-"Genesets were not analysed as they were not provided."
+      return(c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),"NA"))
     }
 
-    rmarkdown::render(system.file("templates/TemplateReportModule.Rmd",package="AMARETTO"), output_file=paste0(report_address,"htmls/modules/module",ModuleNr,".html"), params = list(
+    rmarkdown::render(system.file("templates/TemplateReportModule.Rmd",package="AMARETTO"), output_dir=paste0(full_path,"/htmls/modules/"),output_file = paste0("module",ModuleNr,".html"), params = list(
       report_address = report_address,
       ModuleNr = ModuleNr,
       heatmap_module = heatmap_module,
       dt_regulators = dt_regulators,
       dt_genesets = dt_genesets),quiet = TRUE)
-    return(c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),nrow(output_hgt_filter %>% dplyr::filter(padj<0.05))))
   }
 
   stopCluster(cluster)
@@ -132,12 +137,14 @@ AMARETTO_htmlreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
   all_genes<-rbind(all_targets,all_regulators)%>% arrange(Genes) %>% dplyr::mutate(Module=paste0('<a href="./modules/module',Module,'.html">Module ',Module,'</a>'))
   dt_genes<-datatable(all_genes, class = 'display',extensions = 'Buttons',rownames = FALSE,options = list(
     pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf')),escape = FALSE)
-
-  dt_genesetsall<-datatable(left_join(output_hgt %>% dplyr::filter(padj<0.05 & n_Overlapping>1) %>% dplyr::group_by(Geneset) %>% dplyr::mutate(Testset=paste0('<a href="./modules/module',sub("Module_","",Testset),'.html">',Testset,'</a>')) %>% summarise(Modules=paste(Testset,collapse=", ")),GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% mutate(Geneset=gsub("_"," ",Geneset),Modules=gsub("_"," ",Modules)),
+  if (hyper_geo_test_bool){
+    dt_genesetsall<-datatable(left_join(output_hgt %>% dplyr::filter(padj<0.05 & n_Overlapping>1) %>% dplyr::group_by(Geneset) %>% dplyr::mutate(Testset=paste0('<a href="./modules/module',sub("Module_","",Testset),'.html">',Testset,'</a>')) %>% summarise(Modules=paste(Testset,collapse=", ")),GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% mutate(Geneset=gsub("_"," ",Geneset),Modules=gsub("_"," ",Modules)),
                             class = 'display',extensions = 'Buttons',rownames = FALSE,
                             options = list(pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf')),escape = FALSE)
-
-  rmarkdown::render(system.file("templates/TemplateIndexPage.Rmd",package="AMARETTO"), output_file= paste0(report_address,"htmls/index.html"), params = list(
+  }else{
+    dt_genesetsall<-"Genesets were not analysed as they were not provided."
+  }
+  rmarkdown::render(system.file("templates/TemplateIndexPage.Rmd",package="AMARETTO"), output_dir=paste0(full_path,"/htmls/"),output_file= "index.html", params = list(
     nExp = nExp,
     nCNV = nCNV,
     nMET = nMET,
@@ -150,7 +157,6 @@ AMARETTO_htmlreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
 
   cat("The report is ready to use\n")
 }
-
 
 #' Hyper Geometric Geneset Enrichement Test
 #'
