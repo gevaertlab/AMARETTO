@@ -24,9 +24,9 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NUL
   if (ModuleNr>AMARETTOresults$NrModules){
     stop('\tCannot plot Module',ModuleNr,' since the total number of modules is',AMARETTOresults$N,'.\n')
   }
-  ModuleData<-AMARETTOinit$MA_matrix_Var[AMARETTOresults$ModuleMembership==ModuleNr,]
+  ModuleData<-as.data.frame(AMARETTOinit$MA_matrix_Var)[AMARETTOresults$ModuleMembership==ModuleNr,]
   ModuleRegulators <- AMARETTOresults$AllRegulators[which(AMARETTOresults$RegulatoryPrograms[ModuleNr,] != 0)]
-  RegulatorData <- AMARETTOinit$RegulatorData[ModuleRegulators,]
+  RegulatorData <- as.data.frame(AMARETTOinit$RegulatorData)[ModuleRegulators,]
   ModuleGenes <- rownames(ModuleData)
   cat('Module',ModuleNr,'has',length(rownames(ModuleData)),'genes and',length(ModuleRegulators),'regulators for',length(colnames(ModuleData)),'samples.\n')
   
