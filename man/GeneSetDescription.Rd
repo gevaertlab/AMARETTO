@@ -7,9 +7,12 @@
 GeneSetDescription(filename)
 }
 \arguments{
-\item{filename}{}
+\item{filename}{The name of the gmt file.}
 }
 \description{
-GeneSetDescription
+reads the gene set descriptions from the 2nd column of the gmt file
+}
+\examples{
+GeneSetDescription("foo.gmt")
 }
 \keyword{internal}

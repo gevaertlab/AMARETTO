@@ -5,10 +5,10 @@
 #' @param AMARETTOresults List output from AMARETTO_Run().
 #' @param CNV_matrix CNV matrix, with genes in rows and samples in columns.
 #' @param MET_matrix Methylation matrix, with genes in rows and samples in columns.
-#' @param ModuleNr Module number to visualize
-#' @param SAMPLE_annotation Matrix or Dataframe with sample annotation
-#' @param ID Column used as sample name
-#' @param order_samples Order samples in heatmap by mean or by clustering
+#' @param ModuleNr Module number to visualize.
+#' @param SAMPLE_annotation Matrix or Dataframe with sample annotation.
+#' @param ID Column used as sample name.
+#' @param order_samples Order samples in heatmap by mean or by clustering.
 #' @import tidyverse
 #' @import randomcoloR
 #' @import RColorBrewer
@@ -18,6 +18,7 @@
 #' @export
 #'
 #' @examples
+#' AMARETTO_VisualizeModule(AMARETTOinit,AMARETTOresults,CNV_matrix=CNV_matrix_LIHC,MET_matrix = MET_matrix_LIHC,SAMPLE_annotation=annotation_LIHC_hm,ID="submitter_id",ModuleNr=1) 
 
 AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET_matrix=NULL,ModuleNr,SAMPLE_annotation=NULL,ID=NULL,order_samples=NULL) {
   # getting the data

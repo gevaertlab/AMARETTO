@@ -25,16 +25,19 @@ AMARETTO_htmlreport(AMARETTOinit, AMARETTOresults, CNV_matrix = NULL,
 
 \item{VarPercentage}{Original Var Percentage used}
 
-\item{hyper_geo_test_bool}{Boolean if a hyper geometric test needs to be performed}
+\item{hyper_geo_test_bool}{Boolean if a hyper geometric test needs to be performed. If TRUE provide a GMT file in the hyper_geo_reference parameter.}
 
-\item{hyper_geo_reference}{GMT file with}
+\item{hyper_geo_reference}{GMT file with gene sets to compare with.}
 
-\item{output_address}{Output directory for the html files}
+\item{output_address}{Output directory for the html files.}
 
-\item{MSIGDB}{TRUE if gene sets were retrieved from MSIGDB}
+\item{MSIGDB}{TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.}
 
 \item{GMTURL}{TRUE if second column of gmt contains URLs to gene set, FALSE if it contains a description}
 }
 \description{
 Retrieve an interactive html report, including gene set enrichment analysis if asked for.
+}
+\examples{
+AMARETTO_htmlreport(AMARETTOinit,AMARETTOresults,CNV_matrix=CNV_matrix_LIHC,MET_matrix = MET_matrix_LIHC,VarPercentage=10,hyper_geo_test_bool=FALSE,output_address='./')
 }

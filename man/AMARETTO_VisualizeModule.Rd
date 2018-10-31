@@ -17,14 +17,17 @@ AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults,
 
 \item{MET_matrix}{Methylation matrix, with genes in rows and samples in columns.}
 
-\item{ModuleNr}{Module number to visualize}
+\item{ModuleNr}{Module number to visualize.}
 
-\item{SAMPLE_annotation}{Matrix or Dataframe with sample annotation}
+\item{SAMPLE_annotation}{Matrix or Dataframe with sample annotation.}
 
-\item{ID}{Column used as sample name}
+\item{ID}{Column used as sample name.}
 
-\item{order_samples}{Order samples in heatmap by mean or by clustering}
+\item{order_samples}{Order samples in heatmap by mean or by clustering.}
 }
 \description{
 Function to visualize the gene modules
+}
+\examples{
+AMARETTO_VisualizeModule(AMARETTOinit,AMARETTOresults,CNV_matrix=CNV_matrix_LIHC,MET_matrix = MET_matrix_LIHC,SAMPLE_annotation=annotation_LIHC_hm,ID="submitter_id",ModuleNr=1) 
 }

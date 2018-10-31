@@ -2,7 +2,8 @@
 % Please edit documentation in R/amaretto_download.R
 \name{AMARETTO_DownloadResults}
 \alias{AMARETTO_DownloadResults}
-\title{AMARETTO_DownloadResults}
+\title{AMARETTO_DownloadResults
+Retrieve a download of all the data linked with the run (including heatmaps)}
 \usage{
 AMARETTO_DownloadResults(AMARETTOinit, AMARETTOresults, data_address,
   Heatmaps = TRUE)
@@ -15,11 +16,11 @@ AMARETTO_DownloadResults(AMARETTOinit, AMARETTOresults, data_address,
 \item{data_address}{Directory to save data folder}
 
 \item{Heatmaps}{Output heatmaps as pdf}
-
-\item{data_in}{A dataframe that needs to be converted to a gct file}
-
-\item{file_address}{File adress of the gct file}
 }
 \description{
+AMARETTO_DownloadResults
 Retrieve a download of all the data linked with the run (including heatmaps)
+}
+\examples{
+AMARETTO_DownloadResults(AMARETTOinit,AMARETTOresults,"./")
 }

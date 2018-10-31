@@ -10,6 +10,9 @@ readGMT(filename)
 \item{filename}{}
 }
 \description{
-readGMT
+reads a GMT file
+}
+\examples{
+readGMT("foo.gmt")
 }
 \keyword{internal}

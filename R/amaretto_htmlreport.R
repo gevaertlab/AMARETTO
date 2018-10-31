@@ -9,10 +9,10 @@
 #' @param SAMPLE_annotation SAMPLE annotation will be added to heatmap
 #' @param ID ID column of the SAMPLE annotation data frame
 #' @param VarPercentage Original Var Percentage used
-#' @param hyper_geo_test_bool Boolean if a hyper geometric test needs to be performed
-#' @param hyper_geo_reference GMT file with
-#' @param output_address Output directory for the html files
-#' @param MSIGDB TRUE if gene sets were retrieved from MSIGDB
+#' @param hyper_geo_test_bool Boolean if a hyper geometric test needs to be performed. If TRUE provide a GMT file in the hyper_geo_reference parameter.
+#' @param hyper_geo_reference GMT file with gene sets to compare with.
+#' @param output_address Output directory for the html files.
+#' @param MSIGDB TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.
 #' @param GMTURL TRUE if second column of gmt contains URLs to gene set, FALSE if it contains a description
 #'
 #' @import tidyverse
@@ -25,6 +25,7 @@
 #' @export
 #'
 #' @examples
+#' AMARETTO_htmlreport(AMARETTOinit,AMARETTOresults,CNV_matrix=CNV_matrix_LIHC,MET_matrix = MET_matrix_LIHC,VarPercentage=10,hyper_geo_test_bool=FALSE,output_address='./')
 
 AMARETTO_htmlreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET_matrix=NULL,SAMPLE_annotation=NULL,ID=NULL,VarPercentage,hyper_geo_test_bool=FALSE,hyper_geo_reference=NULL,output_address='./',MSIGDB=FALSE,GMTURL=FALSE){
 
@@ -160,10 +161,12 @@ AMARETTO_htmlreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
 
 #' Hyper Geometric Geneset Enrichement Test
 #'
-#' @param gmtfile gmt with reference gene set
-#' @param testgmtfile gmt with gene sets to test
-#' @param NrCores number of cores for parallelization
-#' @param ref.numb.genes The total number of genes teste, standard equal to 45 956 (MSIGDB standard)
+#' Calculates the p-values for unranked gene set enrichment based on two gmt files as input and the hyper geometric test.
+#'
+#' @param gmtfile The gmt file with reference gene set.
+#' @param testgmtfile The gmt file with gene sets to test. In our case, the gmt file of the modules.
+#' @param NrCores Number of cores used for parallelization.
+#' @param ref.numb.genes The total number of genes teste, standard equal to 45 956 (MSIGDB standard).
 #'
 #' @import doParallel
 #' @keywords internal
@@ -209,6 +212,7 @@ HyperGTestGeneEnrichment<-function(gmtfile,testgmtfile,NrCores,ref.numb.genes=45
 #' @param AMARETTOinit List output from AMARETTO_Initialize().
 #' @param AMARETTOresults List output from AMARETTO_Run().
 #' @keywords internal
+#' GmtFromModules(AMARETTOinit,AMARETTOresults)
 
 GmtFromModules <- function(AMARETTOinit,AMARETTOresults){
 
@@ -225,11 +229,14 @@ GmtFromModules <- function(AMARETTOinit,AMARETTOresults){
 
 #' GeneSetDescription
 #'
-#' @param filename
+#' reads the gene set descriptions from the 2nd column of the gmt file
+#' 
+#' @param filename The name of the gmt file.
 #'
 #' @return
 #' @keywords internal
 #' @examples
+#' GeneSetDescription("foo.gmt")
 GeneSetDescription<-function(filename){
   gmtLines<-strsplit(readLines(filename),"\t")
   gmtLines_description <- lapply(gmtLines, function(x) {
@@ -244,12 +251,15 @@ GeneSetDescription<-function(filename){
 
 #' readGMT
 #'
+#' reads a GMT file
+#' 
 #' @param filename
 #'
 #' @return
 #' @keywords internal
 #'
 #' @examples
+#' readGMT("foo.gmt")
 readGMT<-function(filename){
   gmtLines<-strsplit(readLines(filename),"\t")
   gmtLines_genes <- lapply(gmtLines, tail, -2)
