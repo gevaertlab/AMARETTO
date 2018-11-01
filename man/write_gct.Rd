@@ -2,8 +2,7 @@
 % Please edit documentation in R/amaretto_download.R
 \name{write_gct}
 \alias{write_gct}
-\title{write_gct
-Write a gct file with the proper header.}
+\title{write_gct}
 \usage{
 write_gct(data_in, file_address)
 }
@@ -11,7 +10,6 @@ write_gct(data_in, file_address)
 \item{file_address}{}
 }
 \description{
-write_gct
 Write a gct file with the proper header.
 }
 \examples{

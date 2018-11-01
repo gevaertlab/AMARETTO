@@ -2,11 +2,10 @@
 % Please edit documentation in R/amaretto_download.R
 \name{AMARETTO_ExportResults}
 \alias{AMARETTO_ExportResults}
-\title{AMARETTO_DownloadResults
-Retrieve a download of all the data linked with the run (including heatmaps)}
+\title{AMARETTO_ExportResults}
 \usage{
 AMARETTO_ExportResults(AMARETTOinit, AMARETTOresults, data_address,
-  Heatmaps = TRUE)
+  Heatmaps = TRUE, CNV_matrix = NULL, MET_matrix = NULL)
 }
 \arguments{
 \item{AMARETTOinit}{AMARETTO initialize output}
@@ -18,9 +17,8 @@ AMARETTO_ExportResults(AMARETTOinit, AMARETTOresults, data_address,
 \item{Heatmaps}{Output heatmaps as pdf}
 }
 \description{
-AMARETTO_DownloadResults
 Retrieve a download of all the data linked with the run (including heatmaps)
 }
 \examples{
-AMARETTO_DownloadResults(AMARETTOinit,AMARETTOresults,"./")
+AMARETTO_ExportResults(AMARETTOinit,AMARETTOresults,"./")
 }

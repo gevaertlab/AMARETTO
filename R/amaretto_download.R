@@ -173,7 +173,8 @@ get_firehoseData <- function(downloadData=TRUE,saveDir = "./",TCGA_acronym_upper
 }
 
 
-#' AMARETTO_DownloadResults
+#' AMARETTO_ExportResults
+#' 
 #' Retrieve a download of all the data linked with the run (including heatmaps)
 #' @param AMARETTOinit AMARETTO initialize output
 #' @param AMARETTOresults AMARETTO results output
@@ -185,9 +186,9 @@ get_firehoseData <- function(downloadData=TRUE,saveDir = "./",TCGA_acronym_upper
 #' @export
 #'
 #' @examples
-#' AMARETTO_DownloadResults(AMARETTOinit,AMARETTOresults,"./")
+#' AMARETTO_ExportResults(AMARETTOinit,AMARETTOresults,"./")
 
-AMARETTO_ExportResults <-function(AMARETTOinit,AMARETTOresults,data_address,Heatmaps=TRUE){
+AMARETTO_ExportResults <-function(AMARETTOinit,AMARETTOresults,data_address,Heatmaps=TRUE,CNV_matrix=NULL,MET_matrix=NULL){
 
   if (!dir.exists(data_address)){
     stop("Output directory is not existing.")
@@ -206,32 +207,33 @@ AMARETTO_ExportResults <-function(AMARETTOinit,AMARETTOresults,data_address,Heat
 
   if(Heatmaps==TRUE){
     foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO')) %dopar% {
-      pdf(file=paste(data_address,output_dir,"/Module_",as.character(ModuleNr),".pdf",sep=""))
-      AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults=AMARETTOresults, CNV_matrix, MET_matrix, ModuleNr=ModuleNr)
+      pdf(file=file.path(data_address,output_dir,paste0("Module_",as.character(ModuleNr),".pdf")))
+      AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, CNV_matrix, MET_matrix, ModuleNr=ModuleNr)
       dev.off()
     }
   }
 
   stopCluster(cluster)
   #save rdata files for AMARETTO_Run and AMARETTO_Initialize output
-  save(AMARETTOresults, file=paste0(data_address,output_dir,"/amarettoResults.RData"))
-  save(AMARETTOinit, file=paste0(data_address,output_dir,"/amarettoInit.RData"))
+  save(AMARETTOresults, file=file.path(data_address,output_dir,"/amarettoResults.RData"))
+  save(AMARETTOinit, file=file.path(data_address,output_dir,"/amarettoInit.RData"))
   
   #save some tables that might be useful for further analysis
-  write_gct(AMARETTOresults$ModuleData,paste0(data_address,output_dir,'/ModuleData_amaretto.gct'))
-  write_gct(AMARETTOresults$ModuleMembership,paste0(data_address,output_dir,'/ModuleMembership_amaretto.gct'))
-  write_gct(AMARETTOresults$RegulatoryProgramData,paste0(data_address,output_dir,'/RegulatoryProgramData_amaretto.gct'))
-  write_gct(AMARETTOresults$RegulatoryPrograms,paste0(data_address,output_dir,'/RegulatoryPrograms_amaretto.gct'))
-  readr::write_tsv(as.data.frame(AMARETTOresults$AllGenes),paste0(data_address,output_dir,'/AllGenes_amaretto.tsv'))
-  readr::write_tsv(as.data.frame(AMARETTOresults$AllRegulators),paste0(data_address,output_dir,'/AllRegulators_amaretto.tsv'))
-  readr::write_tsv(as.data.frame(AMARETTOresults$NrModules),paste0(data_address,output_dir,'/NrModules_amaretto.tsv'))
+  write_gct(AMARETTOresults$ModuleData,file.path(data_address,output_dir,'/ModuleData_amaretto.gct'))
+  write_gct(AMARETTOresults$ModuleMembership,file.path(data_address,output_dir,'/ModuleMembership_amaretto.gct'))
+  write_gct(AMARETTOresults$RegulatoryProgramData,file.path(data_address,output_dir,'/RegulatoryProgramData_amaretto.gct'))
+  write_gct(AMARETTOresults$RegulatoryPrograms,file.path(data_address,output_dir,'/RegulatoryPrograms_amaretto.gct'))
+  readr::write_tsv(as.data.frame(AMARETTOresults$AllGenes),file.path(data_address,output_dir,'/AllGenes_amaretto.tsv'))
+  readr::write_tsv(as.data.frame(AMARETTOresults$AllRegulators),file.path(data_address,output_dir,'/AllRegulators_amaretto.tsv'))
+  readr::write_tsv(as.data.frame(AMARETTOresults$NrModules),file.path(data_address,output_dir,'/NrModules_amaretto.tsv'))
 
   #zip the file
-  zip(zipfile = paste0(data_address,output_dir),files=paste0(data_address,output_dir))
+  zip(zipfile = file.path(data_address,output_dir),files=file.path(data_address,output_dir))
 }
 
 
 #' write_gct
+#' 
 #' Write a gct file with the proper header.
 #' @param data_in
 #' @param file_address
