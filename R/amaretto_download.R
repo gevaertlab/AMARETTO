@@ -187,18 +187,15 @@ get_firehoseData <- function(downloadData=TRUE,saveDir = "./",TCGA_acronym_upper
 #' @examples
 #' AMARETTO_DownloadResults(AMARETTOinit,AMARETTOresults,"./")
 
-AMARETTO_DownloadResults <-function(AMARETTOinit,AMARETTOresults,data_address,Heatmaps=TRUE){
+AMARETTO_ExportResults <-function(AMARETTOinit,AMARETTOresults,data_address,Heatmaps=TRUE){
 
   if (!dir.exists(data_address)){
     stop("Output directory is not existing.")
   }
-  if (!endsWith(data_address,"/")){
-    output_address=paste0(data_address,"/")
-  }
-  
+
   #add a date stamp to the output directory
   output_dir<-paste0("AMARETTOresults_",gsub("-|:","",gsub(" ","_",Sys.time())))
-  dir.create(paste0(data_address,output_dir))
+  dir.create(file.path(data_address,output_dir))
   
   #parallelize the heatmap production
   cluster <- makeCluster(c(rep("localhost", NrCores)), type = "SOCK")

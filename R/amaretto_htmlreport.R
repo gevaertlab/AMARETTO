@@ -35,9 +35,6 @@ AMARETTO_htmlreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
   #### Check endslash in outputadress & Existance ###
   if (!dir.exists(output_address)){
     stop("Output directory is not existing.")
-    if (!endsWith(output_address,"/")){
-      output_address=paste0(output_address,"/")
-    }
   }
   #### Check Existance HyperGeometric test file ###
   if (hyper_geo_test_bool==TRUE){
