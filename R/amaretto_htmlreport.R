@@ -98,10 +98,10 @@ AMARETTO_htmlreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
           autoWidth = TRUE,pageLength = 10,dom = 'Bfrtip',
           buttons = c('csv', 'excel', 'pdf'))) %>% formatSignif(c('p_value','padj','overlap_perc'),2)
       }
-      return(c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),nrow(output_hgt_filter %>% dplyr::filter(padj<0.05))))
+      ngenesets<-nrow(output_hgt_filter %>% dplyr::filter(padj<0.05))
     } else {
       dt_genesets<-"Genesets were not analysed as they were not provided."
-      return(c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),"NA"))
+      ngenesets<-"NA"
     }
 
     rmarkdown::render(system.file("templates/TemplateReportModule.Rmd",package="AMARETTO"), output_dir=paste0(full_path,"/htmls/modules/"),output_file = paste0("module",ModuleNr,".html"), params = list(
@@ -110,6 +110,9 @@ AMARETTO_htmlreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
       heatmap_module = heatmap_module,
       dt_regulators = dt_regulators,
       dt_genesets = dt_genesets),quiet = TRUE)
+    
+    return(c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),ngenesets))
+    
   }
 
   stopCluster(cluster)
@@ -213,7 +216,6 @@ HyperGTestGeneEnrichment<-function(gmtfile,testgmtfile,NrCores,ref.numb.genes=45
 #' @param AMARETTOresults List output from AMARETTO_Run().
 #' @keywords internal
 #' GmtFromModules(AMARETTOinit,AMARETTOresults)
-
 GmtFromModules <- function(AMARETTOinit,AMARETTOresults){
 
   ModuleMembership<-rownames_to_column(as.data.frame(AMARETTOresults$ModuleMembership),"GeneNames")
