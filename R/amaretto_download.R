@@ -197,6 +197,9 @@ AMARETTO_ExportResults <-function(AMARETTOinit,AMARETTOresults,data_address,Heat
   output_dir<-paste0("AMARETTOresults_",gsub("-|:","",gsub(" ","_",Sys.time())))
   dir.create(file.path(data_address,output_dir))
   
+  NrCores<-AMARETTOinit$NrCores
+  NrModules<-AMARETTOresults$NrModules
+  
   #parallelize the heatmap production
   cluster <- makeCluster(c(rep("localhost", NrCores)), type = "SOCK")
   registerDoParallel(cluster,cores=NrCores)
