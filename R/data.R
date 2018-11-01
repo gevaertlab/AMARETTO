@@ -30,12 +30,12 @@
 "MethylStates"
 
 
-#' ProcessedDataLAML
+#' ProcessedDataLIHC
 #'
-#' A list of dataframes of processed toy example dataset from TCGA-LAML.
+#' A list of dataframes of processed toy example dataset from TCGA-LIHC.
 #'
 #' @format List
 #'   ...
 #' }
 #' @source \url{AMARETTO}
-"ProcessedDataLAML"
+"ProcessedDataLIHC"
