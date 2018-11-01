@@ -46,7 +46,7 @@ AMARETTO_htmlreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
    }
   }
 
-  report_address=paste0(output_address,"report_html/")
+  report_address=file.path(output_address,"report_html/")
 
   #### Create necessary folders ####
   dir.create(paste0(report_address,"htmls/modules"),recursive = TRUE,showWarnings = FALSE)
