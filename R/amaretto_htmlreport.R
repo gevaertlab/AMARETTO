@@ -1,4 +1,4 @@
-#' AMARETTO_htmlreport
+#' AMARETTO_HTMLreport
 #'
 #' Retrieve an interactive html report, including gene set enrichment analysis if asked for.
 #'
@@ -25,9 +25,9 @@
 #' @export
 #'
 #' @examples
-#' AMARETTO_htmlreport(AMARETTOinit,AMARETTOresults,CNV_matrix=CNV_matrix_LIHC,MET_matrix = MET_matrix_LIHC,VarPercentage=10,hyper_geo_test_bool=FALSE,output_address='./')
+#' AMARETTO_HTMLreport(AMARETTOinit,AMARETTOresults,CNV_matrix=CNV_matrix_LIHC,MET_matrix = MET_matrix_LIHC,VarPercentage=10,hyper_geo_test_bool=FALSE,output_address='./')
 
-AMARETTO_htmlreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET_matrix=NULL,SAMPLE_annotation=NULL,ID=NULL,VarPercentage,hyper_geo_test_bool=FALSE,hyper_geo_reference=NULL,output_address='./',MSIGDB=FALSE,GMTURL=FALSE){
+AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET_matrix=NULL,SAMPLE_annotation=NULL,ID=NULL,VarPercentage,hyper_geo_test_bool=FALSE,hyper_geo_reference=NULL,output_address='./',MSIGDB=FALSE,GMTURL=FALSE){
 
   NrModules<-AMARETTOresults$NrModules
   NrCores<-AMARETTOinit$NrCores
@@ -60,10 +60,11 @@ AMARETTO_htmlreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
   ###########################  Parallelizing :
   cluster <- makeCluster(c(rep("localhost", NrCores)), type = "SOCK")
   registerDoParallel(cluster,cores=NrCores)
+  
   full_path<-normalizePath(report_address)
   ####html file per module ####
   ### make this parallel
-  ModuleOverviewTable<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT')) %dopar% {
+  ModuleOverviewTable<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT','rmarkdown')) %dopar% {
     heatmap_module<-AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, CNV_matrix, MET_matrix, SAMPLE_annotation=SAMPLE_annotation, ID=ID, ModuleNr=ModuleNr)
     #Get Regulator for each module and weight
     ModuleRegulators <- AMARETTOresults$RegulatoryPrograms[ModuleNr,which(AMARETTOresults$RegulatoryPrograms[ModuleNr,] != 0)]
@@ -100,13 +101,17 @@ AMARETTO_htmlreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
       dt_genesets<-"Genesets were not analysed as they were not provided."
       ngenesets<-"NA"
     }
-
-    rmarkdown::render(system.file("templates/TemplateReportModule.Rmd",package="AMARETTO"), output_dir=paste0(full_path,"/htmls/modules/"),output_file = paste0("module",ModuleNr,".html"), params = list(
+    
+    modulemd<-paste0(full_path,"/htmls/modules/module",ModuleNr,".rmd")
+    file.copy(system.file("templates/TemplateReportModule.Rmd",package="AMARETTO"),modulemd)
+    
+    rmarkdown::render(modulemd,output_file = paste0("module",ModuleNr,".html"), params = list(
       report_address = report_address,
       ModuleNr = ModuleNr,
       heatmap_module = heatmap_module,
       dt_regulators = dt_regulators,
       dt_genesets = dt_genesets),quiet = TRUE)
+    file.remove(modulemd)
     
     return(c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),ngenesets))
     

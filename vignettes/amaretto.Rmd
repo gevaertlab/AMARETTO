@@ -165,10 +165,10 @@ analysis with AMARETTO. First, we need to initialize the algorithm by clustering
 the regulator data object. This is done by the AMARETTO Initialize function and the TCGA LAML data set:
 
     ------------------------------------------------------------------
-    > data(ProcessedDataLAML)
-    > AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLAML$MA_TCGA,
-                                          CNV_matrix = ProcessedDataLAML$CNV_TCGA,
-                                          MET_matrix = ProcessedDataLAML$MET_TCGA,
+    > data(ProcessedDataLIHC)
+    > AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
+                                          CNV_matrix = ProcessedDataLIHC$CNV_matrix,
+                                          MET_matrix = ProcessedDataLIHC$MET_matrix,
                                           NrModules = 10, VarPercentage = 5)
     ------------------------------------------------------------------
     
@@ -204,11 +204,22 @@ Finally, modules can be visualized using the AMARETTO VisualizeModule function:
 
     
     ------------------------------------------------------------------
-    > ModuleNr <- 1
     > AMARETTO_VisualizeModule(AMARETTOinit,AMARETTOresults,
-                        ProcessedDataLAML$CNV,ProcessedDataLAML$MET,ModuleNr)
+                        ProcessedDataLIHC$CNV_matrix,ProcessedDataLIHC$MET_matrix,ModuleNr=1)
     ------------------------------------------------------------------
-    
+
+Additionaly, to a standard version of the heatmap, one can add sample annotations to interogate biological phenotypes.
+
+# HTML Report of AMARETTO
+
+To retrieve heatmaps for all of the modules and additional tables with gene set enrichment data one can run a HTML report. 
+
+    ------------------------------------------------------------------
+    > gmt_file<-system.file("templates/H.C2CP.genesets.gmt",package="AMARETTO")
+    > AMARETTO_HTMLreport(AMARETTOinit,AMARETTOresults,
+                        ProcessedDataLIHC$CNV_matrix,ProcessedDataLIHC$MET_matrix,
+                        hyper_geo_test_bool = TRUE,hyper_geo_reference = gmt_file, MSIGDB=TRUE)
+    ------------------------------------------------------------------
     
 # References
 
