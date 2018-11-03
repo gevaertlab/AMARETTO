@@ -3,7 +3,7 @@
 
 <p align="center">
   <a href="https://github.com/gevaertlab/AMARETTO">
-    <img height="150" src="https://github.com/gevaertlab/AMARETTO/blob/develop/files/logo.jpg">
+    <img height="150" src="https://github.com/gevaertlab/AMARETTO/blob/master/files/logo.jpg">
   </a>
   <h1 align="center"></h1>
 </p>
@@ -45,7 +45,7 @@ Install from the GitHub repository using devtools:
 ## Running AMARETTO
 
 * The RUNNING_AMARETTO_EXAMPLE folder contains an example R script for a typical AMARETTO analysis. Please try!
-* [*Introduction to AMARETTO*](https://nbviewer.jupyter.org/github/gevaertlab/AMARETTO/blob/develop/vignettes/amaretto.pdf) provides a comprehensive example of the AMARETTO workflow with detailed  explanations of each function.</br> 
+* [*Introduction to AMARETTO*](https://nbviewer.jupyter.org/github/gevaertlab/AMARETTO/blob/master/vignettes/amaretto.pdf) provides a comprehensive example of the AMARETTO workflow with detailed  explanations of each function.</br> 
 * Detailed information on `AMARETTO` package functions can be obtained in the help files. For example, to view the help file for the function `AMARETTO` in a R session, use `?AMARETTO`.
 
 ## References
