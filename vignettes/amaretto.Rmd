@@ -235,6 +235,8 @@ integration of multi-omics data. Interface Focus. 5(2) (2013)
 3. Gevaert O. MethylMix: an R package for identifying DNA methylation-driven genes. Bioinformatics. 2015 Jan 20.
 pii: btv020.
 
+\newpage
+
 # Session info {.unnumbered}
 
 ```{r sessionInfo, echo=FALSE}
