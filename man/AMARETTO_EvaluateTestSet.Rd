@@ -18,5 +18,5 @@ AMARETTO_EvaluateTestSet(AMARETTOresults, MA_Data_TestSet,
 Code to evaluate AMARETTO on a new gene expression test set. Uses output from AMARETTO_Run() and CreateRegulatorData().
 }
 \examples{
-AMARETTOtestReport<-AMARETTO_EvaluateTestSet(AMARETTOresults=AMARETTOresults, MA_Data_TestSet=AMARETTOinit$MA_matrix_Var, RegulatorData_TestSet=AMARETTOinit$RegulatorData)
+AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults,AMARETTOinit$MA_matrix_Var,AMARETTOinit$RegulatorData)
 }

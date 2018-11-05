@@ -113,7 +113,8 @@ AMARETTO_Run <- function(AMARETTOinit) {
 #' @return
 #' @export
 #'
-#' @examples AMARETTOtestReport<-AMARETTO_EvaluateTestSet(AMARETTOresults=AMARETTOresults, MA_Data_TestSet=AMARETTOinit$MA_matrix_Var, RegulatorData_TestSet=AMARETTOinit$RegulatorData)
+#' @examples AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults,AMARETTOinit$MA_matrix_Var,AMARETTOinit$RegulatorData)
+
 AMARETTO_EvaluateTestSet <- function(AMARETTOresults,MA_Data_TestSet,RegulatorData_TestSet) {
   nrSamples = ncol(MA_Data_TestSet)
   RegulatorNames=rownames(RegulatorData_TestSet)
