@@ -1,7 +1,6 @@
 #' AMARETTO_HTMLreport
 #'
 #' Retrieve an interactive html report, including gene set enrichment analysis if asked for.
-#'
 #' @param AMARETTOinit AMARETTO initialize output
 #' @param AMARETTOresults AMARETTO results output
 #' @param CNV_matrix Processed CNV matrix ($CNV_matrix element from Preprocess_CancerSite() list output).
@@ -26,7 +25,6 @@
 #'
 #' @examples
 #' AMARETTO_HTMLreport(AMARETTOinit,AMARETTOresults,CNV_matrix=CNV_matrix_LIHC,MET_matrix = MET_matrix_LIHC,VarPercentage=10,hyper_geo_test_bool=FALSE,output_address='./')
-
 AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET_matrix=NULL,SAMPLE_annotation=NULL,ID=NULL,VarPercentage,hyper_geo_test_bool=FALSE,hyper_geo_reference=NULL,output_address='./',MSIGDB=FALSE,GMTURL=FALSE){
 
   NrModules<-AMARETTOresults$NrModules
