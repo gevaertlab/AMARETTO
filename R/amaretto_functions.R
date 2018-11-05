@@ -113,7 +113,14 @@ AMARETTO_Run <- function(AMARETTOinit) {
 #' @return
 #' @export
 #'
-#' @examples AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults,AMARETTOinit$MA_matrix_Var,AMARETTOinit$RegulatorData)
+#' @examples
+#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix=MA_matrix, CNV_matrix= CNV_matrix,MET_matrix= MET_matrix, Driver_list = NULL, NrModules= Nr, VarPercentage= Var,
+#'                                     PvalueThreshold = 0.001, RsquareThreshold = 0.1, pmax = 10,
+#'                                     NrCores = 1, OneRunStop = 0)
+#'
+#' AMARETTOresults<-AMARETTO_Run(AMARETTOinit)
+
+#' AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults,AMARETTOinit$MA_matrix_Var,AMARETTOinit$RegulatorData)
 
 AMARETTO_EvaluateTestSet <- function(AMARETTOresults,MA_Data_TestSet,RegulatorData_TestSet) {
   nrSamples = ncol(MA_Data_TestSet)
