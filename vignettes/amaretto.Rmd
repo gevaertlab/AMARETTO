@@ -211,7 +211,7 @@ Finally, modules can be visualized using the AMARETTO VisualizeModule function:
 Additionaly, to a standard version of the heatmap, one can add sample annotations to interogate biological phenotypes.
 
 <left>
-![fig.13](/Users/jayendra/Projects/Amaretto/GitHub/AMARETTO/files/Module1_LIHC.png)
+![fig.13](../files/Module1_LIHC.png)
 
 
 \newpage
