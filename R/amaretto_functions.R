@@ -21,14 +21,19 @@
 #' @importFrom matrixStats rowVars
 #' @importFrom matrixStats rowMads
 #' @examples
+#' data("ProcessedDataLIHC")
+#' data("Driver_Genes")
+#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
+#'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
+#'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
+#'                                     NrModules = 20, VarPercentage = 50)
 #'
-#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix=MA_matrix, CNV_matrix= CNV_matrix,MET_matrix= MET_matrix, Driver_list = NULL, NrModules= Nr, VarPercentage= Var,
-#'                                     PvalueThreshold = 0.001, RsquareThreshold = 0.1, pmax = 10,
-#'                                     NrCores = 1, OneRunStop = 0)
+#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
+#'                                     CNV_matrix = NULL,
+#'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
+#'                                     Driver_list = Driver_Genes[["MSigDB"]],
+#'                                     NrModules = 20, VarPercentage = 50)
 #'
-#'  AMARETTOinit <- AMARETTO_Initialize(MA_matrix=MA_matrix, CNV_matrix= NULL,MET_matrix= MET_matrix, Driver_list = custom_drivers, NrModules= Nr, VarPercentage= Var,
-#'                                     PvalueThreshold = 0.001, RsquareThreshold = 0.1, pmax = 10,
-#'                                     NrCores = 1, OneRunStop = 0 , method= "union")
 AMARETTO_Initialize <- function(MA_matrix=MA_matrix,CNV_matrix=NULL,MET_matrix=NULL, Driver_list = NULL,NrModules,
                                 VarPercentage,PvalueThreshold=0.001,RsquareThreshold=0.1,pmax=10,NrCores=1,OneRunStop=0, method= "union"){
   if(is.null(MET_matrix) & is.null(CNV_matrix) & is.null(Driver_list)) {
@@ -84,7 +89,14 @@ AMARETTO_Initialize <- function(MA_matrix=MA_matrix,CNV_matrix=NULL,MET_matrix=N
 #' @import parallel
 #' @importFrom doParallel registerDoParallel
 #'
-#' @examples AMARETTOresults<-AMARETTO_Run(AMARETTOinit)
+#' @examples
+#' data("ProcessedDataLIHC")
+#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
+#'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
+#'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
+#'                                     NrModules = 20, VarPercentage = 50)
+#'
+#' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 
 AMARETTO_Run <- function(AMARETTOinit) {
   if (length(AMARETTOinit)==0){
@@ -114,15 +126,19 @@ AMARETTO_Run <- function(AMARETTOinit) {
 #' @export
 #'
 #' @examples
-#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix=MA_matrix, CNV_matrix= CNV_matrix,MET_matrix= MET_matrix, Driver_list = NULL, NrModules= Nr, VarPercentage= Var,
-#'                                     PvalueThreshold = 0.001, RsquareThreshold = 0.1, pmax = 10,
-#'                                     NrCores = 1, OneRunStop = 0)
+#' data("ProcessedDataLIHC")
+#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
+#'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
+#'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
+#'                                     NrModules = 20, VarPercentage = 50)
 #'
-#' AMARETTOresults<-AMARETTO_Run(AMARETTOinit)
+#' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
+#'
+#' AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults = AMARETTOresults,
+#'                                                MA_Data_TestSet = AMARETTOinit$MA_matrix_Var,
+#'                                                RegulatorData_TestSet = AMARETTOinit$RegulatorData)
 
-#' AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults,AMARETTOinit$MA_matrix_Var,AMARETTOinit$RegulatorData)
-
-AMARETTO_EvaluateTestSet <- function(AMARETTOresults,MA_Data_TestSet,RegulatorData_TestSet) {
+AMARETTO_EvaluateTestSet <- function(AMARETTOresults = AMARETTOresults,MA_Data_TestSet =MA_Data_TestSet,RegulatorData_TestSet=RegulatorData_TestSet) {
   nrSamples = ncol(MA_Data_TestSet)
   RegulatorNames=rownames(RegulatorData_TestSet)
   stats = mat.or.vec(AMARETTOresults$NrModules,9)

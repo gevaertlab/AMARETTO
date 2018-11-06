@@ -17,11 +17,12 @@ library(devtools)
 devtools::install_github("gevaertlab/AMARETTO",ref="master")
 library(AMARETTO)
 
+setwd("AMARETTO")
 #-----------------------------------------------------------------------------------------
 # 2. Dowloading TCGA input data for analysis
 #-----------------------------------------------------------------------------------------
-#TargetDirectory <- "./Downloads/" # path to data download directory
-#CancerSite <- "READ"
+#TargetDirectory <- file.path(getwd(),"Downloads/") #Absolute path to data download directory
+#CancerSite <- "LIHC"
 #DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory)
 
 #-----------------------------------------------------------------------------------------
@@ -48,14 +49,18 @@ AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
 
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 
-AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults,AMARETTOinit$MA_matrix_Var,AMARETTOinit$RegulatorData)
+AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults = AMARETTOresults,
+                                               MA_Data_TestSet = AMARETTOinit$MA_matrix_Var,
+                                               RegulatorData_TestSet = AMARETTOinit$RegulatorData)
 
 #-----------------------------------------------------------------------------------------
 # 4. Visualize AMARETTO modules
 #-----------------------------------------------------------------------------------------
 ModuleNr <- 1 #define the module number to visualize
 
-AMARETTO_VisualizeModule(AMARETTOinit,AMARETTOresults,ProcessedDataLIHC$CNV,ProcessedDataLIHC$MET,ModuleNr)
+AMARETTO_VisualizeModule(AMARETTOinit = AMARETTOinit,AMARETTOresults = AMARETTOresults,
+                         CNV_matrix = ProcessedDataLIHC$CNV,MET_matrix = ProcessedDataLIHC$MET,
+                         ModuleNr = ModuleNr)
 
 #-----------------------------------------------------------------------------------------
 # 5. Get HTML report for AMARETTO modules

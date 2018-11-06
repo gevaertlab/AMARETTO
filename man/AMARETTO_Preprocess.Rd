@@ -13,5 +13,10 @@ AMARETTO_Preprocess(CancerSite, DataSetDirectories)
 Wrapper code that analyzes process TCGA GISTIC (CNV) and gene expression (rna-seq or microarray) data  via one call
 }
 \examples{
+data('BatchData')
+TargetDirectory <- file.path(getwd(),"Downloads/") # path to data download directory
+CancerSite <- "LIHC"
+DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory)
 ProcessedData <- AMARETTO_Preprocess(CancerSite,DataSetDirectories)
+
 }

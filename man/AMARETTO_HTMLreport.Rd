@@ -39,5 +39,15 @@ AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, CNV_matrix = NULL,
 Retrieve an interactive html report, including gene set enrichment analysis if asked for.
 }
 \examples{
-AMARETTO_HTMLreport(AMARETTOinit,AMARETTOresults,CNV_matrix=CNV_matrix_LIHC,MET_matrix = MET_matrix_LIHC,VarPercentage=10,hyper_geo_test_bool=FALSE,output_address='./')
+data("ProcessedDataLIHC")
+AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
+                                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
+                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
+                                    NrModules = 20, VarPercentage = 50)
+
+AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
+
+AMARETTO_HTMLreport(AMARETTOinit= AMARETTOinit,AMARETTOresults= AMARETTOresults,CNV_matrix=ProcessedDataLIHC$CNV_matrix,
+                   MET_matrix = ProcessedDataLIHC$MET_matrix,VarPercentage=10,hyper_geo_test_bool=FALSE,output_address='./')
+
 }

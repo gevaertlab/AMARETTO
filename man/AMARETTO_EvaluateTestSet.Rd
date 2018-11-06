@@ -4,8 +4,9 @@
 \alias{AMARETTO_EvaluateTestSet}
 \title{AMARETTO_EvaluateTestSet}
 \usage{
-AMARETTO_EvaluateTestSet(AMARETTOresults, MA_Data_TestSet,
-  RegulatorData_TestSet)
+AMARETTO_EvaluateTestSet(AMARETTOresults = AMARETTOresults,
+  MA_Data_TestSet = MA_Data_TestSet,
+  RegulatorData_TestSet = RegulatorData_TestSet)
 }
 \arguments{
 \item{AMARETTOresults}{AMARETTO output from AMARETTO_Run().}
@@ -18,10 +19,15 @@ AMARETTO_EvaluateTestSet(AMARETTOresults, MA_Data_TestSet,
 Code to evaluate AMARETTO on a new gene expression test set. Uses output from AMARETTO_Run() and CreateRegulatorData().
 }
 \examples{
-AMARETTOinit <- AMARETTO_Initialize(MA_matrix=MA_matrix, CNV_matrix= CNV_matrix,MET_matrix= MET_matrix, Driver_list = NULL, NrModules= Nr, VarPercentage= Var,
-                                    PvalueThreshold = 0.001, RsquareThreshold = 0.1, pmax = 10,
-                                    NrCores = 1, OneRunStop = 0)
+data("ProcessedDataLIHC")
+AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
+                                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
+                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
+                                    NrModules = 20, VarPercentage = 50)
 
-AMARETTOresults<-AMARETTO_Run(AMARETTOinit)
-AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults,AMARETTOinit$MA_matrix_Var,AMARETTOinit$RegulatorData)
+AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
+
+AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults = AMARETTOresults,
+                                               MA_Data_TestSet = AMARETTOinit$MA_matrix_Var,
+                                               RegulatorData_TestSet = AMARETTOinit$RegulatorData)
 }

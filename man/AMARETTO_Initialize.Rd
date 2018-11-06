@@ -38,12 +38,17 @@ Requires processed gene expressiosn (rna-seq or microarray), CNV (usually from a
 Uses the function CreateRegulatorData() and results are fed into the function AMARETTO_Run().
 }
 \examples{
+data("ProcessedDataLIHC")
+data("Driver_Genes")
+AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
+                                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
+                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
+                                    NrModules = 20, VarPercentage = 50)
 
-AMARETTOinit <- AMARETTO_Initialize(MA_matrix=MA_matrix, CNV_matrix= CNV_matrix,MET_matrix= MET_matrix, Driver_list = NULL, NrModules= Nr, VarPercentage= Var,
-                                    PvalueThreshold = 0.001, RsquareThreshold = 0.1, pmax = 10,
-                                    NrCores = 1, OneRunStop = 0)
+AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
+                                    CNV_matrix = NULL,
+                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
+                                    Driver_list = Driver_Genes[["MSigDB"]],
+                                    NrModules = 20, VarPercentage = 50)
 
- AMARETTOinit <- AMARETTO_Initialize(MA_matrix=MA_matrix, CNV_matrix= NULL,MET_matrix= MET_matrix, Driver_list = custom_drivers, NrModules= Nr, VarPercentage= Var,
-                                    PvalueThreshold = 0.001, RsquareThreshold = 0.1, pmax = 10,
-                                    NrCores = 1, OneRunStop = 0 , method= "union")
 }

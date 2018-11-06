@@ -162,7 +162,7 @@ In the case that you run AMARETTO with your own data, three data matrices are ne
 expression, DNA copy number and DNA methylation data, where genes are in the rows and patients are in the columns.
 Once you have your own data in this format or using a previously downloaded TCGA data set, you can start doing
 analysis with AMARETTO. First, we need to initialize the algorithm by clustering the gene expression data and creating
-the regulator data object. This is done by the AMARETTO Initialize function and the a subsampled TCGA LIHC data set:
+the regulator data object. This is done by the AMARETTO Initialize function and the TCGA LIHC data set:
 
     ------------------------------------------------------------------
     > data(ProcessedDataLIHC)

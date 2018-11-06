@@ -12,7 +12,6 @@ GmtFromModules(AMARETTOinit, AMARETTOresults)
 \item{AMARETTOresults}{List output from AMARETTO_Run().}
 }
 \description{
-Output a GMT file for the modules, read gmt, read description from gmt
+GmtFromModules
 }
-\keyword{GmtFromModules(AMARETTOinit,AMARETTOresults)}
 \keyword{internal}
