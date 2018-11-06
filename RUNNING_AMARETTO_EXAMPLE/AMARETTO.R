@@ -43,7 +43,7 @@ data("ProcessedDataLIHC")
 AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-                                    NrModules = 10, VarPercentage = 5)
+                                    NrModules = 20, VarPercentage = 50)
 
 
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
