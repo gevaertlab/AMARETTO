@@ -1,15 +1,15 @@
 Package: AMARETTO
 Type: Package
-Title: Multi-Omics Data Fusion For Cancer Module Discovery
+Title: Multi-Omics Data Fusion for Cancer Module Discovery
 Version: 0.99.1
 Date: 2016-06-06
 Author: Magali Champion, Katie Planey and Olivier Gevaert
 Maintainer: Olivier Gevaert <olivier.gevaert@gmail.com>
 Depends: R (>= 3.5), RCurl,limma, foreach, parallel, doParallel,
-        glmnet, matrixStats, RColorBrewer, impute,Matrix,BiocStyle,
+        glmnet, matrixStats, RColorBrewer, impute, Matrix, BiocStyle,
         stringr, ComplexHeatmap, circlize, R.utils, randomcoloR,
         curatedTCGAData, tidyverse, callr, Rcpp, DT, htmltools,
-	reshape2
+	reshape2, rmarkdown
 Description: Module network discovery using gene expression, CNV, and methylation data.
 License: MIT + file LICENSE
 LazyLoad: yes

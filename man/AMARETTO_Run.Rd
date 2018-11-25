@@ -13,5 +13,11 @@ AMARETTO_Run(AMARETTOinit)
 Function to run AMARETTO, a statistical algorithm to identify cancer drivers by integrating a variety of omics data from cancer and normal tissue.
 }
 \examples{
-AMARETTOresults<-AMARETTO_Run(AMARETTOinit)
+data("ProcessedDataLIHC")
+AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
+                                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
+                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
+                                    NrModules = 20, VarPercentage = 50)
+
+AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 }

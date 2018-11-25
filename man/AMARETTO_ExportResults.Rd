@@ -20,5 +20,13 @@ AMARETTO_ExportResults(AMARETTOinit, AMARETTOresults, data_address,
 Retrieve a download of all the data linked with the run (including heatmaps)
 }
 \examples{
+data("ProcessedDataLIHC")
+AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
+                                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
+                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
+                                    NrModules = 20, VarPercentage = 50)
+
+AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
+
 AMARETTO_ExportResults(AMARETTOinit,AMARETTOresults,"./")
 }

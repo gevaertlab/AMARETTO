@@ -7,7 +7,13 @@
 #' @return
 #' @export
 #'
-#' @examples ProcessedData <- AMARETTO_Preprocess(CancerSite,DataSetDirectories)
+#' @examples
+#' data('BatchData')
+#' TargetDirectory <- file.path(getwd(),"Downloads/") # path to data download directory
+#' CancerSite <- "LIHC"
+#' DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory)
+#' ProcessedData <- AMARETTO_Preprocess(CancerSite,DataSetDirectories)
+#'
 AMARETTO_Preprocess <- function(CancerSite,DataSetDirectories) {
   data(BatchData)
   MinPerBatch=5

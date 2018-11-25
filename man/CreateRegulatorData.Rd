@@ -6,7 +6,7 @@
 \usage{
 CreateRegulatorData(MA_matrix = MA_matrix, CNV_matrix = NULL,
   MET_matrix = NULL, Driver_list = NULL, PvalueThreshold = 0.001,
-  RsquareThreshold = 0.1, method = NULL)
+  RsquareThreshold = 0.1, method = "union")
 }
 \arguments{
 \item{MA_matrix}{Processed gene expression data matrix ($MA_matrix element from Preprocess_CancerSite() list output).}
@@ -28,5 +28,11 @@ Determine potential regulator genes.
 Function to identify which genes' CNV and/or methylation statuses significantly predict expression of that gene. Input is output from Preprocess_CancerSite(). This function is used by AMARETTO_Initialize().
 }
 \examples{
-CreateRegulatorData(MA_matrix, CNV_matrix, MET_matrix, PvalueThreshold = 0.001, RsquareThreshold = 0.1)
+data("ProcessedDataLIHC")
+CreateRegulatorData(MA_matrix = ProcessedDataLIHC$MA_matrix,
+                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
+                     MET_matrix= ProcessedDataLIHC$MET_matrix,
+                     PvalueThreshold = 0.001, RsquareThreshold = 0.1)
+
 }
+\keyword{internal}

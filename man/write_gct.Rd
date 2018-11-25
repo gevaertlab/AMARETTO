@@ -10,9 +10,6 @@ write_gct(data_in, file_address)
 \item{file_address}{}
 }
 \description{
-Write a gct file with the proper header.
-}
-\examples{
-write_gct(AMARETTOresults$RegulatoryPrograms,'RegulatoryPrograms.gct')
+write_gct
 }
 \keyword{internal}

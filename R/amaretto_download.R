@@ -14,7 +14,7 @@
 #' @export
 #'
 #' @examples
-#' TargetDirectory <- "./Downloads/" # path to data download directory
+#' TargetDirectory <- file.path(getwd(),"Downloads/") # path to data download directory
 #' CancerSite <- "LIHC"
 #' DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory)
 AMARETTO_Download <- function(CancerSite,TargetDirectory,downloadData=TRUE) {
@@ -53,8 +53,6 @@ AMARETTO_Download <- function(CancerSite,TargetDirectory,downloadData=TRUE) {
 #' @return
 #' @keywords internal
 #' @examples
-#' data_download <- get_firehoseData(downloadData=TRUE,saveDir = "./",TCGA_acronym_uppercase = "LUAD",dataType="stddata",dataFileTag = "mRNAseq_Preprocess.Level_3", FFPE=FALSE,fileType= "tar.gz",  gdacURL= "http://gdac.broadinstitute.org/runs/",untarUngzip=TRUE,printDisease_abbr=FALSE)
-
 get_firehoseData <- function(downloadData=TRUE,saveDir = "./",TCGA_acronym_uppercase = "LUAD",dataType="stddata",dataFileTag = "mRNAseq_Preprocess.Level_3",
                              FFPE=FALSE,fileType= "tar.gz",  gdacURL= "http://gdac.broadinstitute.org/runs/",untarUngzip=TRUE,printDisease_abbr=FALSE){
 
@@ -174,7 +172,7 @@ get_firehoseData <- function(downloadData=TRUE,saveDir = "./",TCGA_acronym_upper
 
 
 #' AMARETTO_ExportResults
-#' 
+#'
 #' Retrieve a download of all the data linked with the run (including heatmaps)
 #' @param AMARETTOinit AMARETTO initialize output
 #' @param AMARETTOresults AMARETTO results output
@@ -186,6 +184,14 @@ get_firehoseData <- function(downloadData=TRUE,saveDir = "./",TCGA_acronym_upper
 #' @export
 #'
 #' @examples
+#' data("ProcessedDataLIHC")
+#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
+#'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
+#'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
+#'                                     NrModules = 20, VarPercentage = 50)
+#'
+#' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
+#'
 #' AMARETTO_ExportResults(AMARETTOinit,AMARETTOresults,"./")
 
 AMARETTO_ExportResults <-function(AMARETTOinit,AMARETTOresults,data_address,Heatmaps=TRUE,CNV_matrix=NULL,MET_matrix=NULL){
@@ -197,10 +203,10 @@ AMARETTO_ExportResults <-function(AMARETTOinit,AMARETTOresults,data_address,Heat
   #add a date stamp to the output directory
   output_dir<-paste0("AMARETTOresults_",gsub("-|:","",gsub(" ","_",Sys.time())))
   dir.create(file.path(data_address,output_dir))
-  
+
   NrCores<-AMARETTOinit$NrCores
   NrModules<-AMARETTOresults$NrModules
-  
+
   #parallelize the heatmap production
   cluster <- makeCluster(c(rep("localhost", NrCores)), type = "SOCK")
   registerDoParallel(cluster,cores=NrCores)
@@ -217,7 +223,7 @@ AMARETTO_ExportResults <-function(AMARETTOinit,AMARETTOresults,data_address,Heat
   #save rdata files for AMARETTO_Run and AMARETTO_Initialize output
   save(AMARETTOresults, file=file.path(data_address,output_dir,"/amarettoResults.RData"))
   save(AMARETTOinit, file=file.path(data_address,output_dir,"/amarettoInit.RData"))
-  
+
   #save some tables that might be useful for further analysis
   write_gct(AMARETTOresults$ModuleData,file.path(data_address,output_dir,'/ModuleData_amaretto.gct'))
   write_gct(AMARETTOresults$ModuleMembership,file.path(data_address,output_dir,'/ModuleMembership_amaretto.gct'))
@@ -233,15 +239,13 @@ AMARETTO_ExportResults <-function(AMARETTOinit,AMARETTOresults,data_address,Heat
 
 
 #' write_gct
-#' 
-#' Write a gct file with the proper header.
+#'
 #' @param data_in
 #' @param file_address
 #'
 #' @return
 #' @keywords internal
 #' @examples
-#' write_gct(AMARETTOresults$RegulatoryPrograms,'RegulatoryPrograms.gct')
 write_gct<-function(data_in,file_address){
   header_gct<-paste0('#1.2\n',nrow(data_in),'\t',ncol(data_in))
   data_in<-rownames_to_column(as.data.frame(data_in),"Name") %>% dplyr::mutate(Description=Name) %>% dplyr::select(Name,Description,everything())

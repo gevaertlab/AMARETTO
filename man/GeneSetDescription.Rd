@@ -10,9 +10,6 @@ GeneSetDescription(filename)
 \item{filename}{The name of the gmt file.}
 }
 \description{
-reads the gene set descriptions from the 2nd column of the gmt file
-}
-\examples{
-GeneSetDescription("foo.gmt")
+GeneSetDescription
 }
 \keyword{internal}

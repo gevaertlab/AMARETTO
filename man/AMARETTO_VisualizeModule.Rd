@@ -29,5 +29,18 @@ AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults,
 Function to visualize the gene modules
 }
 \examples{
-AMARETTO_VisualizeModule(AMARETTOinit,AMARETTOresults,CNV_matrix=CNV_matrix_LIHC,MET_matrix = MET_matrix_LIHC,SAMPLE_annotation=annotation_LIHC_hm,ID="submitter_id",ModuleNr=1) 
+data("ProcessedDataLIHC")
+AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
+                                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
+                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
+                                    NrModules = 20, VarPercentage = 50)
+
+AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
+
+ModuleNr <- 1 #define the module number to visualize
+
+AMARETTO_VisualizeModule(AMARETTOinit = AMARETTOinit,AMARETTOresults = AMARETTOresults,
+                         CNV_matrix = ProcessedDataLIHC$CNV,
+                         MET_matrix = ProcessedDataLIHC$MET,
+                         ModuleNr = ModuleNr)
 }

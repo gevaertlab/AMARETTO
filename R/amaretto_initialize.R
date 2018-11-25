@@ -9,12 +9,17 @@
 #' @param PvalueThreshold Threshold used to find relevant driver genes with CNV alterations: maximal p-value.
 #' @param RsquareThreshold Threshold used to find relevant driver genes with CNV alterations: minimal R-square value between CNV and gene expression data.
 #' @param method Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.
-#'
-#' @return
 #' @export
+#' @return
+#' @keywords internal
+#' @examples
+#' data("ProcessedDataLIHC")
+#' CreateRegulatorData(MA_matrix = ProcessedDataLIHC$MA_matrix,
+#'                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
+#'                      MET_matrix= ProcessedDataLIHC$MET_matrix,
+#'                      PvalueThreshold = 0.001, RsquareThreshold = 0.1)
 #'
-#' @examples CreateRegulatorData(MA_matrix, CNV_matrix, MET_matrix, PvalueThreshold = 0.001, RsquareThreshold = 0.1)
-CreateRegulatorData <- function(MA_matrix=MA_matrix,CNV_matrix=NULL,MET_matrix=NULL, Driver_list = NULL,PvalueThreshold=0.001,RsquareThreshold=0.1,method=NULL) {
+CreateRegulatorData <- function(MA_matrix=MA_matrix,CNV_matrix=NULL,MET_matrix=NULL, Driver_list = NULL,PvalueThreshold=0.001,RsquareThreshold=0.1,method="union") {
 
   if(is.null(Driver_list)) DriversList <- NULL
   if(is.null(CNV_matrix))  CNV_matrix <- matrix(0, nrow = 0, ncol = 0)

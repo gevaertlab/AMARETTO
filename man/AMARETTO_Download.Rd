@@ -17,7 +17,7 @@ AMARETTO_Download(CancerSite, TargetDirectory, downloadData = TRUE)
 Downloading TCGA dataset for AMARETTO analysis
 }
 \examples{
-TargetDirectory <- "./Downloads/" # path to data download directory
+TargetDirectory <- file.path(getwd(),"Downloads/") # path to data download directory
 CancerSite <- "LIHC"
 DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory)
 }
