@@ -15,70 +15,155 @@
 #' ProcessedData <- AMARETTO_Preprocess(CancerSite,DataSetDirectories)
 #'
 AMARETTO_Preprocess <- function(CancerSite,DataSetDirectories) {
+  #below dataset name is: BatchData once loaded.
   data(BatchData)
-  MinPerBatch=5
-  MAEO <- readRDS(paste0(DataSetDirectories[1], "/", CancerSite, "_RNASeq_MAEO.rds"))
-  query1 <- grep("RNASeq", names(experiments(MAEO)))
-  MAEO_ge <- as.matrix(assay(MAEO[[query1]]))
+  MinPerBatch=5    
+  
+  ##### MAE additions -Lucas #####
+  # load in MAEO
+  MAEO_MA <- readRDS(paste0(DataSetDirectories[1], CancerSite, "_RNASeq_MAEO.rds"))
+  query1 <- grep("RNASeq", names(experiments(MAEO_MA)))
+  MAEO_ge <- as.matrix(assay(MAEO_MA[[query1]]))
   MAEO_ge <- apply(MAEO_ge, 2, log2)
   MAEO_ge[is.infinite(MAEO_ge) & MAEO_ge<0] <- NA
-  cat("Loading mRNA data.\n")
-  if (!is.null(MAEO)) {
+  ################################
+  
+  # Processing MA data, special case for OV and GBM where no RNA seq data is available             
+  cat("Loading mRNA data.\n")    
+  if (!is.null(MAEO_MA)) {   
     MA_TCGA=Preprocess_MAdata(CancerSite,MAEO_ge)
   } else {
     stop("No RNASeq MAEO object found.\n")
-  }
+  }                   
+  
+  # Processing CNV data
   cat("Loading CNV data.\n")
   cat("\tProcessing GISTIC output.\n")
-  CGH_Data=TCGA_Load_GISTICdata(DataSetDirectories$CNVdirectory)
+  CGH_Data=TCGA_Load_GISTICdata(DataSetDirectories$CNVdirectory) 
   CNVgenes=c(CGH_Data$AMPgenes,CGH_Data$DELgenes)
   CNVgenes=gsub('\\[','',CNVgenes)
   CNVgenes=gsub('\\]','',CNVgenes)
-  CGH_Data$CGH_Data_Segmented=CGH_Data$CGH_Data_Segmented[unique(CNVgenes),]
+  
+  # selecting the segmented GISTIC data
+  CGH_Data$CGH_Data_Segmented=CGH_Data$CGH_Data_Segmented[unique(CNVgenes),]    
   SampleNames=colnames(CGH_Data$CGH_Data_Segmented)
   if (CancerSite =='LAML') {
     colnames(CGH_Data$CGH_Data_Segmented)=paste(SampleNames,'-03',sep='')
   } else {
     colnames(CGH_Data$CGH_Data_Segmented)=paste(SampleNames,'-01',sep='')
-  }
+  }        
   cat("\tBatch correction.\n")
   CNV_TCGA=TCGA_BatchCorrection_MolecularData(CGH_Data$CGH_Data_Segmented,BatchData,MinPerBatch)
   CNV_TCGA=CGH_Data$CGH_Data_Segmented
   Genes=rownames(CNV_TCGA)
   SplitGenes=strsplit2(Genes,'\\|')
-  rownames(CNV_TCGA)=SplitGenes[,1]
-  CNV_TCGA=TCGA_GENERIC_MergeData(unique(rownames(CNV_TCGA)),CNV_TCGA)
-  AllCancers=c("COADREAD","BLCA","BRCA","COAD","GBM","HNSC","KIRC","LAML","LUAD","LUSC","OV","READ","UCEC")
+  rownames(CNV_TCGA)=SplitGenes[,1]      
+  CNV_TCGA=TCGA_GENERIC_MergeData(unique(rownames(CNV_TCGA)),CNV_TCGA)        
+  
+  # Processing Methylation data  
+  AllCancers=c("COADREAD","BLCA","BRCA","COAD","GBM","HNSC","KIRC","LAML","LUAD","LUSC","OV","READ","UCEC") 
   if (length(intersect(CancerSite,AllCancers))>0) {
     cat("Loading methylation data.\n")
     cat("\tGetting MethylMix methylation states.\n")
+    #below dataset name is: MET_TCGA once loaded.
     data('MethylStates')
-    eval(parse(text=paste("MET_TCGA=MethylStates$",CancerSite,sep="")))
+    eval(parse(text=paste("MET_TCGA=MethylStates$",CancerSite,sep="")))                     
     SampleNames=colnames(MET_TCGA)
-    SampleNames=gsub('\\.','-',SampleNames)
+    SampleNames=gsub('\\.','-',SampleNames)        
     if (CancerSite =='LAML') {
       colnames(MET_TCGA)=paste(SampleNames,'-03',sep='')
     } else {
       colnames(MET_TCGA)=paste(SampleNames,'-01',sep='')
-    }
+    }         
   } else {
-    cat("MethylMix data for",CancerSite,"not available\n")
+    cat("MethylMix data for",CancerSite,"not available\n")    
     MET_TCGA=matrix(0,1,1)
   }
+  
+  # Overlapping all data sets (for MET and CNV, making sure all genes and samples exist in the MA data)
   cat('Summarizing:\n')
-  cat('\tFound',length(rownames(MA_TCGA)),'genes and',length(colnames(MA_TCGA)),'samples for MA data.\n')
-  cat('\tFound',length(rownames(CNV_TCGA)),'genes and',length(colnames(CNV_TCGA)),'samples for GISTIC data before overlapping.\n')
-  cat('\tFound',length(rownames(MET_TCGA)),'genes and',length(colnames(MET_TCGA)),'samples for MethylMix data before overlapping.\n')
+  cat('\tFound',length(rownames(MA_TCGA)),'genes and',length(colnames(MA_TCGA)),'samples for MA data.\n')    
+  cat('\tFound',length(rownames(CNV_TCGA)),'genes and',length(colnames(CNV_TCGA)),'samples for GISTIC data before overlapping.\n')    
+  cat('\tFound',length(rownames(MET_TCGA)),'genes and',length(colnames(MET_TCGA)),'samples for MethylMix data before overlapping.\n')    
+  
   cat('Overlapping genes and samples for GISTIC and MethylMix.\n')
   OverlapGenes=Reduce(intersect,list(rownames(MA_TCGA),rownames(CNV_TCGA)))
   OverlapSamples=Reduce(intersect,list(colnames(MA_TCGA),colnames(CNV_TCGA)))
   CNV_TCGA=CNV_TCGA[OverlapGenes,OverlapSamples]
-  cat('\tFound',length(OverlapGenes),'overlapping genes and',length(OverlapSamples),'samples for GISTIC data.\n')
+  cat('\tFound',length(OverlapGenes),'overlapping genes and',length(OverlapSamples),'samples for GISTIC data.\n')    
+  
   OverlapGenes=Reduce(intersect,list(rownames(MA_TCGA),rownames(MET_TCGA)))
   OverlapSamples=Reduce(intersect,list(colnames(MA_TCGA),colnames(MET_TCGA)))
   MET_TCGA=MET_TCGA[OverlapGenes,OverlapSamples]
   cat('\tFound',length(OverlapGenes),'overlapping genes and',length(OverlapSamples),'samples for MethylMix data.\n')
-  return(list(MA_TCGA=MA_TCGA,CNV_TCGA=CNV_TCGA,MET_TCGA=MET_TCGA))
+  
+  ##### MAE additions -Lucas #####
+  # build sample map
+  # get sampleMap for MA from MAEO
+  # ignore the dumb implementation; useful skeleton for more complex naming convention
+  MA_names=substr(colnames(MA_TCGA), 1, 12)
+  MA_fullnames=substr(colnames(MA_TCGA), 1, 12)
+  MA_samplemap=simplify2array(lapply(MA_names, grep, MA_fullnames, value=TRUE)) #match name to full
+  MA_samplemap=cbind.data.frame(MA_names, MA_samplemap, stringsAsFactors=FALSE)
+
+  # CNV first
+  GenesFile=paste(DataSetDirectories$CNVdirectory,'all_data_by_genes.txt',sep="")
+  CGH_Data=read.csv(GenesFile,sep="\t",row.names=1,header=TRUE,na.strings="NA")
+  CGH_Data=CGH_Data[,-1]
+  CGH_Data=CGH_Data[,-1]
+  SampleNames=colnames(CGH_Data)
+  CNV_names=colnames(TCGA_GENERIC_CleanUpSampleNames(CNV_TCGA,12))
+  CNV_fullnames=substr(gsub('\\.','-',SampleNames), 1, 12)
+  CNV_samplemap=simplify2array(lapply(CNV_names, grep, CNV_fullnames, value=TRUE)) #match name to full
+  CNV_samplemap=cbind.data.frame(CNV_names, CNV_samplemap, stringsAsFactors=FALSE)
+
+  # then MET
+  # basically impossible to fully reconstruct these sample names
+  data('MethylStates')
+  eval(parse(text=paste("MET_TCGA=MethylStates$",CancerSite,sep="")))                     
+  MET_names=substr(gsub('\\.','-',colnames(MET_TCGA)), 1, 12)
+  MET_samplemap=lapply(MET_names, grep, c(MA_fullnames, CNV_fullnames), value=TRUE) #match name to full if within MA or CNV
+  MET_samplemap=lapply(MET_samplemap, function(x){len=length(x); if (len>1) {x=x[1]} else {x=x}})
+  MET_samplemap=unlist(lapply(MET_samplemap,function(x) if(identical(x,character(0))) "NULL" else x))
+  MET_samplemap=cbind.data.frame(MET_names, MET_samplemap, stringsAsFactors=FALSE)
+
+  #match primary and colname for simplicity
+  MA_TCGA = TCGA_GENERIC_CleanUpSampleNames(MA_TCGA,12)
+  CNV_TCGA = TCGA_GENERIC_CleanUpSampleNames(CNV_TCGA,12)
+  MET_TCGA = TCGA_GENERIC_CleanUpSampleNames(MET_TCGA,12)
+  colnames(MET_TCGA) <- MET_names
+  MA_SE <- SummarizedExperiment::SummarizedExperiment(assays=list(MA_TCGA=MA_TCGA), colData=colnames(MA_TCGA))
+  CNV_SE <- SummarizedExperiment::SummarizedExperiment(assays=list(CNV_TCGA=CNV_TCGA), colData=colnames(CNV_TCGA))
+  MET_SE <- SummarizedExperiment::SummarizedExperiment(assays=list(MET_TCGA=MET_TCGA), colData=colnames(MET_TCGA))
+  MA_name = paste0(CancerSite,"_RNASeq2GeneNorm")
+  CNV_name = paste0(CancerSite,"_GISTIC_CNV")
+  MET_name = paste0(CancerSite,"_MethylationStates")
+  objlist <- list()
+  objlist[[MA_name]] <- MA_SE
+  objlist[[CNV_name]] <- CNV_SE
+  objlist[[MET_name]] <- MET_SE
+
+  # build colData for each, then merge
+  CNV_cd <- data.frame(colnames(CNV_TCGA))
+  rownames(CNV_cd) <- colnames(CNV_TCGA)
+  colnames(CNV_cd) <- c("patientID")
+  MET_cd <- data.frame(colnames(MET_TCGA))
+  rownames(MET_cd) <- colnames(MET_TCGA)
+  colnames(MET_cd) <- c("patientID")
+  MAEO_temp <- TCGAutils::mergeColData(MAEO_MA, CNV_cd)
+  colData <- colData(TCGAutils::mergeColData(MAEO_temp, MET_cd))
+
+  #combine samplemaps
+  listmap <- list(MA_samplemap, CNV_samplemap, MET_samplemap)
+  names(listmap) <- c(MA_name, CNV_name, MET_name)
+  comb_smap <- listToMap(listmap)
+  
+  #build final MAE object
+  MAEO <- MultiAssayExperiment(objlist, colData,  comb_smap)
+  ################################
+
+  #return(list(MA_TCGA=MA_TCGA,CNV_TCGA=CNV_TCGA,MET_TCGA=MET_TCGA))
+  return(MAEO)
 }
 
 #' TCGA_Load_GISTICdata

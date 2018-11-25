@@ -12,23 +12,23 @@
 #-----------------------------------------------------------------------------------------
 # 1. Installing AMARETTO and loading the package:
 #-----------------------------------------------------------------------------------------
-install.packages("devtools")
+#install.packages("devtools")
 library(devtools)
-devtools::install_github("gevaertlab/AMARETTO",ref="master")
+#devtools::install_github("gevaertlab/AMARETTO",ref="master")
 library(AMARETTO)
 
-setwd("AMARETTO")
+#setwd("AMARETTO")
 #-----------------------------------------------------------------------------------------
 # 2. Dowloading TCGA input data for analysis
 #-----------------------------------------------------------------------------------------
-#TargetDirectory <- file.path(getwd(),"Downloads/") #Absolute path to data download directory
-#CancerSite <- "LIHC"
-#DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory)
+TargetDirectory <- file.path(getwd(),"Downloads/") #Absolute path to data download directory
+CancerSite <- "LIHC"
+DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory)
 
 #-----------------------------------------------------------------------------------------
 # 3. Preprocessing the downloaded TCGA data
 #-----------------------------------------------------------------------------------------
-#ProcessedData <- AMARETTO_Preprocess(CancerSite,DataSetDirectories)
+ProcessedData <- AMARETTO_Preprocess(CancerSite,DataSetDirectories)
 
 #data(MethylStates) #MethylMix preprocessed data for CancerSite
 #met <- MethylStates[CancerSite] #MethylMix preprocessed data for CancerSite
@@ -36,14 +36,14 @@ setwd("AMARETTO")
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 # Loading preprocessed TCGA-LAML example dataset:
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
-data("ProcessedDataLIHC")
+#data("ProcessedDataLIHC")
 
 #-----------------------------------------------------------------------------------------
 # 4. Running AMARETTO
 #-----------------------------------------------------------------------------------------
-AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
-                                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
+AMARETTOinit <- AMARETTO_Initialize(MA_matrix = assay(ProcessedData[[1]]),
+                                    CNV_matrix = assay(ProcessedData[[2]]),
+                                    MET_matrix = assay(ProcessedData[[3]]),
                                     NrModules = 20, VarPercentage = 50)
 
 
@@ -59,11 +59,11 @@ AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults = AMARETTOresults
 ModuleNr <- 1 #define the module number to visualize
 
 AMARETTO_VisualizeModule(AMARETTOinit = AMARETTOinit,AMARETTOresults = AMARETTOresults,
-                         CNV_matrix = ProcessedDataLIHC$CNV,MET_matrix = ProcessedDataLIHC$MET,
+                         CNV_matrix = assay(ProcessedData[[2]]),MET_matrix = assay(ProcessedData[[3]]),
                          ModuleNr = ModuleNr)
 
 #-----------------------------------------------------------------------------------------
 # 5. Get HTML report for AMARETTO modules
 #-----------------------------------------------------------------------------------------
 
-AMARETTO_HTMLreport(AMARETTOinit,AMARETTOresults,CNV_matrix=ProcessedDataLIHC$CNV,MET_matrix = ProcessedDataLIHC$MET,VarPercentage=10,hyper_geo_test_bool=FALSE,output_address='./')
+AMARETTO_HTMLreport(AMARETTOinit,AMARETTOresults,CNV_matrix=assay(ProcessedData[[2]]),MET_matrix = assay(ProcessedData[[3]]),VarPercentage=10,hyper_geo_test_bool=FALSE,output_address='./')
