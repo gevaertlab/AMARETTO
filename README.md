@@ -19,7 +19,6 @@ Integrating an increasing number of available multi-omics cancer data remains on
 - [Installation](#installation)
 - [Running AMARETTO](#running-amaretto)
 - [References](#references)
-- [License](#license)
 
 ## Introduction
 
