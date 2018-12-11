@@ -28,14 +28,9 @@ AMARETTO_LarsenBased <- function(Data,Clusters,RegulatorData,Parameters,NrCores)
   NrReassignGenes = length(Data_rownames)
   while (NrReassignGenes > 0.01*length(Data_rownames)){
     ptm <- proc.time()
-    switch(Parameters$Mode,
-           larsen={
-             regulatoryPrograms <- AMARETTO_LearnRegulatoryProgramsLarsen(Data,Clusters,RegulatorData,RegulatorSign,Lambda,AutoRegulation,alpha=Parameters$alpha,pmax=Parameters$pmax)
-           },
-           vbsr={
-             regulatoryPrograms <- AMARETTO_LearnRegulatoryPrograms(Data,Clusters,RegulatorData,RegulatorSign,Lambda,AutoRegulation,alpha=Parameters$alpha,pmax=Parameters$pmax, mode = Parameters$Mode)
-           }
-    )
+
+    regulatoryPrograms <- AMARETTO_LearnRegulatoryPrograms(Data,Clusters,RegulatorData,RegulatorSign,Lambda,AutoRegulation,Parameters)
+    
     ptm <- proc.time() - ptm
     printf("Elapsed time is %f seconds\n",ptm[3])
     NrClusters = length(unique(Clusters))
@@ -65,130 +60,6 @@ AMARETTO_LarsenBased <- function(Data,Clusters,RegulatorData,Parameters,NrCores)
   return(result)
 }
 
-#' AMARETTO_LearnRegulatoryProgramsLarsen
-#'
-#' @param Data
-#' @param Clusters
-#' @param RegulatorData
-#' @param RegulatorSign
-#' @param Lambda
-#' @param AutoRegulation
-#' @param alpha
-#' @param pmax
-#'
-#' @return
-#' @keywords internal
-#' @examples
-AMARETTO_LearnRegulatoryProgramsLarsen<-function(Data,Clusters,RegulatorData,RegulatorSign,Lambda,AutoRegulation,alpha,pmax){
-  RegulatorData_rownames=rownames(RegulatorData)
-  Data_rownames=rownames(Data)
-  trace = 0
-  NrFolds = 10
-  NrClusters = length(unique(Clusters))
-  NrGenes = nrow(Data)
-  NrSamples = ncol(Data)
-  NrInterpolateSteps = 100
-  if (AutoRegulation >= 1){
-  } else if (AutoRegulation == 0) {
-    BetaSpecial = list(NrClusters,1)
-    RegulatorPositions = list(NrClusters,1)
-  }
-  y_all = mat.or.vec(NrClusters,NrSamples)
-  ClusterIDs = unique(Clusters)
-  ClusterIDs = sort(ClusterIDs, decreasing = FALSE)
-  cnt <- 1:NrClusters
-  ptm1 <- proc.time()
-  BetaY_all <- foreach(i=1:NrClusters,.combine=cbind,.init=list(list(),list(),list()),.packages = "glmnet") %dopar% {
-    if (length(which(Clusters == ClusterIDs[i]))>1) {
-      y = apply((Data[which(Clusters == ClusterIDs[i]),]),2,mean)
-    } else {
-      y = Data[which(Clusters == ClusterIDs[i]),]
-    }
-    CurrentClusterPositions = which(Clusters %in% ClusterIDs[i])
-    nrGenesInClusters = length(CurrentClusterPositions)
-    if (AutoRegulation >= 1){
-      X = RegulatorData
-    } else if (AutoRegulation == 0){
-      X = RegulatorData[setdiff(RegulatorData_rownames,Data_rownames[CurrentClusterPositions]),]
-    }
-    fit = cv.glmnet(t(X), y,alpha = alpha, pmax = pmax)
-    nonZeroLambdas <- fit$lambda[which(fit$nzero>0)]
-    nonZeroCVMs <- fit$cvm[which(fit$nzero>0)]
-    if(length(which(nonZeroCVMs==min(nonZeroCVMs,na.rm=TRUE)))==0){
-      warnMessage <- paste0("\nOn cluster ",i," there were no cv.glm results that gave non-zero coefficients.")
-      warning(warnMessage);
-    }
-    bestNonZeroLambda <- nonZeroLambdas[which(nonZeroCVMs==min(nonZeroCVMs,na.rm=TRUE))]
-    b_o = coef(fit,s = bestNonZeroLambda)
-    b_opt <- c(b_o[2:length(b_o)])
-    if (AutoRegulation == 2){
-      CurrentUsedRegulators = RegulatorData_rownames[which(b_opt!=0, arr.ind = T)]
-      CurrentClusterMembers = Data_rownames[CurrentClusterPositions]
-      nrIterations = 0
-      while (length(CurrentClusterMembers[CurrentClusterMembers %in% CurrentUsedRegulators]) != 0){
-        CurrentClusterMembers = setdiff(CurrentClusterMembers,CurrentUsedRegulators)
-        nrCurrentClusterMembers = length(CurrentClusterMembers)
-        if (nrCurrentClusterMembers > 0){
-          names = Data_rownames %in% CurrentClusterMembers
-          if (length(which(names==TRUE))>1){
-            y = apply((Data[names,]),2,mean)
-          } else {
-            y = Data[names,]
-          }
-          fit = cv.glmnet(t(X), y,alpha = alpha, pmax = pmax)
-          nonZeroLambdas <- fit$lambda[which(fit$nzero>0)]
-          nonZeroCVMs <- fit$cvm[which(fit$nzero>0)]
-          if(length(which(nonZeroCVMs==min(nonZeroCVMs,na.rm=TRUE)))==0){
-            warnMessage <- paste0("\nOn cluster ",i," there were no cv.glm results that gave non-zero coefficients during the Autoregulation step.")
-            warning(warnMessage);
-          }
-          bestNonZeroLambda <- nonZeroLambdas[which(nonZeroCVMs==min(nonZeroCVMs,na.rm=TRUE))]
-          new_b_o = coef(fit,s = bestNonZeroLambda)
-          new_b_opt <- c(new_b_o[2:length(b_o)])
-          CurrentUsedRegulators = RegulatorData_rownames[which(new_b_opt != 0)]
-          nrIterations = nrIterations + 1
-          b_opt = new_b_opt
-        } else{
-          b_opt = rep(0,length(RegulatorData_rownames))
-        }
-      }
-      Report <- c(length(CurrentClusterPositions),length(CurrentClusterMembers),nrIterations)
-    }
-    if (sum(RegulatorSign[which(RegulatorSign != 0)]) > 0){
-      RegulatorCheck = RegulatorSign * t(b_opt)
-      WrongRegulators = which(RegulatorCheck < 0)
-      if (length(WrongRegulators)  == 0){
-        b_opt[WrongRegulators] = 0
-      }
-    }
-    if (AutoRegulation >= 1){
-    } else {
-      BetaSpecial[i] = b_opt
-      RegulatorPositions[i] = (RegulatorData_rownames %in% setdiff(RegulatorData_rownames,Data_rownames[CurrentClusterPositions]))
-    }
-    list(b_opt,y,Report)
-  }
-  if (AutoRegulation == 0){
-    for (i in 1:NrClusters){
-      Beta[i,RegulatorPositions[i]] = BetaSpecial[i]
-    }
-  }
-  tmpPos=NrClusters+1
-  Beta <- do.call(cbind, BetaY_all[1,2:tmpPos])
-  Beta = t(Beta);
-  colnames(Beta)=RegulatorData_rownames
-  rownames(Beta)=gsub('result.','Module_',rownames(Beta))
-  y_all<-do.call(cbind, BetaY_all[2,2:tmpPos])
-  y_all = t(y_all);
-  rownames(y_all)=gsub('result.','Module_',rownames(y_all))
-  AutoRegulationReport<-do.call(cbind, BetaY_all[3,2:tmpPos])
-  AutoRegulationReport = t(AutoRegulationReport)
-  rownames(AutoRegulationReport)=gsub('result.','Module_',rownames(AutoRegulationReport))
-  error = y_all - (Beta %*% RegulatorData)
-  result <- list(Beta = Beta,error = error,AutoRegulationReport = AutoRegulationReport)
-  return(result)
-}
-
 
 #' AMARETTO_LearnRegulatoryPrograms
 #'
@@ -212,9 +83,7 @@ AMARETTO_LearnRegulatoryPrograms <-
            RegulatorSign,
            Lambda,
            AutoRegulation,
-           alpha,
-           pmax,
-           mode) {
+           Parameters) {
     RegulatorData_rownames = rownames(RegulatorData)
     Data_rownames = rownames(Data)
     trace = 0
@@ -254,10 +123,10 @@ AMARETTO_LearnRegulatoryPrograms <-
         } else if (AutoRegulation == 0) {
           X = RegulatorData[setdiff(RegulatorData_rownames, Data_rownames[CurrentClusterPositions]),]
         }
-        if(mode=='larsen'){
-          b_opt<-lasso_regProg(X,y, alpha = alpha, pmax = pmax)
+        if(Parameters$Mode=='larsen'){
+          b_opt<-lasso_regProg(X,y, alpha = Parameters$alpha, pmax = Parameters$pmax)
         }
-        else if(mode=='vbsr'){
+        else if(Parameters$M=='vbsr'){
           b_opt<-vbsr_regProg(X,y)
         }
         else{
@@ -278,8 +147,11 @@ AMARETTO_LearnRegulatoryPrograms <-
               } else {
                 y = Data[names,]
               }
-              if(mode=='larsen'){
-                new_b_opt<-lasso_regProg(X,y, alpha = alpha, pmax = pmax)
+              if(Parameters$Mode=='larsen'){
+                b_opt<-lasso_regProg(X,y, alpha = Parameters$alpha, pmax = Parameters$pmax)
+              }
+              else if(Parameters$M=='vbsr'){
+                b_opt<-vbsr_regProg(X,y)
               }
               CurrentUsedRegulators = RegulatorData_rownames[which(new_b_opt != 0)]
               nrIterations = nrIterations + 1
@@ -333,6 +205,8 @@ AMARETTO_LearnRegulatoryPrograms <-
            AutoRegulationReport = AutoRegulationReport)
     return(result)
   }
+
+## Here are different functions to compute y=bX
 
 lasso_regProg <- 
   function(X,
