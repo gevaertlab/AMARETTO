@@ -30,7 +30,7 @@ AMARETTO_LarsenBased <- function(Data,Clusters,RegulatorData,Parameters,NrCores)
     ptm <- proc.time()
 
     regulatoryPrograms <- AMARETTO_LearnRegulatoryPrograms(Data,Clusters,RegulatorData,RegulatorSign,Lambda,AutoRegulation,Parameters)
-    
+
     ptm <- proc.time() - ptm
     printf("Elapsed time is %f seconds\n",ptm[3])
     NrClusters = length(unique(Clusters))
@@ -93,7 +93,7 @@ AMARETTO_LearnRegulatoryPrograms <-
     NrSamples = ncol(Data)
     NrInterpolateSteps = 100
     if (AutoRegulation >= 1) {
-      
+
     } else if (AutoRegulation == 0) {
       BetaSpecial = list(NrClusters, 1)
       RegulatorPositions = list(NrClusters, 1)
@@ -126,13 +126,13 @@ AMARETTO_LearnRegulatoryPrograms <-
         if(Parameters$Mode=='larsen'){
           b_opt<-lasso_regProg(X,y, alpha = Parameters$alpha, pmax = Parameters$pmax)
         }
-        else if(Parameters$M=='vbsr'){
+        else if(Parameters$Mode=='vbsr'){
           b_opt<-vbsr_regProg(X,y)
         }
         else{
           warning("mode not recognized")
         }
-        
+
         if (AutoRegulation == 2) {
           CurrentUsedRegulators = RegulatorData_rownames[which(b_opt != 0, arr.ind = T)]
           CurrentClusterMembers = Data_rownames[CurrentClusterPositions]
@@ -153,9 +153,9 @@ AMARETTO_LearnRegulatoryPrograms <-
               else if(Parameters$M=='vbsr'){
                 b_opt<-vbsr_regProg(X,y)
               }
-              CurrentUsedRegulators = RegulatorData_rownames[which(new_b_opt != 0)]
+              CurrentUsedRegulators = RegulatorData_rownames[which(b_opt != 0)]
               nrIterations = nrIterations + 1
-              b_opt = new_b_opt
+              #b_opt = new_b_opt
             } else {
               b_opt = rep(0, length(RegulatorData_rownames))
             }
@@ -175,7 +175,7 @@ AMARETTO_LearnRegulatoryPrograms <-
           }
         }
         if (AutoRegulation >= 1) {
-          
+
         } else {
           BetaSpecial[i] = b_opt
           RegulatorPositions[i] = (RegulatorData_rownames %in% setdiff(RegulatorData_rownames, Data_rownames[CurrentClusterPositions]))
@@ -206,14 +206,23 @@ AMARETTO_LearnRegulatoryPrograms <-
     return(result)
   }
 
-## Here are different functions to compute y=bX
-
-lasso_regProg <- 
+#' lasso_regProg
+#'
+#' @param X
+#' @param y
+#' @param alpha
+#' @param pmax
+#'
+#' @return
+#' @keywords internal
+#'
+#' @examples
+lasso_regProg <-
   function(X,
-           y, 
-           alpha, 
+           y,
+           alpha,
            pmax){
-    
+
     fit = cv.glmnet(t(X), y, alpha = alpha, pmax = pmax)
     nonZeroLambdas <- fit$lambda[which(fit$nzero > 0)]
     nonZeroCVMs <- fit$cvm[which(fit$nzero > 0)]
@@ -231,13 +240,23 @@ lasso_regProg <-
     return(b_opt)
   }
 
-vbsr_regProg <- 
+
+#' vbsr_regProg
+#'
+#' @param X
+#' @param y
+#'
+#' @return
+#' @keywords internal
+#'
+#' @examples
+vbsr_regProg <-
   function(X,
            y){
-    
+
     res<-vbsr(y,t(X),n_orderings = 15,family='normal')
     #Set the threashold of the p-value using a Bonferroni correction with FER<0.05
-    betas[res$pval > 0.05/(nrow(RegulatorData)*nrow(Data))]<-0
+    res[res$pval > 0.05/(nrow(X)*nrow(y))]<-0
     b_opt<-res$beta
     return(b_opt)
   }

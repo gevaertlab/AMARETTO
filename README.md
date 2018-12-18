@@ -19,7 +19,6 @@ Integrating an increasing number of available multi-omics cancer data remains on
 - [Installation](#installation)
 - [Running AMARETTO](#running-amaretto)
 - [References](#references)
-- [License](#license)
 
 ## Introduction
 
@@ -53,4 +52,4 @@ Install from the GitHub repository using devtools:
 2.	Gevaert, O., Villalobos, V., Sikic, B. I. & Plevritis, S. K. Identification of ovarian cancer driver genes by using module network integration of multi-omics data. Interface Focus 3, 20130013–20130013 (2013).
 3.	Gevaert, O. MethylMix: an R package for identifying DNA methylation-driven genes. Bioinformatics 31, 1839–1841 (2015).
 
->>>>>>> origin/master
+>>>>>>> origin/linker
