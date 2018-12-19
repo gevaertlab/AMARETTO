@@ -127,7 +127,7 @@ AMARETTO_LearnRegulatoryPrograms <-
           b_opt<-lasso_regProg(X,y, alpha = Parameters$alpha, pmax = Parameters$pmax)
         }
         else if(Parameters$Mode=='vbsr'){
-          b_opt<-vbsr_regProg(X,y)
+          b_opt<-vbsr_regProg(X,y, nrow(Data))
         }
         else{
           warning("mode not recognized")
@@ -151,7 +151,7 @@ AMARETTO_LearnRegulatoryPrograms <-
                 b_opt<-lasso_regProg(X,y, alpha = Parameters$alpha, pmax = Parameters$pmax)
               }
               else if(Parameters$M=='vbsr'){
-                b_opt<-vbsr_regProg(X,y)
+                b_opt<-vbsr_regProg(X,y, nrow(Data))
               }
               CurrentUsedRegulators = RegulatorData_rownames[which(b_opt != 0)]
               nrIterations = nrIterations + 1
@@ -252,12 +252,14 @@ lasso_regProg <-
 #' @examples
 vbsr_regProg <-
   function(X,
-           y){
+           y,
+          NrTargetGenes){
 
     res<-vbsr(y,t(X),n_orderings = 15,family='normal')
     #Set the threashold of the p-value using a Bonferroni correction with FER<0.05
-    res[res$pval > 0.05/(nrow(X)*nrow(y))]<-0
-    b_opt<-res$beta
+    betas<-res$betas
+    betas[res$pval > 0.05/(nrow(X)*NrTargetGenes)]<-0
+    b_opt<-betas
     return(b_opt)
   }
 
