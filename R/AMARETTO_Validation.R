@@ -83,7 +83,7 @@ AMARETTO_Validation <- function(MA_matrix, CNV_matrix, MET_matrix, split=0.8, Nr
   
   
   
-  AMARETTO_valRegReport <- AMARETTO_Evaluate_Validation(AMARETTOresults,
+  AMARETTO_valReport <- AMARETTO_Evaluate_Validation(AMARETTOresults,
                                                         MA_matrix_val,
                                                         RegulatorInfo$RegulatorData)
   
