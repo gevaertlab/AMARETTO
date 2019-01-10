@@ -47,8 +47,8 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
     stop("GMT for hyper geometric test is not existing.\n")
    }
   }
-  report_address=file.path(output_address,"report_html/")
-  dir.create(paste0(report_address,"htmls/modules"),recursive = TRUE,showWarnings = FALSE)
+  report_address=file.path(output_address)
+  dir.create(paste0(report_address,"AMARETTOhtmls/modules"),recursive = TRUE,showWarnings = FALSE)
   cat("The output folder structure is created.\n")
   if (hyper_geo_test_bool){
     GmtFromModules(AMARETTOinit,AMARETTOresults)
@@ -94,7 +94,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
       dt_genesets<-"Genesets were not analysed as they were not provided."
       ngenesets<-"NA"
     }
-    modulemd<-paste0(full_path,"/htmls/modules/module",ModuleNr,".rmd")
+    modulemd<-paste0(full_path,"/AMARETTOhtmls/modules/module",ModuleNr,".rmd")
     file.copy(system.file("templates/TemplateReportModule.Rmd",package="AMARETTO"),modulemd)
     rmarkdown::render(modulemd,output_file = paste0("module",ModuleNr,".html"), params = list(
       report_address = report_address,
@@ -133,7 +133,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
   }else{
     dt_genesetsall<-"Genesets were not analysed as they were not provided."
   }
-  rmarkdown::render(system.file("templates/TemplateIndexPage.Rmd",package="AMARETTO"), output_dir=paste0(full_path,"/htmls/"),output_file= "index.html", params = list(
+  rmarkdown::render(system.file("templates/TemplateIndexPage.Rmd",package="AMARETTO"), output_dir=paste0(full_path,"/AMARETTOhtmls/"),output_file= "index.html", params = list(
     nExp = nExp,
     nCNV = nCNV,
     nMET = nMET,
