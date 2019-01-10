@@ -47,8 +47,8 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
     stop("GMT for hyper geometric test is not existing.\n")
    }
   }
-  report_address=file.path(output_address)
-  dir.create(paste0(report_address,"AMARETTOhtmls/modules"),recursive = TRUE,showWarnings = FALSE)
+  report_address <- file.path(output_address)
+  dir.create(paste0(report_address,"/AMARETTOhtmls/modules"),recursive = TRUE,showWarnings = FALSE)
   cat("The output folder structure is created.\n")
   if (hyper_geo_test_bool){
     GmtFromModules(AMARETTOinit,AMARETTOresults)
