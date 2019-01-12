@@ -57,6 +57,10 @@ AMARETTO_Initialize <- function(MA_matrix=MA_matrix,CNV_matrix=NULL,MET_matrix=N
     }
   }
   MA_matrix_Var=geneFiltering('MAD',MA_matrix,VarPercentage)
+  drop_me <- as.numeric(which(apply(t(MA_matrix_Var), 2, var) == 0))
+  if(length(drop_me) >0)    MA_matrix_Var <- MA_matrix_Var[ -drop_me,]
+  if(length(drop_me) ==0)    MA_matrix_Var <- MA_matrix_Var
+  print(paste0("dropping ",length(drop_me), " gene(s) with std.deviation= 0"))
   MA_matrix_Var=t(scale(t(MA_matrix_Var)))
   if (NrModules>=nrow(MA_matrix_Var)){
     stop(paste0("The number of modules is too large compared to the number of genes. Choose a number of modules smaller than ",nrow(MA_matrix_Var),".\n"))

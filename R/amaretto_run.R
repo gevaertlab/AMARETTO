@@ -108,7 +108,7 @@ AMARETTO_LearnRegulatoryProgramsLarsen<-function(Data,Clusters,RegulatorData,Reg
     } else if (AutoRegulation == 0){
       X = RegulatorData[setdiff(RegulatorData_rownames,Data_rownames[CurrentClusterPositions]),]
     }
-    fit = cv.glmnet(t(X), y,alpha = alpha, pmax = pmax)
+    fit = cv.glmnet(t(X), y,alpha = alpha, pmax = pmax,lambda=Lambda_Sequence(t(X), y))
     nonZeroLambdas <- fit$lambda[which(fit$nzero>0)]
     nonZeroCVMs <- fit$cvm[which(fit$nzero>0)]
     if(length(which(nonZeroCVMs==min(nonZeroCVMs,na.rm=TRUE)))==0){
@@ -132,7 +132,7 @@ AMARETTO_LearnRegulatoryProgramsLarsen<-function(Data,Clusters,RegulatorData,Reg
           } else {
             y = Data[names,]
           }
-          fit = cv.glmnet(t(X), y,alpha = alpha, pmax = pmax)
+          fit = cv.glmnet(t(X), y,alpha = alpha, pmax = pmax,lambda=Lambda_Sequence(t(X), y))
           nonZeroLambdas <- fit$lambda[which(fit$nzero>0)]
           nonZeroCVMs <- fit$cvm[which(fit$nzero>0)]
           if(length(which(nonZeroCVMs==min(nonZeroCVMs,na.rm=TRUE)))==0){
@@ -292,3 +292,21 @@ AMARETTO_CreateRegulatorPrograms <- function(AMARETTOinit,AMARETTOresults) {
   }
   return(RegulatorProgramData)
 }
+
+
+#' Lambda_Sequence
+#'
+#' @param sx 
+#' @param sy 
+#' @return
+#' @keywords internal
+#' @examples
+Lambda_Sequence <-function(sx,sy){
+  n<-nrow (sx)
+  lambda_max <- max(abs(colSums(sx*sy)))/n
+  epsilon <- .0001
+  K <- 100
+  lambdaseq <- round(exp(seq(log(lambda_max), log(lambda_max*epsilon),length.out = K)), digits = 10)
+  return(lambdaseq)
+}
+
