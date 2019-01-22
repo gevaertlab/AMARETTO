@@ -53,14 +53,20 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NUL
   ha_drivers <- HeatmapAnnotation(df = column_to_rownames(Alterations,"HGNC_symbol") %>% dplyr::select(CNVMet_Alterations,DriversList_Alterations), col = list(CNVMet_Alterations= c("Copy number alterations"="#eca400","Methylation aberrations"="#006992","Methylation and copy number alterations"="#d95d39","Not Altered"="lightgray"),DriversList_Alterations=c("Driver not predefined"="lightgray","Driver predefined"="#588B5B")),which = "column", height = unit(0.3, "cm"),name="",
                                   annotation_legend_param = list(title_gp = gpar(fontsize = 8),labels_gp = gpar(fontsize = 6)))
 
-  if (is.null(MET_matrix) && is.null(CNV_matrix)){
-    overlapping_samples<-colnames(ModuleData)
-  } else if(is.null(MET_matrix)){
-    overlapping_samples<-Reduce(intersect, list(colnames(CNV_matrix),colnames(ModuleData)))
-  } else if(is.null(CNV_matrix)){
-    overlapping_samples<-Reduce(intersect, list(colnames(MET_matrix),colnames(ModuleData)))
-  } else {
-    overlapping_samples<-Reduce(intersect, list(colnames(CNV_matrix),colnames(MET_matrix),colnames(ModuleData)))
+  overlapping_samples <- colnames(ModuleData)
+  
+  # Add NAs for Gene Expression samples not existing in CNV or MET data 
+  if (!is.null(CNV_matrix)){
+    non_CNV_sample_names<- overlapping_samples[!overlapping_samples%in%colnames(CNV_matrix)]
+    CNV_extension_mat<- matrix(data=NA,nrow=nrow(CNV_matrix),ncol=length(non_CNV_sample_names))
+    colnames(CNV_extension_mat)<-non_CNV_sample_names
+    CNV_matrix<-cbind(CNV_matrix,CNV_extension_mat)
+  }
+  if (!is.null(MET_matrix)){
+    non_MET_sample_names<- overlapping_samples[!overlapping_samples%in%colnames(MET_matrix)]
+    MET_extension_mat<- matrix(data=NA,nrow=nrow(MET_matrix),ncol=length(non_MET_sample_names))
+    colnames(MET_extension_mat)<-non_MET_sample_names
+    MET_matrix<-cbind(MET_matrix,MET_extension_mat)
   }
 
   if(is.null(order_samples)){
