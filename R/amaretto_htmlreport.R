@@ -121,7 +121,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
   nMod = AMARETTOresults$NrModules
   dt_overview<-datatable(ModuleOverviewTable %>% mutate(ModuleNr=paste0('<a href="./modules/module',ModuleNr,'.html">Module ',ModuleNr,'</a>')),class = 'display',extensions = 'Buttons',rownames = FALSE,options = list(
     pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf')),escape = FALSE)
-  all_targets<-rownames_to_column(data.frame(AMARETTOinit$ModuleMembership),"Genes") %>% dplyr::rename(Module="AMARETTOinit.ModuleMembership") %>% mutate(Type="Target")
+  all_targets<-rownames_to_column(data.frame(AMARETTOresults$ModuleMembership),"Genes") %>% dplyr::rename(Module="ModuleNr") %>% mutate(Type="Target")
   all_regulators<-melt(rownames_to_column(as.data.frame(AMARETTOresults$RegulatoryPrograms),"Module"),id.vars = "Module") %>% dplyr::filter(value>0) %>% dplyr::select(variable,Module) %>% mutate(Module=sub("Module_","",Module),Type="Regulator") %>% dplyr::rename(Genes='variable')
   all_genes<-rbind(all_targets,all_regulators)%>% arrange(Genes) %>% dplyr::mutate(Module=paste0('<a href="./modules/module',Module,'.html">Module ',Module,'</a>'))
   dt_genes<-datatable(all_genes, class = 'display',extensions = 'Buttons',rownames = FALSE,options = list(
