@@ -194,14 +194,16 @@ get_firehoseData <- function(downloadData=TRUE,saveDir = "./",TCGA_acronym_upper
 #'
 #' AMARETTO_ExportResults(AMARETTOinit,AMARETTOresults,"./")
 
-AMARETTO_ExportResults <-function(AMARETTOinit,AMARETTOresults,data_address,Heatmaps=TRUE,CNV_matrix=NULL,MET_matrix=NULL){
+AMARETTO_ExportResults <-function(AMARETTOinit,AMARETTOresults,data_address,Heatmaps=TRUE,CNV_matrix=NULL,MET_matrix=NULL, OutputFilenamePrefix = ""){
 
   if (!dir.exists(data_address)){
     stop("Output directory is not existing.")
   }
-
+  if (nchar(OutputFilenamePrefix) > 0){
+    OutputFilenamePrefix <- paste0(OutputFilenamePrefix, "_")
+  }
   #add a date stamp to the output directory
-  output_dir<-paste0("AMARETTOresults_",gsub("-|:","",gsub(" ","_",Sys.time())))
+  output_dir<-paste0(OutputFilenamePrefix, "AMARETTOresults_",gsub("-|:","",gsub(" ","_",Sys.time())))
   dir.create(file.path(data_address,output_dir))
 
   NrCores<-AMARETTOinit$NrCores
