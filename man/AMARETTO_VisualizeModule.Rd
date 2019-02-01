@@ -6,7 +6,8 @@
 \usage{
 AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults,
   CNV_matrix = NULL, MET_matrix = NULL, ModuleNr,
-  SAMPLE_annotation = NULL, ID = NULL, order_samples = NULL)
+  show_row_names = FALSE, SAMPLE_annotation = NULL, ID = NULL,
+  order_samples = NULL)
 }
 \arguments{
 \item{AMARETTOinit}{List output from AMARETTO_Initialize().}
@@ -18,6 +19,8 @@ AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults,
 \item{MET_matrix}{Methylation matrix, with genes in rows and samples in columns.}
 
 \item{ModuleNr}{Module number to visualize.}
+
+\item{show_row_names}{if TRUE, displays rownames of the gene expression matrix in the modules heatmap}
 
 \item{SAMPLE_annotation}{Matrix or Dataframe with sample annotation.}
 

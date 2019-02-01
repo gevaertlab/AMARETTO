@@ -1,6 +1,7 @@
 #' AMARETTO_VisualizeModule
 #'
 #' Function to visualize the gene modules
+#'
 #' @param AMARETTOinit List output from AMARETTO_Initialize().
 #' @param AMARETTOresults List output from AMARETTO_Run().
 #' @param CNV_matrix CNV matrix, with genes in rows and samples in columns.
@@ -9,6 +10,8 @@
 #' @param SAMPLE_annotation Matrix or Dataframe with sample annotation.
 #' @param ID Column used as sample name.
 #' @param order_samples Order samples in heatmap by mean or by clustering.
+#' @param show_row_names if TRUE, displays rownames of the gene expression matrix in the modules heatmap
+#'
 #' @import tidyverse
 #' @import randomcoloR
 #' @import RColorBrewer
@@ -33,7 +36,7 @@
 #'                          MET_matrix = ProcessedDataLIHC$MET,
 #'                          ModuleNr = ModuleNr)
 
-AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET_matrix=NULL,ModuleNr,SAMPLE_annotation=NULL,ID=NULL,order_samples=NULL) {
+AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET_matrix=NULL,ModuleNr,show_row_names=FALSE, SAMPLE_annotation=NULL,ID=NULL,order_samples=NULL) {
   if (ModuleNr>AMARETTOresults$NrModules){
     stop('\tCannot plot Module',ModuleNr,' since the total number of modules is',AMARETTOresults$N,'.\n')
   }
@@ -91,7 +94,7 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NUL
     fontsizeMo=4
   } else {fontsizeMo=2}
 
-  ha_Module <- Heatmap(ClustModuleData, name = "", column_title = "Target Genes\nExpression",cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = gpar(fontsize = fontsizeMo),show_heatmap_legend = FALSE,
+  ha_Module <- Heatmap(ClustModuleData, name = "", column_title = "Target Genes\nExpression",cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=show_row_names,column_names_gp = gpar(fontsize = fontsizeMo),show_heatmap_legend = FALSE,
                        column_title_gp = gpar(fontsize = 6, fontface = "bold"), col=colorRamp2(c(-max(abs(ClustModuleData)), 0, max(abs(ClustModuleData))), c("darkblue", "white", "darkred")),heatmap_legend_param = list(color_bar = "continuous",legend_direction = "horizontal",title_gp = gpar(fontsize = 8),labels_gp = gpar(fontsize = 6)))
 
   ha_list<- ha_Reg + ha_Module

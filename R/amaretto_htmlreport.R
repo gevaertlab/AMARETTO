@@ -1,6 +1,7 @@
 #' AMARETTO_HTMLreport
 #'
 #' Retrieve an interactive html report, including gene set enrichment analysis if asked for.
+#'
 #' @param AMARETTOinit AMARETTO initialize output
 #' @param AMARETTOresults AMARETTO results output
 #' @param CNV_matrix Processed CNV matrix ($CNV_matrix element from Preprocess_CancerSite() list output).
@@ -12,6 +13,7 @@
 #' @param hyper_geo_reference GMT file with gene sets to compare with.
 #' @param output_address Output directory for the html files.
 #' @param MSIGDB TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.
+#' @param show_row_names if TRUE, displays rownames of the gene expression matrix in the modules heatmap
 #' @param GMTURL TRUE if second column of gmt contains URLs to gene set, FALSE if it contains a description
 #'
 #' @import tidyverse
@@ -35,7 +37,7 @@
 #' AMARETTO_HTMLreport(AMARETTOinit= AMARETTOinit,AMARETTOresults= AMARETTOresults,CNV_matrix=ProcessedDataLIHC$CNV_matrix,
 #'                    MET_matrix = ProcessedDataLIHC$MET_matrix,VarPercentage=10,hyper_geo_test_bool=FALSE,output_address='./')
 #'
-AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET_matrix=NULL,SAMPLE_annotation=NULL,ID=NULL,VarPercentage,hyper_geo_test_bool=FALSE,hyper_geo_reference=NULL,output_address='./',MSIGDB=FALSE,GMTURL=FALSE){
+AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET_matrix=NULL,show_row_names=FALSE,SAMPLE_annotation=NULL,ID=NULL,VarPercentage,hyper_geo_test_bool=FALSE,hyper_geo_reference=NULL,output_address='./',MSIGDB=FALSE,GMTURL=FALSE){
 
   NrModules<-AMARETTOresults$NrModules
   NrCores<-AMARETTOinit$NrCores
@@ -61,7 +63,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
 
   full_path<-normalizePath(report_address)
   ModuleOverviewTable<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT','rmarkdown')) %dopar% {
-    heatmap_module<-AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, CNV_matrix, MET_matrix, SAMPLE_annotation=SAMPLE_annotation, ID=ID, ModuleNr=ModuleNr)
+    heatmap_module<-AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, CNV_matrix, MET_matrix, show_row_names = show_row_names, SAMPLE_annotation=SAMPLE_annotation, ID=ID, ModuleNr=ModuleNr)
     ModuleRegulators <- AMARETTOresults$RegulatoryPrograms[ModuleNr,which(AMARETTOresults$RegulatoryPrograms[ModuleNr,] != 0)]
 
     dt_regulators<-datatable(rownames_to_column(as.data.frame(ModuleRegulators),"RegulatorIDs") %>% dplyr::rename(Weights="ModuleRegulators") %>% mutate(RegulatorIDs=paste0('<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=',RegulatorIDs,'">',RegulatorIDs,'</a>')),

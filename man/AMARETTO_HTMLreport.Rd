@@ -5,10 +5,10 @@
 \title{AMARETTO_HTMLreport}
 \usage{
 AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, CNV_matrix = NULL,
-  MET_matrix = NULL, SAMPLE_annotation = NULL, ID = NULL,
-  VarPercentage, hyper_geo_test_bool = FALSE,
-  hyper_geo_reference = NULL, output_address = "./", MSIGDB = FALSE,
-  GMTURL = FALSE)
+  MET_matrix = NULL, show_row_names = FALSE,
+  SAMPLE_annotation = NULL, ID = NULL, VarPercentage,
+  hyper_geo_test_bool = FALSE, hyper_geo_reference = NULL,
+  output_address = "./", MSIGDB = FALSE, GMTURL = FALSE)
 }
 \arguments{
 \item{AMARETTOinit}{AMARETTO initialize output}
@@ -18,6 +18,8 @@ AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, CNV_matrix = NULL,
 \item{CNV_matrix}{Processed CNV matrix ($CNV_matrix element from Preprocess_CancerSite() list output).}
 
 \item{MET_matrix}{Processed methylation matrix ($MET_matrix element from Preprocess_CancerSite() list output).}
+
+\item{show_row_names}{if TRUE, displays rownames of the gene expression matrix in the modules heatmap}
 
 \item{SAMPLE_annotation}{SAMPLE annotation will be added to heatmap}
 
