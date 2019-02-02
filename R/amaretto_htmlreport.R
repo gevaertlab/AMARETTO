@@ -121,6 +121,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
   nExp = ncol(AMARETTOresults$RegulatoryProgramData)
   nGenes = length(AMARETTOresults$AllGenes)
   nMod = AMARETTOresults$NrModules
+  options('DT.warn.size'=FALSE) # avoid showing datatable size-related warnings.
   dt_overview<-datatable(ModuleOverviewTable %>% mutate(ModuleNr=paste0('<a href="./modules/module',ModuleNr,'.html">Module ',ModuleNr,'</a>')),class = 'display',extensions = 'Buttons',rownames = FALSE,options = list(
     pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf')),escape = FALSE)
   all_targets<-rownames_to_column(data.frame(AMARETTOresults$ModuleMembership),"Genes") %>% dplyr::rename(Module="ModuleNr") %>% mutate(Type="Target")

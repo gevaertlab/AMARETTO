@@ -33,7 +33,7 @@ dt_genes
 ## Genesets enriched in modules
 <br><br><br>
 ```{r Genesets,echo=FALSE}
-suppressWarnings(dt_genesetsall)
+dt_genesetsall
 ```
 
 </center>

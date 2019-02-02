@@ -28,7 +28,7 @@ dt_regulators
 ## Functional Enrichment Results
 <br><br><br>
 ```{r geneset, echo=FALSE,out.width='25%'}
-suppressWarnings(dt_genesets)
+dt_genesets
 ```
 <br><br><br>
 </center>
