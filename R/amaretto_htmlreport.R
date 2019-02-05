@@ -14,7 +14,6 @@
 #' @param output_address Output directory for the html files.
 #' @param MSIGDB TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.
 #' @param show_row_names if TRUE, displays rownames of the gene expression matrix in the modules heatmap
-#' @param GMTURL TRUE if second column of gmt contains URLs to gene set, FALSE if it contains a description
 #'
 #' @import tidyverse
 #' @import doParallel
@@ -37,8 +36,8 @@
 #' AMARETTO_HTMLreport(AMARETTOinit= AMARETTOinit,AMARETTOresults= AMARETTOresults,CNV_matrix=ProcessedDataLIHC$CNV_matrix,
 #'                    MET_matrix = ProcessedDataLIHC$MET_matrix,VarPercentage=10,hyper_geo_test_bool=FALSE,output_address='./')
 #'
-AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET_matrix=NULL,show_row_names=FALSE,SAMPLE_annotation=NULL,ID=NULL,VarPercentage,hyper_geo_test_bool=FALSE,hyper_geo_reference=NULL,output_address='./',MSIGDB=FALSE,GMTURL=FALSE){
-
+AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET_matrix=NULL,show_row_names=FALSE,SAMPLE_annotation=NULL,ID=NULL,VarPercentage,hyper_geo_test_bool=FALSE,hyper_geo_reference=NULL,output_address='./',MSIGDB=FALSE){
+  
   NrModules<-AMARETTOresults$NrModules
   NrCores<-AMARETTOinit$NrCores
   if (!dir.exists(output_address)){
@@ -55,7 +54,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
   if (hyper_geo_test_bool){
     GmtFromModules(AMARETTOinit,AMARETTOresults)
     output_hgt<-HyperGTestGeneEnrichment(hyper_geo_reference, "./Modules_targets_only.gmt",NrCores)
-    GeneSetDescriptions<-GeneSetDescription(hyper_geo_reference)
+    GeneSetDescriptions<-GeneSetDescription(hyper_geo_reference,MSIGDB)
   }
   cat("The hyper geometric test results are calculated.\n")
   cluster <- makeCluster(c(rep("localhost", NrCores)), type = "SOCK")
@@ -74,21 +73,14 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
     if (hyper_geo_test_bool){
       output_hgt_filter<-output_hgt %>% dplyr::filter(Testset==paste0("Module_",as.character(ModuleNr))) %>% dplyr::arrange(padj)
       output_hgt_filter<-left_join(output_hgt_filter,GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% mutate(overlap_perc=n_Overlapping/NumberGenes) %>% dplyr::select(Geneset,Description,n_Overlapping,Overlapping_genes,overlap_perc,p_value,padj)
-      if (MSIGDB==TRUE & GMTURL==FALSE){
+      if (MSIGDB==TRUE){
         dt_genesets<-datatable(output_hgt_filter %>% mutate(Geneset=paste0('<a href="http://software.broadinstitute.org/gsea/msigdb/cards/',Geneset,'">',gsub("_"," ",Geneset),'</a>')),class = 'display',extensions = 'Buttons',rownames = FALSE,options = list(
           pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf')),colnames=c("Gene Set Name","Description","# Genes in Overlap","Overlapping Genes","Percent of GeneSet overlapping","p-value","FDR q-value"),escape = FALSE) %>%
           formatSignif(c('p_value','padj','overlap_perc'),2) %>% formatStyle('overlap_perc',background = styleColorBar(c(0,1), 'lightblue'),backgroundSize = '98% 88%',backgroundRepeat = 'no-repeat', backgroundPosition = 'center')
-      } else if (MSIGDB==TRUE & GMTURL==TRUE){
-        dt_genesets<-datatable(output_hgt_filter %>% dplyr::select(-Description) %>% mutate(Geneset=paste0('<a href="http://software.broadinstitute.org/gsea/msigdb/cards/',Geneset,'">',gsub("_"," ",Geneset),'</a>')),class = 'display',extensions = 'Buttons',rownames = FALSE,options = list(
-          pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf')),colnames=c("Gene Set Name","# Genes in Overlap","Overlapping Genes","Percent of GeneSet overlapping","p-value","FDR q-value"),escape = FALSE) %>%
-          formatSignif(c('p_value','padj','overlap_perc'),2) %>% formatStyle('overlap_perc',background = styleColorBar(c(0,1), 'lightblue'),backgroundSize = '98% 88%',backgroundRepeat = 'no-repeat', backgroundPosition = 'center')
-      } else if (MSIGDB==FALSE & GMTURL==TRUE){
-        dt_genesets<-datatable(output_hgt_filter %>% mutate(Geneset=paste0('<a href="',Description,'">',gsub("_"," ",Geneset),'</a>')) %>% dplyr::select(-Description),class = 'display',extensions = 'Buttons',rownames = FALSE,options = list(
-          pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf')),colnames=c("Gene Set Name","Description","# Genes in Overlap","Overlapping Genes","Percent of GeneSet overlapping","p-value","FDR q-value"),escape = FALSE) %>%
-          formatSignif(c('p_value','padj','overlap_perc'),2) %>% formatStyle('overlap_perc',background = styleColorBar(c(0,1), 'lightblue'),backgroundSize = '98% 88%',backgroundRepeat = 'no-repeat', backgroundPosition = 'center')
-      } else{
+      } 
+      else{
         dt_genesets<-datatable(output_hgt_filter,class = 'display',extensions = 'Buttons',rownames = FALSE,options = list(
-          autoWidth = TRUE,pageLength = 10,dom = 'Bfrtip',
+          pageLength = 10,dom = 'Bfrtip',
           buttons = c('csv', 'excel', 'pdf'))) %>% formatSignif(c('p_value','padj','overlap_perc'),2)
       }
       ngenesets<-nrow(output_hgt_filter %>% dplyr::filter(padj<0.05))
@@ -130,9 +122,12 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
   dt_genes<-datatable(all_genes, class = 'display',extensions = 'Buttons',rownames = FALSE,options = list(
     pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf')),escape = FALSE)
   if (hyper_geo_test_bool){
-    dt_genesetsall<-datatable(left_join(output_hgt %>% dplyr::filter(padj<0.05 & n_Overlapping>1) %>% dplyr::group_by(Geneset) %>% dplyr::mutate(Testset=paste0('<a href="./modules/module',sub("Module_","",Testset),'.html">',Testset,'</a>')) %>% summarise(Modules=paste(Testset,collapse=", ")),GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% mutate(Geneset=gsub("_"," ",Geneset),Modules=gsub("_"," ",Modules)),
-                            class = 'display',extensions = 'Buttons',rownames = FALSE,
-                            options = list(pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf')),escape = FALSE)
+    genesetsall<-left_join(output_hgt %>% dplyr::filter(padj<0.05 & n_Overlapping>1) %>% dplyr::group_by(Geneset) %>% dplyr::mutate(Testset=paste0('<a href="./modules/module',sub("Module_","",Testset),'.html">',Testset,'</a>')) %>% summarise(Modules=paste(Testset,collapse=", ")),GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% mutate(Modules=gsub("_"," ",Modules))
+    if (MSIGDB==TRUE){
+      genesetsall<-mutate(genesetsall,Geneset=paste0('<a href="http://software.broadinstitute.org/gsea/msigdb/cards/',Geneset,'">',gsub("_"," ",Geneset),'</a>'))
+    }
+    dt_genesetsall<-datatable(genesetsall,class = 'display',extensions = 'Buttons',rownames = FALSE,
+                              options = list(pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf')),escape = FALSE)
   }else{
     dt_genesetsall<-"Genesets were not analysed as they were not provided."
   }
@@ -213,13 +208,17 @@ GmtFromModules <- function(AMARETTOinit,AMARETTOresults){
 }
 
 #' GeneSetDescription
+#'
 #' @param filename The name of the gmt file.
+#' @param MSIGDB 
 #'
 #' @return
 #' @keywords internal
 #' @examples
-GeneSetDescription<-function(filename){
+GeneSetDescription<-function(filename,MSIGDB){
+  data(MsigdbMapping)
   gmtLines<-strsplit(readLines(filename),"\t")
+  #print(gmtLines)
   gmtLines_description <- lapply(gmtLines, function(x) {
     c(x[[1]],x[[2]],length(x)-2)
   })
@@ -227,6 +226,11 @@ GeneSetDescription<-function(filename){
   rownames(gmtLines_description)<-NULL
   colnames(gmtLines_description)<-c("GeneSet","Description","NumberGenes")
   gmtLines_description$NumberGenes<-as.numeric(gmtLines_description$NumberGenes)
+  if(MSIGDB){
+  gmtLines_description$Description<-sapply(gmtLines_description$GeneSet, function(x) {
+    index<-which(MsigdbMapping$geneset==x)
+    ifelse(length(index)!=0, MsigdbMapping$description[index],gmtLines_description$Description[which(gmtLines_description$GeneSet==x)]) 
+  })}
   return(gmtLines_description)
 }
 

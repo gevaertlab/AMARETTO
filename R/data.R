@@ -39,3 +39,15 @@
 #' }
 #' @source \url{AMARETTO}
 "ProcessedDataLIHC"
+
+
+#' MsigdbMapping
+#'
+#' A dataframe containing of MSIGDB geneset names, their urls and descriptions.
+#'
+#' @format List
+#'   ...
+#' }
+#' @source \url{AMARETTO}
+"MsigdbMapping"
+

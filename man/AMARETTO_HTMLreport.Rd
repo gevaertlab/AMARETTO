@@ -8,7 +8,7 @@ AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, CNV_matrix = NULL,
   MET_matrix = NULL, show_row_names = FALSE,
   SAMPLE_annotation = NULL, ID = NULL, VarPercentage,
   hyper_geo_test_bool = FALSE, hyper_geo_reference = NULL,
-  output_address = "./", MSIGDB = FALSE, GMTURL = FALSE)
+  output_address = "./", MSIGDB = FALSE)
 }
 \arguments{
 \item{AMARETTOinit}{AMARETTO initialize output}
@@ -34,8 +34,6 @@ AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, CNV_matrix = NULL,
 \item{output_address}{Output directory for the html files.}
 
 \item{MSIGDB}{TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.}
-
-\item{GMTURL}{TRUE if second column of gmt contains URLs to gene set, FALSE if it contains a description}
 }
 \description{
 Retrieve an interactive html report, including gene set enrichment analysis if asked for.
