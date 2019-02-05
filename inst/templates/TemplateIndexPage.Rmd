@@ -10,9 +10,9 @@ output:
 ## Run Information
 <br>
 Number of Samples in Gene Expression Data = `r nExp`  
-Number of Samples DNA Copy Number Data = `r nCNV`  
-Number of Samples DNA Methylation Data = `r nMET`  
-Number of Genes (`r VarPercentage`% most variable) = `r nGenes`  
+Number of Samples in DNA Copy Number Data = `r nCNV`  
+Number of Samples in DNA Methylation Data = `r nMET`  
+Number of `r VarPercentage`% most variable Genes = `r nGenes`  
 Number of Regulatory Modules = `r nMod`  
 <br><br>
 
