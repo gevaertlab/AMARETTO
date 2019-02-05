@@ -1,5 +1,5 @@
 ---
-title: <center>AMARETTO Report: Overview of all Regulatory Modules</center>
+title: <center>AMARETTO Report - Overview of all Regulatory Modules</center>
 output: 
   html_document:
     theme: cerulean

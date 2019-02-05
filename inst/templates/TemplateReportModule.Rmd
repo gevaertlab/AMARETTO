@@ -18,7 +18,7 @@ heatmap_module
 ```
 <br><br><br>
 
-## Regulatory Program of Module: Activator and Repressor Driver Genes
+## Regulatory Program of Module : Activator and Repressor Driver Genes
 <br><br><br>
 ```{r regulators,echo=FALSE}
 dt_regulators
