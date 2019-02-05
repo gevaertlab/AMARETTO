@@ -1,5 +1,5 @@
 ---
-title: <center>AMARETTO Report - Overview of all Regulatory Modules</center>
+title: <center>AMARETTO Report</center>
 output: 
   html_document:
     theme: cerulean
@@ -30,7 +30,7 @@ dt_genes
 ```
 <br><br><br>
 
-## Enrichments of Known Functional Categories in Regulatory Modules
+## Enrichments of Functional Categories in Regulatory Modules
 <br><br><br>
 ```{r Genesets,echo=FALSE}
 dt_genesetsall

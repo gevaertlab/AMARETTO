@@ -18,14 +18,14 @@ heatmap_module
 ```
 <br><br><br>
 
-## Regulatory Program of Module : Activator and Repressor Driver Genes
+## Regulatory Program: Activator and Repressor Driver Genes
 <br><br><br>
 ```{r regulators,echo=FALSE}
 dt_regulators
 ```
 <br><br><br>
 
-## Enrichments of Known Functional Categories in Regulatory Module
+## Enrichments of Functional Categories in Regulatory Module
 <br><br><br>
 ```{r geneset, echo=FALSE,out.width='25%'}
 dt_genesets
