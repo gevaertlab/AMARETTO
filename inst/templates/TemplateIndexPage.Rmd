@@ -1,5 +1,5 @@
 ---
-title: <center>AMARETTO overview of all modules</center>
+title: <center>AMARETTO Report: Overview of all Regulatory Modules</center>
 output: 
   html_document:
     theme: cerulean
@@ -9,28 +9,28 @@ output:
 <center>
 ## Run Information
 <br>
-Number of Samples (Expression) = `r nExp`  
-Number of Samples (Copy Number) = `r nCNV`  
-Number of Samples (Methylation) = `r nMET`  
+Number of Samples in Gene Expression Data = `r nExp`  
+Number of Samples DNA Copy Number Data = `r nCNV`  
+Number of Samples DNA Methylation Data = `r nMET`  
 Number of Genes (`r VarPercentage`% most variable) = `r nGenes`  
 Number of Regulatory Modules = `r nMod`  
 <br><br>
 
-## Overview of Modules
+## Overview of Regulatory Modules
 <br><br><br>
 ```{r Modules,echo=FALSE}
 dt_overview
 ```
 <br><br><br>
 
-## Gene to module assignment
+## Assignments of Genes to Regulatory Modules
 <br><br><br>
 ```{r Genes,echo=FALSE}
 dt_genes
 ```
 <br><br><br>
 
-## Genesets enriched in modules
+## Enrichments of Known Functional Categories in Regulatory Modules
 <br><br><br>
 ```{r Genesets,echo=FALSE}
 dt_genesetsall
