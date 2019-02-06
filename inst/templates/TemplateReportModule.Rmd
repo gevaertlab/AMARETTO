@@ -25,6 +25,13 @@ dt_regulators
 ```
 <br><br><br>
 
+## Regulatory Module: Target Genes
+<br><br><br>
+```{r targets,echo=FALSE}
+dt_targets
+```
+<br><br><br>
+
 ## Enrichments of Functional Categories in Regulatory Module
 <br><br><br>
 ```{r geneset, echo=FALSE,out.width='25%'}
