@@ -1,4 +1,4 @@
-#' AMARETTO_HTMLreport
+ #' AMARETTO_HTMLreport
 #'
 #' Retrieve an interactive html report, including gene set enrichment analysis if asked for.
 #'
@@ -37,7 +37,7 @@
 #'                    MET_matrix = ProcessedDataLIHC$MET_matrix,VarPercentage=10,hyper_geo_test_bool=FALSE,output_address='./')
 #'
 AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET_matrix=NULL,show_row_names=FALSE,SAMPLE_annotation=NULL,ID=NULL,VarPercentage,hyper_geo_test_bool=FALSE,hyper_geo_reference=NULL,output_address='./',MSIGDB=FALSE){
-  
+
   NrModules<-AMARETTOresults$NrModules
   NrCores<-AMARETTOinit$NrCores
   if (!dir.exists(output_address)){
@@ -64,12 +64,14 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
   ModuleOverviewTable<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT','rmarkdown')) %dopar% {
     heatmap_module<-AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, CNV_matrix, MET_matrix, show_row_names = show_row_names, SAMPLE_annotation=SAMPLE_annotation, ID=ID, ModuleNr=ModuleNr)
     ModuleRegulators <- AMARETTOresults$RegulatoryPrograms[ModuleNr,which(AMARETTOresults$RegulatoryPrograms[ModuleNr,] != 0)]
-
-    dt_regulators<-datatable(rownames_to_column(as.data.frame(ModuleRegulators),"RegulatorIDs") %>% dplyr::rename(Weights="ModuleRegulators") %>% mutate(RegulatorIDs=paste0('<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=',RegulatorIDs,'">',RegulatorIDs,'</a>')),
+    dt_regulators<-datatable(rownames_to_column(as.data.frame(ModuleRegulators),"RegulatorIDs") %>% dplyr::rename(Weights="ModuleRegulators") %>% mutate(RegulatorIDs=paste0('<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=',RegulatorIDs,'">',RegulatorIDs,'</a>'))%>%dplyr::arrange(Weights),
                              class = 'display',extensions = 'Buttons',rownames = FALSE, options = list(
                                columnDefs = list(list(width = '200px', targets = "_all")),pageLength = 10,dom = 'Bfrtip',
                                buttons = c('csv', 'excel', 'pdf')),escape = 'Weights') %>% formatRound('Weights',3) %>% formatStyle('Weights',color = styleInterval(0, c('darkblue', 'darkred')))
-
+    dt_targets<-datatable(as.data.frame(AMARETTOresults$ModuleMembership) %>% rownames_to_column("TargetIDs")%>% arrange(TargetIDs) %>% rename(moduleNr=ModuleNr) %>% filter(moduleNr==ModuleNr) %>% select(-moduleNr) %>% mutate(TargetIDs=paste0('<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=',TargetIDs,'">',TargetIDs,'</a>')),
+                             class = 'display',extensions = 'Buttons',rownames = FALSE, options = list(
+                               columnDefs = list(list(width = '200px', targets = "_all")),pageLength = 10,dom = 'Bfrtip',
+                               buttons = c('csv', 'excel', 'pdf')),escape = FALSE)
     if (hyper_geo_test_bool){
       output_hgt_filter<-output_hgt %>% dplyr::filter(Testset==paste0("Module_",as.character(ModuleNr))) %>% dplyr::arrange(padj)
       output_hgt_filter<-left_join(output_hgt_filter,GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% mutate(overlap_perc=n_Overlapping/NumberGenes) %>% dplyr::select(Geneset,Description,n_Overlapping,Overlapping_genes,overlap_perc,p_value,padj)
@@ -95,6 +97,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
       ModuleNr = ModuleNr,
       heatmap_module = heatmap_module,
       dt_regulators = dt_regulators,
+      dt_targets = dt_targets,
       dt_genesets = dt_genesets),quiet = TRUE)
     file.remove(modulemd)
     return(c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),ngenesets))
@@ -118,7 +121,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
     pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf')),escape = FALSE)
   all_targets<-rownames_to_column(data.frame(AMARETTOresults$ModuleMembership),"Genes") %>% dplyr::rename(Module="ModuleNr") %>% mutate(Type="Target")
   all_regulators<-melt(rownames_to_column(as.data.frame(AMARETTOresults$RegulatoryPrograms),"Module"),id.vars = "Module") %>% dplyr::filter(value>0) %>% dplyr::select(variable,Module) %>% mutate(Module=sub("Module_","",Module),Type="Regulator") %>% dplyr::rename(Genes='variable')
-  all_genes<-rbind(all_targets,all_regulators)%>% arrange(Genes) %>% dplyr::mutate(Module=paste0('<a href="./modules/module',Module,'.html">Module ',Module,'</a>'))
+  all_genes<-rbind(all_targets,all_regulators) %>% arrange(Genes) %>% dplyr::mutate(Genes=paste0('<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=',Genes,'">',Genes,'</a>')) %>% dplyr::mutate(Module=paste0('<a href="./modules/module',Module,'.html">Module ',Module,'</a>'))
   dt_genes<-datatable(all_genes, class = 'display',extensions = 'Buttons',rownames = FALSE,options = list(
     pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf')),escape = FALSE)
   if (hyper_geo_test_bool){
