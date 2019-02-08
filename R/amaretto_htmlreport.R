@@ -315,7 +315,7 @@ AMARETTO_HTMLreport <-
     ModuleOverviewTable <-
       data.frame(matrix(
         unlist(ModuleOverviewTable),
-        byrow = T,
+        byrow = TRUE,
         ncol = 4
       ), stringsAsFactors = FALSE)
     colnames(ModuleOverviewTable) <-
@@ -547,7 +547,7 @@ GeneSetDescription <- function(filename) {
   gmtLines_description <-
     data.frame(matrix(
       unlist(gmtLines_description),
-      byrow = T,
+      byrow = TRUE,
       ncol = 3
     ), stringsAsFactors = FALSE)
   rownames(gmtLines_description) <- NULL

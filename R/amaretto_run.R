@@ -166,7 +166,7 @@ AMARETTO_LearnRegulatoryProgramsLarsen <-
         b_o = coef(fit, s = bestNonZeroLambda)
         b_opt <- c(b_o[2:length(b_o)])
         if (AutoRegulation == 2) {
-          CurrentUsedRegulators = RegulatorData_rownames[which(b_opt != 0, arr.ind = T)]
+          CurrentUsedRegulators = RegulatorData_rownames[which(b_opt != 0, arr.ind = TRUE)]
           CurrentClusterMembers = Data_rownames[CurrentClusterPositions]
           nrIterations = 0
           while (length(CurrentClusterMembers[CurrentClusterMembers %in% CurrentUsedRegulators]) != 0) {

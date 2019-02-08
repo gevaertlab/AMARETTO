@@ -12,12 +12,12 @@
 #-----------------------------------------------------------------------------------------
 # 1. Installing AMARETTO and loading the package:
 #-----------------------------------------------------------------------------------------
-install.packages("devtools")
-library(devtools)
-devtools::install_github("gevaertlab/AMARETTO",ref="master")
+install.packages("BiocManager")
+BiocManager::install("gevaertlab/AMARETTO")
 library(AMARETTO)
 
-setwd("AMARETTO")
+resdir <- "AMARETTO_Results";if(!file.exists(resdir))	dir.create(resdir)
+setwd(resdir)
 #-----------------------------------------------------------------------------------------
 # 2. Dowloading TCGA input data for analysis
 #-----------------------------------------------------------------------------------------

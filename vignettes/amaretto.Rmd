@@ -1,5 +1,23 @@
 ---
 title: "Introduction to _AMARETTO_"
+author:
+  - name: Jayendra Shinde
+    affiliation: Stanford Center for Biomedical Informatics Research (BMIR), School of Medicine and Department of Biomedical Data Science, 1265 Welch Rd, Stanford, CA, USA
+  - name: Celine Everaert
+    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Cambridge, MA, USA
+  - name: Shaimaa Bakr
+    affiliation: Stanford Center for Biomedical Informatics Research (BMIR), School of Medicine and Department of Biomedical Data Science, 1265 Welch Rd, Stanford, CA, USA
+  - name: Mohsen Nabian
+    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Cambridge, MA, USA
+  - name: Nathalie Pochet
+    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Cambridge, MA, USA
+    email: npochet@broadinstitute.org
+    footnote: Corresponding Author
+  - name: Olivier Gevaert
+    affiliation: Stanford Center for Biomedical Informatics Research (BMIR), School of Medicine and Department of Biomedical Data Science, 1265 Welch Rd, Stanford, CA, USA
+    email: olivier.gevaert@stanford.edu
+    footnote: Corresponding Author
+
 
 date: "`r doc_date()`"
 output:
