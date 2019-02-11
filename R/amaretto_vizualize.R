@@ -14,6 +14,8 @@
 #' @import RColorBrewer
 #' @import ComplexHeatmap
 #' @import circlize
+#' @importFrom grDevices dev.off pdf
+#' @importFrom graphics lines par plot title
 #' @return
 #' @export
 #'
@@ -327,7 +329,7 @@ AMARETTO_VisualizeModule <-
         col <- c()
         for (sample_column in colnames(SAMPLE_annotation_fil)[colnames(SAMPLE_annotation_fil) != ID]) {
           newcol <-
-            randomColor(length(unique(SAMPLE_annotation_fil[, sample_column])), luminosity = "bright")
+            randomColor::randomColor(length(unique(SAMPLE_annotation_fil[, sample_column])), luminosity = "bright")
           names(newcol) <-
             unique(SAMPLE_annotation_fil[, sample_column])
           col <- c(col, newcol)

@@ -15,6 +15,10 @@ AMARETTO_ExportResults(AMARETTOinit, AMARETTOresults, data_address,
 \item{data_address}{Directory to save data folder}
 
 \item{Heatmaps}{Output heatmaps as pdf}
+
+\item{CNV_matrix}{CNV_matrix}
+
+\item{MET_matrix}{MET_matrix}
 }
 \description{
 Retrieve a download of all the data linked with the run (including heatmaps)

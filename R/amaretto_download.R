@@ -3,7 +3,6 @@
 #' Downloading TCGA dataset for AMARETTO analysis
 #' @param CancerSite TCGA cancer code for data download
 #' @param TargetDirectory Directory path to download data
-#' @param downloadData
 #'
 #' @return
 #' @import RCurl
@@ -11,6 +10,7 @@
 #' @import limma
 #' @importFrom RCurl getURL
 #' @importFrom limma strsplit2
+#' @importFrom utils data download.file read.csv untar write.table zip
 #' @export
 #'
 #' @examples
@@ -338,6 +338,8 @@ get_firehoseData <-
 #' @param AMARETTOresults AMARETTO results output
 #' @param data_address Directory to save data folder
 #' @param Heatmaps Output heatmaps as pdf
+#' @param CNV_matrix CNV_matrix
+#' @param MET_matrix MET_matrix
 #' @import doParallel
 #' @import tidyverse
 #' @return

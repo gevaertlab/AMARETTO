@@ -7,7 +7,9 @@
 AMARETTO_Preprocess(CancerSite, DataSetDirectories)
 }
 \arguments{
-\item{DataSetDirectories}{}
+\item{CancerSite}{CancerSite}
+
+\item{DataSetDirectories}{DataSetDirectories}
 }
 \description{
 Wrapper code that analyzes process TCGA GISTIC (CNV) and gene expression (rna-seq or microarray) data  via one call

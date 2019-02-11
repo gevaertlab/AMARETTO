@@ -12,6 +12,7 @@
 #' @param PvalueThreshold Threshold used to find relevant driver genes with CNV alterations: maximal p-value.
 #' @param RsquareThreshold Threshold used to find relevant driver genes with CNV alterations: minimal R-square value between CNV and gene expression data.
 #' @param pmax 'pmax' variable for glmnet function from glmnet package; the maximum number of variables aver to be nonzero. Should not be changed by user unless she/he fully understands the AMARETTO algorithm and how its parameters choices affect model output.
+#' @param OneRunStop OneRunStop
 #' @param NrCores A numeric variable indicating the number of computer/server cores to use for paralellelization. Default is 1, i.e. no parallelization. Please check your computer or server's computing capacities before increasing this number.  Parallelization is done via the RParallel package. Mac vs. Windows environments may behave differently when using parallelization.
 #' @param method Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.
 #' @export
@@ -20,6 +21,7 @@
 #' @import Rcpp
 #' @importFrom matrixStats rowVars
 #' @importFrom matrixStats rowMads
+#' @importFrom stats aov coef cor density dist dnorm hclust kmeans lm na.omit p.adjust phyper prcomp qqline qqnorm qqplot rgamma var
 #' @examples
 #' data('ProcessedDataLIHC')
 #' data('Driver_Genes')
@@ -206,7 +208,6 @@ AMARETTO_Run <- function(AMARETTOinit) {
 #' AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults = AMARETTOresults,
 #'                                                MA_Data_TestSet = AMARETTOinit$MA_matrix_Var,
 #'                                                RegulatorData_TestSet = AMARETTOinit$RegulatorData)
-
 AMARETTO_EvaluateTestSet <-
   function(AMARETTOresults = AMARETTOresults,
            MA_Data_TestSet = MA_Data_TestSet,

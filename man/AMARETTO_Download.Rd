@@ -10,8 +10,6 @@ AMARETTO_Download(CancerSite, TargetDirectory, downloadData = TRUE)
 \item{CancerSite}{TCGA cancer code for data download}
 
 \item{TargetDirectory}{Directory path to download data}
-
-\item{downloadData}{}
 }
 \description{
 Downloading TCGA dataset for AMARETTO analysis

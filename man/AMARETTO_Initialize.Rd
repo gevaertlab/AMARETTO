@@ -30,6 +30,8 @@ AMARETTO_Initialize(MA_matrix = MA_matrix, CNV_matrix = NULL,
 
 \item{NrCores}{A numeric variable indicating the number of computer/server cores to use for paralellelization. Default is 1, i.e. no parallelization. Please check your computer or server's computing capacities before increasing this number.  Parallelization is done via the RParallel package. Mac vs. Windows environments may behave differently when using parallelization.}
 
+\item{OneRunStop}{OneRunStop}
+
 \item{method}{Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.}
 }
 \description{

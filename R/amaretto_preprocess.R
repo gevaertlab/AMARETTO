@@ -1,8 +1,8 @@
 #' AMARETTO_Preprocess
 #'
 #' Wrapper code that analyzes process TCGA GISTIC (CNV) and gene expression (rna-seq or microarray) data  via one call
-#' @param CancerSite
-#' @param DataSetDirectories
+#' @param CancerSite CancerSite
+#' @param DataSetDirectories DataSetDirectories
 #'
 #' @return
 #' @export
