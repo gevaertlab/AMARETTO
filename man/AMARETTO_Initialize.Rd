@@ -26,7 +26,7 @@ AMARETTO_Initialize(MA_matrix = MA_matrix, CNV_matrix = NULL,
 
 \item{RsquareThreshold}{Threshold used to find relevant driver genes with CNV alterations: minimal R-square value between CNV and gene expression data.}
 
-\item{pmax}{"pmax" variable for glmnet function from glmnet package; the maximum number of variables aver to be nonzero. Should not be changed by user unless she/he fully understands the AMARETTO algorithm and how its parameters choices affect model output.}
+\item{pmax}{'pmax' variable for glmnet function from glmnet package; the maximum number of variables aver to be nonzero. Should not be changed by user unless she/he fully understands the AMARETTO algorithm and how its parameters choices affect model output.}
 
 \item{NrCores}{A numeric variable indicating the number of computer/server cores to use for paralellelization. Default is 1, i.e. no parallelization. Please check your computer or server's computing capacities before increasing this number.  Parallelization is done via the RParallel package. Mac vs. Windows environments may behave differently when using parallelization.}
 
@@ -38,8 +38,8 @@ Requires processed gene expressiosn (rna-seq or microarray), CNV (usually from a
 Uses the function CreateRegulatorData() and results are fed into the function AMARETTO_Run().
 }
 \examples{
-data("ProcessedDataLIHC")
-data("Driver_Genes")
+data('ProcessedDataLIHC')
+data('Driver_Genes')
 AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
@@ -48,7 +48,7 @@ AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
 AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
                                     CNV_matrix = NULL,
                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-                                    Driver_list = Driver_Genes[["MSigDB"]],
+                                    Driver_list = Driver_Genes[['MSigDB']],
                                     NrModules = 20, VarPercentage = 50)
 
 }

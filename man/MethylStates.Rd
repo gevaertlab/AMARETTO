@@ -4,7 +4,7 @@
 \name{MethylStates}
 \alias{MethylStates}
 \title{MethylStates}
-\format{An object of class \code{list} of length 25.}
+\format{An object of class \code{list} of length 1.}
 \source{
 \url{AMARETTO}
 }
@@ -12,6 +12,6 @@
 MethylStates
 }
 \description{
-A list of dataframes of Methyl States for cancer types obtained from MethylMix processing of TCGA methylation data
+A list of dataframes of Methyl States for example dataset from TCGA-LIHC.
 }
 \keyword{datasets}

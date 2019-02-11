@@ -1,7 +1,7 @@
 Package: AMARETTO
 Type: Package
 Title: Regulatory network inference and driver gene evaluation using integrative multi-omics analysis and penalized regression.
-Version: 0.99.2
+Version: 0.99.3
 Date: 2016-06-06
 Author: Jayendra Shinde, Celine Everaert, Shaimaa Bakr, Mohsen Nabian
 	Nathalie Pochet and Olivier Gevaert
@@ -28,9 +28,7 @@ Imports:
     callr (>= 3.0.0.9001),
     Rcpp
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 LinkingTo: 
     Rcpp
 VignetteBuilder: knitr
-Remotes: 
-    r-lib/callr

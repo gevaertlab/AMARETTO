@@ -19,7 +19,7 @@ AMARETTO_EvaluateTestSet(AMARETTOresults = AMARETTOresults,
 Code to evaluate AMARETTO on a new gene expression test set. Uses output from AMARETTO_Run() and CreateRegulatorData().
 }
 \examples{
-data("ProcessedDataLIHC")
+data('ProcessedDataLIHC')
 AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
                                     MET_matrix = ProcessedDataLIHC$MET_matrix,

@@ -30,7 +30,7 @@ setwd(resdir)
 #-----------------------------------------------------------------------------------------
 #ProcessedData <- AMARETTO_Preprocess(CancerSite,DataSetDirectories)
 
-#data(MethylStates) #MethylMix preprocessed data for CancerSite
+#load(TCGA_MethylStates/MethylStates.rda) #MethylMix preprocessed data for CancerSite
 #met <- MethylStates[CancerSite] #MethylMix preprocessed data for CancerSite
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
