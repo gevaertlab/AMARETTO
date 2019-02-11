@@ -1,5 +1,6 @@
-^TCGA_MethylStates$
 ^RUNNING_AMARETTO_EXAMPLE$
+^data/MethylStates_TCGA\.rda$
+^TCGA_MethylStates$
 ^LICENSE\.md$
 ^AMARETTO\.Rproj$
 ^\.Rproj\.user$
