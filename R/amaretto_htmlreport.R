@@ -14,6 +14,7 @@
 #' @param output_address Output directory for the html files.
 #' @param MSIGDB TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.
 #' @param show_row_names if TRUE, displays rownames of the gene expression matrix in the modules heatmap
+#' @param driverGSEA if TRUE , module_driver genes will also be added to the module_target genes for GSEA.
 #'
 #' @import tidyverse
 #' @import doParallel
@@ -36,7 +37,7 @@
 #' AMARETTO_HTMLreport(AMARETTOinit= AMARETTOinit,AMARETTOresults= AMARETTOresults,CNV_matrix=ProcessedDataLIHC$CNV_matrix,
 #'                    MET_matrix = ProcessedDataLIHC$MET_matrix,VarPercentage=10,hyper_geo_test_bool=FALSE,output_address='./')
 #'
-AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET_matrix=NULL,show_row_names=FALSE,SAMPLE_annotation=NULL,ID=NULL,VarPercentage,hyper_geo_test_bool=FALSE,hyper_geo_reference=NULL,output_address='./',MSIGDB=FALSE){
+AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET_matrix=NULL,show_row_names=FALSE,SAMPLE_annotation=NULL,ID=NULL,VarPercentage,hyper_geo_test_bool=FALSE,hyper_geo_reference=NULL,output_address='./',MSIGDB=FALSE,driverGSEA=TRUE){
 
   NrModules<-AMARETTOresults$NrModules
   NrCores<-AMARETTOinit$NrCores
@@ -52,8 +53,8 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
   dir.create(paste0(report_address,"/AMARETTOhtmls/modules"),recursive = TRUE,showWarnings = FALSE)
   cat("The output folder structure is created.\n")
   if (hyper_geo_test_bool){
-    GmtFromModules(AMARETTOinit,AMARETTOresults)
-    output_hgt<-HyperGTestGeneEnrichment(hyper_geo_reference, "./Modules_targets_only.gmt",NrCores)
+    GmtFromModules(AMARETTOinit,AMARETTOresults,driverGSEA)
+    output_hgt<-HyperGTestGeneEnrichment(hyper_geo_reference, "./Modules_genes.gmt",NrCores)
     GeneSetDescriptions<-GeneSetDescription(hyper_geo_reference,MSIGDB)
   }
   cat("The hyper geometric test results are calculated.\n")
@@ -194,19 +195,26 @@ HyperGTestGeneEnrichment<-function(gmtfile,testgmtfile,NrCores,ref.numb.genes=45
 }
 
 #' GmtFromModules
+#'
 #' @param AMARETTOinit List output from AMARETTO_Initialize().
+#' @param driverGSEA if TRUE , module driver genes will also be added to module target genes for GSEA.
 #' @param AMARETTOresults List output from AMARETTO_Run().
+#'
 #' @keywords internal
-GmtFromModules <- function(AMARETTOinit,AMARETTOresults){
-
+GmtFromModules <- function(AMARETTOinit,AMARETTOresults,driverGSEA){
   ModuleMembership<-rownames_to_column(as.data.frame(AMARETTOresults$ModuleMembership),"GeneNames")
+  if(driverGSEA){
+    all_regulators <-melt(rownames_to_column(as.data.frame(AMARETTOresults$RegulatoryPrograms),"Module"), id.vars = "Module") %>%
+      dplyr::filter(value > 0) %>% dplyr::select(variable, Module) %>% mutate(Module = sub("Module_", "", Module)) %>% dplyr::rename(GeneNames = "variable")%>% dplyr::rename(ModuleNr = "Module")
+    ModuleMembership<-rbind(ModuleMembership,all_regulators)
+  }
   NrModules<-AMARETTOresults$NrModules
   ModuleMembership<-ModuleMembership %>% arrange(GeneNames)
 
   ModuleMembers_list<-split(ModuleMembership$GeneNames,ModuleMembership$ModuleNr)
   names(ModuleMembers_list)<-paste0("Module_",names(ModuleMembers_list))
 
-  gmt_file="./Modules_targets_only.gmt"
+  gmt_file="./Modules_genes.gmt"
   write.table(sapply(names(ModuleMembers_list),function(x) paste(x,paste(ModuleMembers_list[[x]],collapse="\t"),sep="\t")),gmt_file,quote = FALSE,row.names = TRUE,col.names = FALSE,sep='\t')
 }
 

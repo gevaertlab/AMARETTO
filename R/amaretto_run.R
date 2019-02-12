@@ -26,6 +26,7 @@ AMARETTO_LarsenBased <- function(Data,Clusters,RegulatorData,Parameters,NrCores)
     cat('\tAutoregulation is turned OFF.\n')
   }
   NrReassignGenes = length(Data_rownames)
+  run_history<-NrReassignGenes
   while (NrReassignGenes > 0.01*length(Data_rownames)){
     ptm <- proc.time()
     switch(Parameters$Mode,
@@ -51,6 +52,7 @@ AMARETTO_LarsenBased <- function(Data,Clusters,RegulatorData,Parameters,NrCores)
     NrReassignGenes = ReassignGenesToClusters$NrReassignGenes
     Clusters = ReassignGenesToClusters$Clusters
     printf("Nr of reassignments is: %i \n",NrReassignGenes)
+    run_history<-c(run_history,NrReassignGenes)
   }
   ptm1<- proc.time() - ptm1
   printf("Elapsed time is %f seconds\n",ptm1[3])
@@ -58,7 +60,7 @@ AMARETTO_LarsenBased <- function(Data,Clusters,RegulatorData,Parameters,NrCores)
   rownames(ModuleMembership)=rownames(Data)
   colnames(ModuleMembership)=c("ModuleNr")
   result <- list(NrModules = length(unique(Clusters)),RegulatoryPrograms = regulatoryPrograms$Beta,AllRegulators=rownames(RegulatorData),
-                 AllGenes = rownames(Data),ModuleMembership = ModuleMembership,AutoRegulationReport=regulatoryPrograms$AutoRegulationReport)
+                 AllGenes = rownames(Data),ModuleMembership = ModuleMembership,AutoRegulationReport=regulatoryPrograms$AutoRegulationReport,run_history=run_history)
   return(result)
 }
 
