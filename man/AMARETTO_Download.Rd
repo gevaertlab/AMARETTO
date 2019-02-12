@@ -11,6 +11,9 @@ AMARETTO_Download(CancerSite, TargetDirectory, downloadData = TRUE)
 
 \item{TargetDirectory}{Directory path to download data}
 }
+\value{
+result
+}
 \description{
 Downloading TCGA dataset for AMARETTO analysis
 }

@@ -56,8 +56,8 @@ The package *AMARETTO* contains functions to use the statistical algorithm AMARE
 To install the AMARETTO package, the easiest way is through bioconductor:
 
     ------------------------------------------------------------------
-    >source("http://bioconductor.org/biocLite.R")
-    >biocLite("AMARETTO")
+    >install.packages("BiocManager")
+    >BiocManager::install("gevaertlab/AMARETTO")
     ------------------------------------------------------------------
 
 Another way to install AMARETTO is to first download the appropriate file for your platform from the Bioconductor

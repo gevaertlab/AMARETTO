@@ -11,6 +11,9 @@ ComBat_NoFiles(dat, saminfo, type = "txt", write = FALSE,
 \arguments{
 \item{prior.plots}{}
 }
+\value{
+result
+}
 \description{
 ComBat_NoFiles
 }

@@ -23,6 +23,9 @@ CreateRegulatorData(MA_matrix = MA_matrix, CNV_matrix = NULL,
 
 \item{method}{Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.}
 }
+\value{
+result
+}
 \description{
 Determine potential regulator genes.
 Function to identify which genes' CNV and/or methylation statuses significantly predict expression of that gene. Input is output from Preprocess_CancerSite(). This function is used by AMARETTO_Initialize().

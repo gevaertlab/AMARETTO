@@ -15,6 +15,9 @@ AMARETTO_EvaluateTestSet(AMARETTOresults = AMARETTOresults,
 
 \item{RegulatorData_TestSet}{Test regulator data from CreateRegulatorData().}
 }
+\value{
+result
+}
 \description{
 Code to evaluate AMARETTO on a new gene expression test set. Uses output from AMARETTO_Run() and CreateRegulatorData().
 }
@@ -23,10 +26,11 @@ data('ProcessedDataLIHC')
 AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-                                    NrModules = 20, VarPercentage = 50)
-
+                                    NrModules = 20, VarPercentage = 60)
+\dontrun{
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
-
+}
+load(system.file("extdata","AMARETTOresults.rda",package = "AMARETTO"))
 AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults = AMARETTOresults,
                                                MA_Data_TestSet = AMARETTOinit$MA_matrix_Var,
                                                RegulatorData_TestSet = AMARETTOinit$RegulatorData)

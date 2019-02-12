@@ -16,7 +16,7 @@
 #' @import circlize
 #' @importFrom grDevices dev.off pdf
 #' @importFrom graphics lines par plot title
-#' @return
+#' @return result
 #' @export
 #'
 #' @examples
@@ -24,10 +24,11 @@
 #' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
 #'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
 #'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-#'                                     NrModules = 20, VarPercentage = 50)
-#'
+#'                                     NrModules = 20, VarPercentage = 60)
+#' \dontrun{
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
-#'
+#'}
+#' load(system.file("extdata","AMARETTOresults.rda",package = "AMARETTO"))
 #' ModuleNr <- 1 #define the module number to visualize
 #'
 #' AMARETTO_VisualizeModule(AMARETTOinit = AMARETTOinit,AMARETTOresults = AMARETTOresults,

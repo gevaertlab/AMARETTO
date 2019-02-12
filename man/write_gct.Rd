@@ -9,6 +9,9 @@ write_gct(data_in, file_address)
 \arguments{
 \item{file_address}{}
 }
+\value{
+result
+}
 \description{
 write_gct
 }

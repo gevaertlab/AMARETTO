@@ -11,6 +11,9 @@ geneFiltering(Type, MAdata, Percentage)
 
 \item{Percentage}{Minimum percentage by variance for filtering of genes; for example, 75\% would indicate that the CreateRegulatorData() function only analyses genes that have a variance above the 75th percentile across all samples.}
 }
+\value{
+result
+}
 \description{
 Function to filter gene expression matrix
 }

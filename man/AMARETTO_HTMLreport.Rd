@@ -35,15 +35,19 @@ AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, CNV_matrix = NULL,
 
 \item{GMTURL}{TRUE if second column of gmt contains URLs to gene set, FALSE if it contains a description}
 }
+\value{
+result
+}
 \description{
 Retrieve an interactive html report, including gene set enrichment analysis if asked for.
 }
 \examples{
+\dontrun{
 data('ProcessedDataLIHC')
 AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-                                    NrModules = 20, VarPercentage = 50)
+                                    NrModules = 20, VarPercentage = 60)
 
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 
@@ -52,5 +56,5 @@ AMARETTO_HTMLreport(AMARETTOinit= AMARETTOinit,AMARETTOresults= AMARETTOresults,
                     MET_matrix = ProcessedDataLIHC$MET_matrix,
                     VarPercentage=10,hyper_geo_test_bool=FALSE,
                     output_address='./')
-
+}
 }

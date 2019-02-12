@@ -16,6 +16,7 @@
 #' @param NrCores A numeric variable indicating the number of computer/server cores to use for paralellelization. Default is 1, i.e. no parallelization. Please check your computer or server's computing capacities before increasing this number.  Parallelization is done via the RParallel package. Mac vs. Windows environments may behave differently when using parallelization.
 #' @param method Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.
 #' @export
+#' @return result
 #' @import matrixStats
 #' @import callr
 #' @import Rcpp
@@ -28,14 +29,14 @@
 #' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
 #'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
 #'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-#'                                     NrModules = 20, VarPercentage = 50)
-#'
+#'                                     NrModules = 20, VarPercentage = 60)
+#' \dontrun{
 #' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
 #'                                     CNV_matrix = NULL,
 #'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
 #'                                     Driver_list = Driver_Genes[['MSigDB']],
-#'                                     NrModules = 20, VarPercentage = 50)
-#'
+#'                                     NrModules = 20, VarPercentage = 60)
+#'}
 AMARETTO_Initialize <-
   function(MA_matrix = MA_matrix,
            CNV_matrix = NULL,
@@ -130,7 +131,7 @@ AMARETTO_Initialize <-
 #' Function to run AMARETTO, a statistical algorithm to identify cancer drivers by integrating a variety of omics data from cancer and normal tissue.
 #' @param AMARETTOinit List output from AMARETTO_Initialize().
 #'
-#' @return
+#' @return result
 #' @export
 #' @import doParallel
 #' @import foreach
@@ -143,7 +144,7 @@ AMARETTO_Initialize <-
 #' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
 #'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
 #'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-#'                                     NrModules = 20, VarPercentage = 50)
+#'                                     NrModules = 20, VarPercentage = 60)
 #'
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 
@@ -193,7 +194,7 @@ AMARETTO_Run <- function(AMARETTOinit) {
 #' @param MA_Data_TestSet Gene expression matrix from a test set (that was not used in AMARETTO_Run()).
 #' @param RegulatorData_TestSet Test regulator data from CreateRegulatorData().
 #'
-#' @return
+#' @return result
 #' @export
 #'
 #' @examples
@@ -201,10 +202,11 @@ AMARETTO_Run <- function(AMARETTOinit) {
 #' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
 #'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
 #'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-#'                                     NrModules = 20, VarPercentage = 50)
-#'
+#'                                     NrModules = 20, VarPercentage = 60)
+#' \dontrun{
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
-#'
+#'}
+#' load(system.file("extdata","AMARETTOresults.rda",package = "AMARETTO"))
 #' AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults = AMARETTOresults,
 #'                                                MA_Data_TestSet = AMARETTOinit$MA_matrix_Var,
 #'                                                RegulatorData_TestSet = AMARETTOinit$RegulatorData)

@@ -16,6 +16,9 @@ FindTranscriptionallyPredictive_CNV(MA_matrix, CNV_matrix,
 
 \item{RsquareThreshold}{Threshold used to find relevant driver genes with CNV alterations: minimal R-square value between CNV and gene expression data.}
 }
+\value{
+result
+}
 \description{
 Function to identify which genes CNV significantly predict expression of that gene.
 }

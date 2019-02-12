@@ -14,6 +14,9 @@ get_firehoseData(downloadData = TRUE, saveDir = "./",
 \arguments{
 \item{printDisease_abbr}{}
 }
+\value{
+result
+}
 \description{
 Downloading TCGA dataset via firehose
 }

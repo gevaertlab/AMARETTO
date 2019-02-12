@@ -9,8 +9,8 @@
 #' @param PvalueThreshold Threshold used to find relevant driver genes with CNV alterations: maximal p-value.
 #' @param RsquareThreshold Threshold used to find relevant driver genes with CNV alterations: minimal R-square value between CNV and gene expression data.
 #' @param method Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.
+#' @return result
 #' @export
-#' @return
 #' @keywords internal
 #' @examples
 #' data('ProcessedDataLIHC')
@@ -146,7 +146,7 @@ CreateRegulatorData <-
 #' @param PvalueThreshold Threshold used to find relevant driver genes with CNV alterations: maximal p-value.
 #' @param RsquareThreshold Threshold used to find relevant driver genes with CNV alterations: minimal R-square value between CNV and gene expression data.
 #'
-#' @return
+#' @return result
 #' @keywords internal
 #'
 #' @examples
@@ -206,7 +206,7 @@ FindTranscriptionallyPredictive_CNV <-
 #' @param MAdata Processed gene expression data matrix ($MA_matrix element from Preprocess_CancerSite() list output).
 #' @param Percentage Minimum percentage by variance for filtering of genes; for example, 75\% would indicate that the CreateRegulatorData() function only analyses genes that have a variance above the 75th percentile across all samples.
 #'
-#' @return
+#' @return result
 #' @keywords internal
 #'
 #' @examples
@@ -233,7 +233,7 @@ geneFiltering <- function(Type, MAdata, Percentage) {
 #' Wrapper function for C-style formatted output.
 #'
 #' @param ...
-#' @return
+#' @return result
 #' @keywords internal
 #' @examples
 printf <- function(...) {

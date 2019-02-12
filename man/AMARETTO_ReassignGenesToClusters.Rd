@@ -10,6 +10,9 @@ AMARETTO_ReassignGenesToClusters(Data, RegulatorData, Beta, Clusters,
 \arguments{
 \item{AutoRegulation}{}
 }
+\value{
+result
+}
 \description{
 AMARETTO_ReassignGenesToClusters
 }

@@ -10,6 +10,9 @@ AMARETTO_LearnRegulatoryProgramsLarsen(Data, Clusters, RegulatorData,
 \arguments{
 \item{pmax}{}
 }
+\value{
+result
+}
 \description{
 AMARETTO_LearnRegulatoryProgramsLarsen
 }

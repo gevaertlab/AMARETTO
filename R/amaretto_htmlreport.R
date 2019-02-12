@@ -20,15 +20,16 @@
 #' @import DT
 #' @import reshape2
 #' @import rmarkdown
-#' @return
+#' @return result
 #' @export
 #'
 #' @examples
+#'\dontrun{
 #' data('ProcessedDataLIHC')
 #' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
 #'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
 #'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-#'                                     NrModules = 20, VarPercentage = 50)
+#'                                     NrModules = 20, VarPercentage = 60)
 #'
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 #'
@@ -37,7 +38,7 @@
 #'                     MET_matrix = ProcessedDataLIHC$MET_matrix,
 #'                     VarPercentage=10,hyper_geo_test_bool=FALSE,
 #'                     output_address='./')
-#'
+#'}
 AMARETTO_HTMLreport <-
   function(AMARETTOinit,
            AMARETTOresults,
@@ -450,7 +451,7 @@ AMARETTO_HTMLreport <-
 #' @param testgmtfile The gmt file with gene sets to test. In our case, the gmt file of the modules.
 #' @param NrCores Number of cores used for parallelization.
 #' @param ref.numb.genes The total number of genes teste, standard equal to 45 956 (MSIGDB standard).
-#'
+#' @return result
 #' @import doParallel
 #' @keywords internal
 HyperGTestGeneEnrichment <-
@@ -505,6 +506,7 @@ HyperGTestGeneEnrichment <-
   }
 
 #' GmtFromModules
+#' @return result
 #' @param AMARETTOinit List output from AMARETTO_Initialize().
 #' @param AMARETTOresults List output from AMARETTO_Run().
 #' @keywords internal
@@ -536,7 +538,7 @@ GmtFromModules <- function(AMARETTOinit, AMARETTOresults) {
 #' GeneSetDescription
 #' @param filename The name of the gmt file.
 #'
-#' @return
+#' @return result
 #' @keywords internal
 #' @examples
 GeneSetDescription <- function(filename) {
@@ -561,7 +563,7 @@ GeneSetDescription <- function(filename) {
 #' readGMT
 #' @param filename
 #'
-#' @return
+#' @return result
 #' @keywords internal
 #'
 #' @examples

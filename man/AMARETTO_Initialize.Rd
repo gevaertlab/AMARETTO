@@ -34,6 +34,9 @@ AMARETTO_Initialize(MA_matrix = MA_matrix, CNV_matrix = NULL,
 
 \item{method}{Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.}
 }
+\value{
+result
+}
 \description{
 Code used to initialize the seed clusters for an AMARETTO run.
 Requires processed gene expressiosn (rna-seq or microarray), CNV (usually from a GISTIC run), and methylation (from MethylMix, provided in this package) data.
@@ -45,12 +48,12 @@ data('Driver_Genes')
 AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-                                    NrModules = 20, VarPercentage = 50)
-
+                                    NrModules = 20, VarPercentage = 60)
+\dontrun{
 AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
                                     CNV_matrix = NULL,
                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
                                     Driver_list = Driver_Genes[['MSigDB']],
-                                    NrModules = 20, VarPercentage = 50)
-
+                                    NrModules = 20, VarPercentage = 60)
+}
 }

@@ -9,6 +9,9 @@ design.mat(saminfo)
 \arguments{
 \item{saminfo}{}
 }
+\value{
+result
+}
 \description{
 design.mat
 }

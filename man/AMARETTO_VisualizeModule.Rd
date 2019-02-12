@@ -25,6 +25,9 @@ AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults,
 
 \item{order_samples}{Order samples in heatmap by mean or by clustering.}
 }
+\value{
+result
+}
 \description{
 Function to visualize the gene modules
 }
@@ -33,10 +36,11 @@ data('ProcessedDataLIHC')
 AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-                                    NrModules = 20, VarPercentage = 50)
-
+                                    NrModules = 20, VarPercentage = 60)
+\dontrun{
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
-
+}
+load(system.file("extdata","AMARETTOresults.rda",package = "AMARETTO"))
 ModuleNr <- 1 #define the module number to visualize
 
 AMARETTO_VisualizeModule(AMARETTOinit = AMARETTOinit,AMARETTOresults = AMARETTOresults,

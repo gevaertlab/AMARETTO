@@ -9,6 +9,9 @@ Beta.NA(y, X)
 \arguments{
 \item{X}{}
 }
+\value{
+result
+}
 \description{
 Beta.NA
 }

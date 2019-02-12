@@ -9,6 +9,9 @@ bprior(gamma.hat)
 \arguments{
 \item{gamma.hat}{}
 }
+\value{
+result
+}
 \description{
 bprior
 }

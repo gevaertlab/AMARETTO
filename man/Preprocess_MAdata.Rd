@@ -9,6 +9,9 @@ Preprocess_MAdata(CancerSite, MAEO_ge)
 \arguments{
 \item{MAEO_ge}{}
 }
+\value{
+result
+}
 \description{
 Preprocess_MAdata
 }

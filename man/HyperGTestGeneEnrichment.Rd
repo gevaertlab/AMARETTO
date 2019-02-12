@@ -16,6 +16,9 @@ HyperGTestGeneEnrichment(gmtfile, testgmtfile, NrCores,
 
 \item{ref.numb.genes}{The total number of genes teste, standard equal to 45 956 (MSIGDB standard).}
 }
+\value{
+result
+}
 \description{
 Calculates the p-values for unranked gene set enrichment based on two gmt files as input and the hyper geometric test.
 }

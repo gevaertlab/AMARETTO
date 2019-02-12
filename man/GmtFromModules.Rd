@@ -11,6 +11,9 @@ GmtFromModules(AMARETTOinit, AMARETTOresults)
 
 \item{AMARETTOresults}{List output from AMARETTO_Run().}
 }
+\value{
+result
+}
 \description{
 GmtFromModules
 }

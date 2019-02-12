@@ -9,6 +9,9 @@ GeneSetDescription(filename)
 \arguments{
 \item{filename}{The name of the gmt file.}
 }
+\value{
+result
+}
 \description{
 GeneSetDescription
 }

@@ -9,6 +9,9 @@
 \arguments{
 \item{dat}{}
 }
+\value{
+result
+}
 \description{
 Trims the data of extra columns, note your array names cannot be named 'X' or start with 'X.'
 }

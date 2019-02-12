@@ -7,9 +7,25 @@
 AMARETTO_CreateRegulatorPrograms(AMARETTOinit, AMARETTOresults)
 }
 \arguments{
-\item{AMARETTOresults}{}
+\item{AMARETTOinit}{List output from AMARETTO_Initialize().}
+
+\item{AMARETTOresults}{List output from AMARETTO_Run()}
+}
+\value{
+result
 }
 \description{
 AMARETTO_CreateRegulatorPrograms
 }
-\keyword{internal}
+\examples{
+data('ProcessedDataLIHC')
+AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
+                                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
+                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
+                                    NrModules = 20, VarPercentage = 60)
+\dontrun{
+AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
+}
+load(system.file("extdata","AMARETTOresults.rda",package = "AMARETTO"))
+AMARETTO_RP <- AMARETTO_CreateRegulatorPrograms(AMARETTOinit,AMARETTOresults)
+}

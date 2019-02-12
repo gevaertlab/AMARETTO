@@ -9,6 +9,9 @@ build.design(vec, des = NULL, start = 2)
 \arguments{
 \item{start}{}
 }
+\value{
+result
+}
 \description{
 Next two functions make the design matrix (X) from the sample info file
 }

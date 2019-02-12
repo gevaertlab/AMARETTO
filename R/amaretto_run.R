@@ -6,7 +6,7 @@
 #' @param Parameters
 #' @param NrCores
 #'
-#' @return
+#' @return result
 #' @keywords internal
 #' @examples
 AMARETTO_LarsenBased <-
@@ -100,7 +100,7 @@ AMARETTO_LarsenBased <-
 #' @param alpha
 #' @param pmax
 #'
-#' @return
+#' @return result
 #' @keywords internal
 #' @examples
 AMARETTO_LearnRegulatoryProgramsLarsen <-
@@ -257,7 +257,7 @@ AMARETTO_LearnRegulatoryProgramsLarsen <-
 #' @param Clusters
 #' @param AutoRegulation
 #'
-#' @return
+#' @return result
 #' @import Matrix
 #' @importFrom Matrix nnzero
 #' @keywords internal
@@ -319,12 +319,23 @@ AMARETTO_ReassignGenesToClusters <-
 
 #' AMARETTO_CreateModuleData
 #'
-#' @param AMARETTOinit
-#' @param AMARETTOresults
+#' @param AMARETTOinit List output from AMARETTO_Initialize().
+#' @param AMARETTOresults List output from AMARETTO_Run()
 #'
-#' @return
-#' @keywords internal
+#' @return result
+#' @keywords 
+#' @export
 #' @examples
+#' data('ProcessedDataLIHC')
+#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
+#'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
+#'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
+#'                                     NrModules = 20, VarPercentage = 60)
+#'\dontrun{
+#' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
+#' }
+#' load(system.file("extdata","AMARETTOresults.rda",package = "AMARETTO"))
+#' AMARETTO_MD <- AMARETTO_CreateModuleData(AMARETTOinit, AMARETTOresults)
 AMARETTO_CreateModuleData <-
   function(AMARETTOinit, AMARETTOresults) {
     ModuleData = matrix(0, AMARETTOresults$NrModules, length(colnames(AMARETTOinit$MA_matrix_Var)))
@@ -343,12 +354,23 @@ AMARETTO_CreateModuleData <-
 
 #' AMARETTO_CreateRegulatorPrograms
 #'
-#' @param AMARETTOinit
-#' @param AMARETTOresults
+#' @param AMARETTOinit  List output from AMARETTO_Initialize().
+#' @param AMARETTOresults List output from AMARETTO_Run()
 #'
-#' @return
-#' @keywords internal
+#' @return result
+#' @keywords 
+#' @export
 #' @examples
+#' data('ProcessedDataLIHC')
+#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
+#'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
+#'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
+#'                                     NrModules = 20, VarPercentage = 60)
+#'\dontrun{
+#' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
+#' }
+#' load(system.file("extdata","AMARETTOresults.rda",package = "AMARETTO"))
+#' AMARETTO_RP <- AMARETTO_CreateRegulatorPrograms(AMARETTOinit,AMARETTOresults)
 AMARETTO_CreateRegulatorPrograms <-
   function(AMARETTOinit, AMARETTOresults) {
     RegulatorProgramData = matrix(0, AMARETTOresults$NrModules, length(colnames(AMARETTOinit$MA_matrix_Var)))

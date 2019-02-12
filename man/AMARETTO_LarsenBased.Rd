@@ -9,6 +9,9 @@ AMARETTO_LarsenBased(Data, Clusters, RegulatorData, Parameters, NrCores)
 \arguments{
 \item{NrCores}{}
 }
+\value{
+result
+}
 \description{
 AMARETTO_LarsenBased
 }

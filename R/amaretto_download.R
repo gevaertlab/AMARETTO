@@ -3,8 +3,7 @@
 #' Downloading TCGA dataset for AMARETTO analysis
 #' @param CancerSite TCGA cancer code for data download
 #' @param TargetDirectory Directory path to download data
-#'
-#' @return
+#' @return result
 #' @import RCurl
 #' @import curatedTCGAData
 #' @import limma
@@ -12,10 +11,9 @@
 #' @importFrom limma strsplit2
 #' @importFrom utils data download.file read.csv untar write.table zip
 #' @export
-#'
 #' @examples
 #' TargetDirectory <- file.path(getwd(),'Downloads/') # path to data download directory
-#' CancerSite <- 'LIHC'
+#' CancerSite <- "LIHC"
 #' DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory)
 AMARETTO_Download <-
   function(CancerSite,
@@ -75,7 +73,7 @@ AMARETTO_Download <-
 #' @param untarUngzip
 #' @param printDisease_abbr
 #'
-#' @return
+#' @return result
 #' @keywords internal
 #' @examples
 get_firehoseData <-
@@ -342,7 +340,7 @@ get_firehoseData <-
 #' @param MET_matrix MET_matrix
 #' @import doParallel
 #' @import tidyverse
-#' @return
+#' @return result
 #' @export
 #'
 #' @examples
@@ -350,7 +348,7 @@ get_firehoseData <-
 #' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
 #'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
 #'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-#'                                     NrModules = 20, VarPercentage = 50)
+#'                                     NrModules = 20, VarPercentage = 60)
 #'
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 #'
@@ -455,7 +453,7 @@ AMARETTO_ExportResults <-
 #' @param data_in
 #' @param file_address
 #'
-#' @return
+#' @return result
 #' @keywords internal
 #' @examples
 write_gct <- function(data_in, file_address) {
