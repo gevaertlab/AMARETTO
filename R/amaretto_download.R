@@ -3,6 +3,7 @@
 #' Downloading TCGA dataset for AMARETTO analysis
 #' @param CancerSite TCGA cancer code for data download
 #' @param TargetDirectory Directory path to download data
+#' @param downloadData TRUE
 #' @return result
 #' @import RCurl
 #' @import curatedTCGAData
@@ -349,9 +350,10 @@ get_firehoseData <-
 #'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
 #'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
 #'                                     NrModules = 20, VarPercentage = 60)
-#'
+#' \dontrun{
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
-#'
+#'}
+#' load(system.file("extdata","AMARETTOresults.rda",package = "AMARETTO"))
 #' AMARETTO_ExportResults(AMARETTOinit,AMARETTOresults,'./')
 
 AMARETTO_ExportResults <-

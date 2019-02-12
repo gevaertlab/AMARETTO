@@ -19,7 +19,7 @@
 #' @import htmltools
 #' @import DT
 #' @import reshape2
-#' @import rmarkdown
+#' @importFrom rmarkdown run
 #' @return result
 #' @export
 #'

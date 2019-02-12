@@ -18,7 +18,7 @@
 #' @export
 #' @return result
 #' @import matrixStats
-#' @import callr
+#' @rawNamespace import(callr, except = run)
 #' @import Rcpp
 #' @importFrom matrixStats rowVars
 #' @importFrom matrixStats rowMads
@@ -145,8 +145,10 @@ AMARETTO_Initialize <-
 #'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
 #'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
 #'                                     NrModules = 20, VarPercentage = 60)
-#'
+#' \dontrun{
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
+#' }
+#' 
 
 AMARETTO_Run <- function(AMARETTOinit) {
   if (length(AMARETTOinit) == 0) {
