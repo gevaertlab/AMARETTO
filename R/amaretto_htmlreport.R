@@ -19,6 +19,9 @@
 #' @import htmltools
 #' @import DT
 #' @import reshape2
+#' @rawNamespace import(dplyr, except = count)
+#' @import readr
+#' @import tibble
 #' @importFrom rmarkdown run
 #' @return result
 #' @export

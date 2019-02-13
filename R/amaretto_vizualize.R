@@ -10,11 +10,11 @@
 #' @param ID Column used as sample name.
 #' @param order_samples Order samples in heatmap by mean or by clustering.
 #' @import tidyverse
-#' @import randomcoloR
 #' @import RColorBrewer
 #' @import ComplexHeatmap
 #' @import circlize
 #' @importFrom grDevices dev.off pdf
+#' @importFrom randomcoloR randomColor
 #' @importFrom graphics lines par plot title
 #' @return result
 #' @export
@@ -330,7 +330,7 @@ AMARETTO_VisualizeModule <-
         col <- c()
         for (sample_column in colnames(SAMPLE_annotation_fil)[colnames(SAMPLE_annotation_fil) != ID]) {
           newcol <-
-            randomColor::randomColor(length(unique(SAMPLE_annotation_fil[, sample_column])), luminosity = "bright")
+            randomcoloR::randomColor(length(unique(SAMPLE_annotation_fil[, sample_column])), luminosity = "bright")
           names(newcol) <-
             unique(SAMPLE_annotation_fil[, sample_column])
           col <- c(col, newcol)

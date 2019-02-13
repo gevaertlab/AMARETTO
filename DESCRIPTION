@@ -1,7 +1,7 @@
 Package: AMARETTO
 Type: Package
 Title: Regulatory network inference and driver gene evaluation using integrative multi-omics analysis and penalized regression.
-Version: 0.99.8
+Version: 0.99.9
 Date: 2016-06-06
 Author: Jayendra Shinde, Celine Everaert, Shaimaa Bakr, Mohsen Nabian
 	Nathalie Pochet and Olivier Gevaert
@@ -9,7 +9,7 @@ Maintainer: Olivier Gevaert <olivier.gevaert@gmail.com>
 Depends: R (>= 3.5), RCurl,limma, foreach, parallel, doParallel,
         glmnet (>= 2.0.16), matrixStats, RColorBrewer, impute, Matrix, utils,
         stats, grDevices, graphics, ComplexHeatmap, circlize, curatedTCGAData, 
-        tidyverse, Rcpp, DT, htmltools, reshape2, rmarkdown, randomcoloR
+        tidyverse, Rcpp, DT, htmltools, reshape2, rmarkdown, randomcoloR, dplyr, readr, tibble
 Description: Module network discovery using gene expression, CNV, and methylation data.
 License: MIT + file LICENSE
 LazyLoad: yes
