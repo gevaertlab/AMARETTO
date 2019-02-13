@@ -14,9 +14,10 @@
 #' @export
 #' @examples
 #' CancerSite <- 'CHOL'
-#' DataSetDirectories <- AMARETTO_Download(CancerSite,"./")
+#' DataSetDirectories <- AMARETTO_Download(CancerSite,"./", FALSE)
 AMARETTO_Download <- function(CancerSite, TargetDirectory, 
     downloadData = TRUE) {
+    ori.dir <- getwd()
     cat("Downloading MA, CNV and MET data for:", CancerSite, 
         "\n")
     Cancers = c("BLCA", "BRCA", "LUAD", "LUSC", "COADREAD", 
@@ -38,7 +39,7 @@ AMARETTO_Download <- function(CancerSite, TargetDirectory,
     CNVdirectory = get_firehoseData(downloadData, saveDir = TargetDirectory, 
         TCGA_acronym_uppercase = TCGA_acronym_uppercase, 
         dataType = dataType, dataFileTag = dataFileTag)
-    setwd("..")
+    setwd(ori.dir)
     return(list(MAdirectory = TargetDirectory, CNVdirectory = CNVdirectory))
 }
 

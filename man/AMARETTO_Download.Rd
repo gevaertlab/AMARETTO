@@ -21,5 +21,5 @@ Downloading TCGA dataset for AMARETTO analysis
 }
 \examples{
 CancerSite <- 'CHOL'
-DataSetDirectories <- AMARETTO_Download(CancerSite,"./")
+DataSetDirectories <- AMARETTO_Download(CancerSite,"./", FALSE)
 }
