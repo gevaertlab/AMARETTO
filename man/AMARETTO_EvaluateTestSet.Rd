@@ -30,7 +30,7 @@ AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
 \dontrun{
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 }
-load(system.file("extdata","AMARETTOresults.rda",package = "AMARETTO"))
+load(system.file('extdata','AMARETTOresults.rda',package = 'AMARETTO'))
 AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults = AMARETTOresults,
                                                MA_Data_TestSet = AMARETTOinit$MA_matrix_Var,
                                                RegulatorData_TestSet = AMARETTOinit$RegulatorData)

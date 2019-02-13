@@ -40,7 +40,7 @@ AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
 \dontrun{
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 }
-load(system.file("extdata","AMARETTOresults.rda",package = "AMARETTO"))
+load(system.file('extdata','AMARETTOresults.rda',package = 'AMARETTO'))
 ModuleNr <- 1 #define the module number to visualize
 
 AMARETTO_VisualizeModule(AMARETTOinit = AMARETTOinit,AMARETTOresults = AMARETTOresults,

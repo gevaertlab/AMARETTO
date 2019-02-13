@@ -26,6 +26,6 @@ AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
 \dontrun{
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 }
-load(system.file("extdata","AMARETTOresults.rda",package = "AMARETTO"))
+load(system.file('extdata','AMARETTOresults.rda',package = 'AMARETTO'))
 AMARETTO_MD <- AMARETTO_CreateModuleData(AMARETTOinit, AMARETTOresults)
 }

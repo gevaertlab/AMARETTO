@@ -37,94 +37,67 @@
 #'                                     Driver_list = Driver_Genes[['MSigDB']],
 #'                                     NrModules = 20, VarPercentage = 60)
 #'}
-AMARETTO_Initialize <-
-  function(MA_matrix = MA_matrix,
-           CNV_matrix = NULL,
-           MET_matrix = NULL,
-           Driver_list = NULL,
-           NrModules,
-           VarPercentage,
-           PvalueThreshold = 0.001,
-           RsquareThreshold = 0.1,
-           pmax = 10,
-           NrCores = 1,
-           OneRunStop = 0,
-           method = "union") {
-    if (is.null(MET_matrix) &
-        is.null(CNV_matrix) & is.null(Driver_list)) {
-      stop("Please select the correct input data types")
+AMARETTO_Initialize <- function(MA_matrix = MA_matrix, 
+    CNV_matrix = NULL, MET_matrix = NULL, Driver_list = NULL, 
+    NrModules, VarPercentage, PvalueThreshold = 0.001, 
+    RsquareThreshold = 0.1, pmax = 10, NrCores = 1, 
+    OneRunStop = 0, method = "union") {
+    if (is.null(MET_matrix) & is.null(CNV_matrix) & 
+        is.null(Driver_list)) {
+        stop("Please select the correct input data types")
     }
     if (is.null(CNV_matrix) & is.null(Driver_list)) {
-      if (ncol(MA_matrix) < 2 || ncol(MET_matrix) == 1) {
-        stop("AMARETTO cannot be run with less than two samples.\n")
-      }
+        if (ncol(MA_matrix) < 2 || ncol(MET_matrix) == 
+            1) {
+            stop("AMARETTO cannot be run with less than two samples.\n")
+        }
     }
     if (is.null(MET_matrix) & is.null(Driver_list)) {
-      if (ncol(MA_matrix) < 2 || ncol(CNV_matrix) == 1) {
-        stop("AMARETTO cannot be run with less than two samples.\n")
-      }
+        if (ncol(MA_matrix) < 2 || ncol(CNV_matrix) == 
+            1) {
+            stop("AMARETTO cannot be run with less than two samples.\n")
+        }
     }
     
-    if (!is.null(MA_matrix) &
-        !is.null(CNV_matrix) &
+    if (!is.null(MA_matrix) & !is.null(CNV_matrix) & 
         !is.null(MET_matrix) & !is.null(Driver_list)) {
-      if (ncol(MA_matrix) < 2 ||
-          ncol(CNV_matrix) == 1 || ncol(MET_matrix) == 1) {
-        stop("AMARETTO cannot be run with less than two samples.\n")
-      }
+        if (ncol(MA_matrix) < 2 || ncol(CNV_matrix) == 
+            1 || ncol(MET_matrix) == 1) {
+            stop("AMARETTO cannot be run with less than two samples.\n")
+        }
     }
-    MA_matrix_Var = geneFiltering("MAD", MA_matrix, VarPercentage)
+    MA_matrix_Var = geneFiltering("MAD", MA_matrix, 
+        VarPercentage)
     MA_matrix_Var = t(scale(t(MA_matrix_Var)))
     if (NrModules >= nrow(MA_matrix_Var)) {
-      stop(
-        paste0(
-          "The number of modules is too large compared to the number of genes. Choose a number of modules smaller than ",
-          nrow(MA_matrix_Var),
-          ".\n"
-        )
-      )
+        stop(paste0("The number of modules is too large compared to the number of genes. Choose a number of modules smaller than ", 
+            nrow(MA_matrix_Var), ".\n"))
     }
-    KmeansResults = kmeans(MA_matrix_Var, NrModules, iter.max = 100)
+    KmeansResults = kmeans(MA_matrix_Var, NrModules, 
+        iter.max = 100)
     Clusters = as.numeric(KmeansResults$cluster)
     names(Clusters) <- rownames(MA_matrix_Var)
     AutoRegulation = 2
     Lambda2 = 1e-04
     alpha = 1 - 1e-06
-    Parameters <-
-      list(
-        AutoRegulation = AutoRegulation,
-        OneRunStop = OneRunStop,
-        Lambda2 = Lambda2,
-        Mode = "larsen",
-        pmax = pmax,
-        alpha = alpha
-      )
-    RegulatorInfo = CreateRegulatorData(
-      MA_matrix = MA_matrix_Var,
-      CNV_matrix = CNV_matrix,
-      MET_matrix = MET_matrix,
-      Driver_list = Driver_list,
-      PvalueThreshold = PvalueThreshold,
-      RsquareThreshold = RsquareThreshold,
-      method = method
-    )
+    Parameters <- list(AutoRegulation = AutoRegulation, 
+        OneRunStop = OneRunStop, Lambda2 = Lambda2, 
+        Mode = "larsen", pmax = pmax, alpha = alpha)
+    RegulatorInfo = CreateRegulatorData(MA_matrix = MA_matrix_Var, 
+        CNV_matrix = CNV_matrix, MET_matrix = MET_matrix, 
+        Driver_list = Driver_list, PvalueThreshold = PvalueThreshold, 
+        RsquareThreshold = RsquareThreshold, method = method)
     if (length(RegulatorInfo) > 1) {
-      RegulatorData = RegulatorInfo$RegulatorData
-      Alterations = RegulatorInfo$Alterations
-      
-      
-      return(
-        list(
-          MA_matrix_Var = MA_matrix_Var,
-          RegulatorData = RegulatorData,
-          RegulatorAlterations = Alterations,
-          ModuleMembership = Clusters,
-          Parameters = Parameters,
-          NrCores = NrCores
-        )
-      )
+        RegulatorData = RegulatorInfo$RegulatorData
+        Alterations = RegulatorInfo$Alterations
+        
+        
+        return(list(MA_matrix_Var = MA_matrix_Var, 
+            RegulatorData = RegulatorData, RegulatorAlterations = Alterations, 
+            ModuleMembership = Clusters, Parameters = Parameters, 
+            NrCores = NrCores))
     }
-  }
+}
 
 #' AMARETTO_Run
 #'
@@ -151,42 +124,27 @@ AMARETTO_Initialize <-
 #' 
 
 AMARETTO_Run <- function(AMARETTOinit) {
-  if (length(AMARETTOinit) == 0) {
-    cat(
-      "For cancer ",
-      CancerSite,
-      " no drivers were find during the initialization step of AMARETTO"
-    )
-  } else {
-    if (nrow(AMARETTOinit$RegulatorData) == 1) {
-      cat(
-        "For cancer ",
-        CancerSite,
-        " only one driver is detected. AMARETTO cannot be run with less than two drivers.\n"
-      )
+    if (length(AMARETTOinit) == 0) {
+        cat("For cancer ", CancerSite, " no drivers were find during the initialization step of AMARETTO")
     } else {
-      cat(
-        "Running AMARETTO on",
-        length(rownames(AMARETTOinit$MA_matrix_Var)),
-        "genes and",
-        length(colnames(AMARETTOinit$MA_matrix_Var)),
-        "samples.\n"
-      )
-      cat("\tStopping if less then",
-          0.01 * length(rownames(AMARETTOinit$MA_matrix_Var)),
-          "genes reassigned.\n")
-      result = AMARETTO_LarsenBased(
-        AMARETTOinit$MA_matrix_Var,
-        AMARETTOinit$ModuleMembership,
-        AMARETTOinit$RegulatorData,
-        AMARETTOinit$Parameters,
-        AMARETTOinit$NrCores
-      )
-      result$ModuleData = AMARETTO_CreateModuleData(AMARETTOinit, result)
-      result$RegulatoryProgramData = AMARETTO_CreateRegulatorPrograms(AMARETTOinit, result)
-      return(result)
+        if (nrow(AMARETTOinit$RegulatorData) == 1) {
+            cat("For cancer ", CancerSite, " only one driver is detected. AMARETTO cannot be run with less than two drivers.\n")
+        } else {
+            cat("Running AMARETTO on", length(rownames(AMARETTOinit$MA_matrix_Var)), 
+                "genes and", length(colnames(AMARETTOinit$MA_matrix_Var)), 
+                "samples.\n")
+            cat("\tStopping if less then", 0.01 * length(rownames(AMARETTOinit$MA_matrix_Var)), 
+                "genes reassigned.\n")
+            result = AMARETTO_LarsenBased(AMARETTOinit$MA_matrix_Var, 
+                AMARETTOinit$ModuleMembership, AMARETTOinit$RegulatorData, 
+                AMARETTOinit$Parameters, AMARETTOinit$NrCores)
+            result$ModuleData = AMARETTO_CreateModuleData(AMARETTOinit, 
+                result)
+            result$RegulatoryProgramData = AMARETTO_CreateRegulatorPrograms(AMARETTOinit, 
+                result)
+            return(result)
+        }
     }
-  }
 }
 
 #' AMARETTO_EvaluateTestSet
@@ -208,85 +166,88 @@ AMARETTO_Run <- function(AMARETTOinit) {
 #' \dontrun{
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 #'}
-#' load(system.file("extdata","AMARETTOresults.rda",package = "AMARETTO"))
+#' load(system.file('extdata','AMARETTOresults.rda',package = 'AMARETTO'))
 #' AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults = AMARETTOresults,
 #'                                                MA_Data_TestSet = AMARETTOinit$MA_matrix_Var,
 #'                                                RegulatorData_TestSet = AMARETTOinit$RegulatorData)
-AMARETTO_EvaluateTestSet <-
-  function(AMARETTOresults = AMARETTOresults,
-           MA_Data_TestSet = MA_Data_TestSet,
-           RegulatorData_TestSet = RegulatorData_TestSet) {
+AMARETTO_EvaluateTestSet <- function(AMARETTOresults = AMARETTOresults, 
+    MA_Data_TestSet = MA_Data_TestSet, RegulatorData_TestSet = RegulatorData_TestSet) {
     nrSamples = ncol(MA_Data_TestSet)
     RegulatorNames = rownames(RegulatorData_TestSet)
     stats = mat.or.vec(AMARETTOresults$NrModules, 9)
-    Rsquare = mat.or.vec(AMARETTOresults$NrModules, 1)
-    RsquareAjusted = mat.or.vec(AMARETTOresults$NrModules, 1)
+    Rsquare = mat.or.vec(AMARETTOresults$NrModules, 
+        1)
+    RsquareAjusted = mat.or.vec(AMARETTOresults$NrModules, 
+        1)
     modules <- list()
     for (i in 1:AMARETTOresults$NrModules) {
-      currentRegulators = RegulatorNames[which(AMARETTOresults$RegulatoryPrograms[i,] != 0)]
-      nrPresentRegulators = sum((rownames(RegulatorData_TestSet) %in% currentRegulators))
-      currentPresentRegulators = (currentRegulators %in% rownames(RegulatorData_TestSet))
-      stats[i, 1] = nrPresentRegulators
-      stats[i, 2] = length(currentRegulators)
-      currentClusterGenes = AMARETTOresults$AllGenes[which(AMARETTOresults$ModuleMembership[, 1] == i)]
-      nrPresentClusterGenes = sum((rownames(MA_Data_TestSet) %in% currentClusterGenes))
-      stats[i, 3] = nrPresentClusterGenes
-      stats[i, 4] = length(currentClusterGenes)
-      stats[i, 5] = stats[i, 3] / stats[i, 4] * 100
-      currentWeights = AMARETTOresults$RegulatoryPrograms[i, which(AMARETTOresults$RegulatoryPrograms[i,] != 0)]
-      totalWeights = sum(abs(currentWeights))
-      presentWeights = currentWeights[currentPresentRegulators]
-      presentRegulators = currentRegulators[currentPresentRegulators]
-      totalWeightsPercentage = sum(abs(presentWeights)) / totalWeights * 100
-      modules[[i]] = currentClusterGenes[currentClusterGenes %in% rownames(MA_Data_TestSet)]
-      if (nrPresentRegulators > 0) {
-        predictions = (t(RegulatorData_TestSet[presentRegulators, , drop = FALSE])) %*% (presentWeights)  # need to make sure that the first argument remains a matrix.
-        predictions = data.matrix(predictions)
-        if (length(modules[[i]]) != 0) {
-          if (length(currentClusterGenes) > 1) {
-            outcome = apply(MA_Data_TestSet[currentClusterGenes,], 2, mean)
-          } else {
-            outcome = MA_Data_TestSet[currentClusterGenes,]
-          }
-          residuals = predictions - outcome
-          SStot = sum((outcome - mean(outcome)) ^ 2)
-          SSres = sum((predictions - outcome) ^ 2)
-          Rsquare[i] = 1 - (SSres / SStot)
-          RsquareAjusted[i] = Rsquare[i] - (nrPresentRegulators /
-                                              (nrSamples - 1 - nrPresentRegulators)) * (1 - Rsquare[i])
-          MSE = (1 / nrSamples) * sum((predictions - outcome) ^ 2)
-          
-          stats[i, 6] = totalWeightsPercentage
-          stats[i, 7] = Rsquare[i]
-          stats[i, 8] = RsquareAjusted[i]
-          stats[i, 9] = MSE
+        currentRegulators = RegulatorNames[which(AMARETTOresults$RegulatoryPrograms[i, 
+            ] != 0)]
+        nrPresentRegulators = sum((rownames(RegulatorData_TestSet) %in% 
+            currentRegulators))
+        currentPresentRegulators = (currentRegulators %in% 
+            rownames(RegulatorData_TestSet))
+        stats[i, 1] = nrPresentRegulators
+        stats[i, 2] = length(currentRegulators)
+        currentClusterGenes = AMARETTOresults$AllGenes[which(AMARETTOresults$ModuleMembership[, 
+            1] == i)]
+        nrPresentClusterGenes = sum((rownames(MA_Data_TestSet) %in% 
+            currentClusterGenes))
+        stats[i, 3] = nrPresentClusterGenes
+        stats[i, 4] = length(currentClusterGenes)
+        stats[i, 5] = stats[i, 3]/stats[i, 4] * 100
+        currentWeights = AMARETTOresults$RegulatoryPrograms[i, 
+            which(AMARETTOresults$RegulatoryPrograms[i, 
+                ] != 0)]
+        totalWeights = sum(abs(currentWeights))
+        presentWeights = currentWeights[currentPresentRegulators]
+        presentRegulators = currentRegulators[currentPresentRegulators]
+        totalWeightsPercentage = sum(abs(presentWeights))/totalWeights * 
+            100
+        modules[[i]] = currentClusterGenes[currentClusterGenes %in% 
+            rownames(MA_Data_TestSet)]
+        if (nrPresentRegulators > 0) {
+            predictions = (t(RegulatorData_TestSet[presentRegulators, 
+                , drop = FALSE])) %*% (presentWeights)  # need to make sure that the first argument remains a matrix.
+            predictions = data.matrix(predictions)
+            if (length(modules[[i]]) != 0) {
+                if (length(currentClusterGenes) > 1) {
+                  outcome = apply(MA_Data_TestSet[currentClusterGenes, 
+                    ], 2, mean)
+                } else {
+                  outcome = MA_Data_TestSet[currentClusterGenes, 
+                    ]
+                }
+                residuals = predictions - outcome
+                SStot = sum((outcome - mean(outcome))^2)
+                SSres = sum((predictions - outcome)^2)
+                Rsquare[i] = 1 - (SSres/SStot)
+                RsquareAjusted[i] = Rsquare[i] - (nrPresentRegulators/(nrSamples - 
+                  1 - nrPresentRegulators)) * (1 - 
+                  Rsquare[i])
+                MSE = (1/nrSamples) * sum((predictions - 
+                  outcome)^2)
+                
+                stats[i, 6] = totalWeightsPercentage
+                stats[i, 7] = Rsquare[i]
+                stats[i, 8] = RsquareAjusted[i]
+                stats[i, 9] = MSE
+            } else {
+                stats[i, 6] = totalWeightsPercentage
+                stats[i, 7] = 0
+                stats[i, 8] = 0
+                stats[i, 9] = 0
+            }
         } else {
-          stats[i, 6] = totalWeightsPercentage
-          stats[i, 7] = 0
-          stats[i, 8] = 0
-          stats[i, 9] = 0
+            stats[i, 6] = 0
+            stats[i, 7] = 0
+            stats[i, 8] = 0
+            stats[i, 9] = 0
         }
-      } else {
-        stats[i, 6] = 0
-        stats[i, 7] = 0
-        stats[i, 8] = 0
-        stats[i, 9] = 0
-      }
     }
-    dimnames(stats) <-
-      list(
-        rownames(stats, do.NULL = FALSE, prefix = "Module_"),
-        c(
-          "nrPresReg",
-          "nrTotalReg",
-          "nrPresGen",
-          "nrTotGen",
-          "percPresGen",
-          "percWeightPresent",
-          "Rsquare",
-          "RsquareAdjusted",
-          "MSE"
-        )
-      )
+    dimnames(stats) <- list(rownames(stats, do.NULL = FALSE, 
+        prefix = "Module_"), c("nrPresReg", "nrTotalReg", 
+        "nrPresGen", "nrTotGen", "percPresGen", "percWeightPresent", 
+        "Rsquare", "RsquareAdjusted", "MSE"))
     return(stats)
-  }
+}
