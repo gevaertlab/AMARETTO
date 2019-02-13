@@ -33,13 +33,14 @@ Function to visualize the gene modules
 }
 \examples{
 data('ProcessedDataLIHC')
+\dontrun{
 AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
                                     NrModules = 20, VarPercentage = 60)
-\dontrun{
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 }
+load(system.file('extdata','AMARETTOinit.rda',package = 'AMARETTO'))
 load(system.file('extdata','AMARETTOresults.rda',package = 'AMARETTO'))
 ModuleNr <- 1 #define the module number to visualize
 

@@ -159,13 +159,15 @@ AMARETTO_Run <- function(AMARETTOinit) {
 #'
 #' @examples
 #' data('ProcessedDataLIHC')
+#' \dontrun{
 #' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
 #'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
 #'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
 #'                                     NrModules = 20, VarPercentage = 60)
-#' \dontrun{
+#'
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 #'}
+#' load(system.file('extdata','AMARETTOinit.rda',package = 'AMARETTO'))
 #' load(system.file('extdata','AMARETTOresults.rda',package = 'AMARETTO'))
 #' AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults = AMARETTOresults,
 #'                                                MA_Data_TestSet = AMARETTOinit$MA_matrix_Var,
