@@ -1,7 +1,7 @@
 Package: AMARETTO
 Type: Package
 Title: Regulatory Network Inference and Driver Gene Evaluation using Integrative Multi-Omics Analysis and Penalized Regression.
-Version: 0.99.12
+Version: 0.99.13
 Date: 2016-06-06
 Author: Jayendra Shinde, Celine Everaert, Shaimaa Bakr, Mohsen Nabian
 	Nathalie Pochet and Olivier Gevaert
