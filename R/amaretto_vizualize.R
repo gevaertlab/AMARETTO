@@ -29,12 +29,11 @@
 #'}
 #' load(system.file('extdata','AMARETTOinit.rda',package = 'AMARETTO'))
 #' load(system.file('extdata','AMARETTOresults.rda',package = 'AMARETTO'))
-#' ModuleNr <- 1 #define the module number to visualize
 #'
 #' AMARETTO_VisualizeModule(AMARETTOinit = AMARETTOinit,AMARETTOresults = AMARETTOresults,
 #'                          CNV_matrix = ProcessedDataLIHC$CNV,
 #'                          MET_matrix = ProcessedDataLIHC$MET,
-#'                          ModuleNr = ModuleNr)
+#'                          ModuleNr = 1)
 
 AMARETTO_VisualizeModule <- function(AMARETTOinit, 
     AMARETTOresults, CNV_matrix = NULL, MET_matrix = NULL, 

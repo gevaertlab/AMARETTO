@@ -236,13 +236,15 @@ get_firehoseData <- function(downloadData = TRUE, saveDir = "./",
 #'
 #' @examples
 #' data('ProcessedDataLIHC')
+#' \dontrun{
 #' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
 #'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
 #'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
 #'                                     NrModules = 20, VarPercentage = 60)
-#' \dontrun{
+#' 
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 #'}
+#' load(system.file('extdata','AMARETTOinit.rda',package = 'AMARETTO'))
 #' load(system.file('extdata','AMARETTOresults.rda',package = 'AMARETTO'))
 #' AMARETTO_ExportResults(AMARETTOinit,AMARETTOresults,'./')
 
