@@ -9,6 +9,8 @@ author:
     affiliation: Stanford Center for Biomedical Informatics Research (BMIR), Department of Medicine and Biomedical Data Science, 1265 Welch Rd, Stanford, CA, USA
   - name: Mohsen Nabian
     affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Cambridge, MA, USA
+  - name: Jishu Xu
+    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Cambridge, MA, USA
   - name: Nathalie Pochet
     affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Cambridge, MA, USA
     email: npochet@broadinstitute.org
@@ -39,9 +41,8 @@ vignette: |
   
   
 ---
-```{r ,echo=FALSE,results='hide', message=FALSE, warning=FALSE}
 
-```
+
 
 
 
@@ -55,6 +56,11 @@ The package *AMARETTO* contains functions to use the statistical algorithm AMARE
 
 To install the AMARETTO package, the easiest way is through bioconductor:
 
+```{r setup}
+library(devtools)
+devtools::install_github("gevaertlab/AMARETTO")
+```
+    
     ------------------------------------------------------------------
     >install.packages("BiocManager")
     >BiocManager::install("gevaertlab/AMARETTO")
@@ -132,9 +138,16 @@ We also added COADREAD as a combination of colon and rectal cancer, as reports h
 a single disease. The cancer code is needed to download data from TCGA and one needs to decide on a target location
 to save the data locally in the TargetDirectory, e.g. the /Downloads/ folder on a mac.
 
+```{r}
+TargetDirectory <- tempfile()
+CancerSite <- "CHOL"
+DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory)
+
+```
+
     ------------------------------------------------------------------
-    > TargetDirectory <- "./Downloads/"
-    > CancerSite <- "READ"
+    > TargetDirectory <- tempfile()
+    > CancerSite <- "CHOL"
     > DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory)
     ------------------------------------------------------------------
     
@@ -145,8 +158,8 @@ the paths to the downloaded folder for preprocessing. AMARETTO_Download() can al
 the data as follows:
 
     ------------------------------------------------------------------
-    > TargetDirectory <- "./Downloads/"
-    > CancerSite <- "READ"
+    > TargetDirectory <- tempfile()
+    > CancerSite <- "CHOL"
     > DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory,FALSE)
     ------------------------------------------------------------------
     

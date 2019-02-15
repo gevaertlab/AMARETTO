@@ -6,7 +6,7 @@ Date: 2016-06-06
 Author: Jayendra Shinde, Celine Everaert, Shaimaa Bakr, Mohsen Nabian
 	Nathalie Pochet and Olivier Gevaert
 Maintainer: Olivier Gevaert <olivier.gevaert@gmail.com>
-Depends: R (>= 3.6), RCurl,limma, foreach, parallel, doParallel,
+Depends: R (>= 3.5), RCurl,limma, foreach, parallel, doParallel,
         glmnet (>= 2.0.16), matrixStats, RColorBrewer, impute, Matrix, utils,
         stats, grDevices, graphics, ComplexHeatmap, circlize, curatedTCGAData, 
         tidyverse, Rcpp, DT, htmltools, reshape2, rmarkdown, dplyr, readr, tibble
