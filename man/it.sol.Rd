@@ -9,6 +9,9 @@ it.sol(sdat, g.hat, d.hat, g.bar, t2, a, b, conv = 1e-04)
 \arguments{
 \item{conv}{}
 }
+\value{
+result
+}
 \description{
 Pass in entire data set, the design matrix for the entire data, the batch means, the batch variances, priors (m, t2, a, b), columns of the data  matrix for the batch. Uses the EM to find the parametric batch adjustments
 }

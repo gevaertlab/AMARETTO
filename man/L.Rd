@@ -9,6 +9,9 @@ L(x, g.hat, d.hat)
 \arguments{
 \item{d.hat}{}
 }
+\value{
+result
+}
 \description{
 likelihood function
 }

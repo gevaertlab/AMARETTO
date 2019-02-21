@@ -4,10 +4,13 @@
 \alias{trim.dat}
 \title{trim.dat}
 \usage{
-\method{trim}{dat}(dat)
+trim.dat(dat)
 }
 \arguments{
 \item{dat}{}
+}
+\value{
+result
 }
 \description{
 Trims the data of extra columns, note your array names cannot be named 'X' or start with 'X.'

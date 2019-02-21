@@ -9,6 +9,9 @@ list.batch(saminfo)
 \arguments{
 \item{saminfo}{}
 }
+\value{
+result
+}
 \description{
 Makes a list with elements pointing to which array belongs to which batch
 }
