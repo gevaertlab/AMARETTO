@@ -1,0 +1,169 @@
+---
+title: <center>AMARETTO Regulatory Module `r toString(i)` \n Phenotypes Report</center>
+output: 
+  html_document:
+    theme: cerulean
+    highlight: NULL
+
+---
+<center>
+<br><br>
+<a href="../phenotypeindex.html"><button type="button"  class="btn btn-primary">Index Page</button></a>
+<br><br>
+
+```{r, echo=FALSE,include = FALSE}
+library(knitr)
+# You need this code to conduct the magic dependences attaching...
+DT::datatable(matrix())
+```
+
+```{r phenotypes,  results="asis", echo=FALSE}
+for(parameter in parameters){
+  #p_survival<-matrix(nrow=AMARETTOresults$NrModules, ncol=11)
+    moduleNr <- paste0("Module_",i)
+    sample_size<-nrow(annotation%>%select(!!parameter) %>% drop_na())
+    
+    cat(sprintf("\n\n## %s\n\n", gsub("_|\\."," ",parameter)))
+    cat("\n\n")
+    
+    cat("Phenotypic association was calculated for ",parameter, " on ",sample_size," patients.<br>")
+    test<-typelist[parameter]
+    
+    if (test == "cathegorical" && sample_size<30 ){
+      annotation[,parameter]<-as.factor(annotation[,parameter])
+      if (nlevels(annotation[,parameter])==2){
+        cat("A wilcox test was performed for ",parameter,".\n")
+        cat("\n\n#### Test Results \n\n")
+        testresults<-wilcox.test(annotation[,moduleNr]~annotation[,parameter], conf.int = TRUE)
+        
+        cat("pvalue: ",testresults$p.value,"\n\n")
+        cat("confidence interval: ",testresults$conf.int,"\n\n")
+        cat("W statistics: ",testresults$statistic,"\n\n")
+        
+        print(ggplot(annotation %>% drop_na(!!parameter),aes(x=get(parameter), y=get(moduleNr), fill=get(parameter)))+
+              geom_boxplot()+
+              geom_jitter(color="lightgray")+
+              theme_classic()+
+              theme(legend.position = "none")+
+              labs(x=parameter,y=sub("_"," ",moduleNr),caption=paste0("p=",round(testresults$p.value,4))))
+
+      } else if (nlevels(annotation[,parameter])>2){
+        cat("A Kruskal-Wallis Rank sum test was performed for ",parameter,".\n")
+        cat("\n\n#### Test Results \n\n")
+        testresults <- kruskal.test(annotation[,i]~annotation[,parameter])
+        
+        cat("pvalue: ",testresults$p.value,"\n\n")
+        cat("KW Chi-squared statistics: ",testresults$statistic,"\n\n")
+        
+        print(ggplot(annotation %>% drop_na(!!parameter),aes(x=get(parameter), y=get(moduleNr), fill=get(parameter)))+
+              geom_boxplot()+
+              geom_jitter(color="lightgray")+
+              theme_classic()+
+              theme(legend.position = "none",axis.text.x = element_text(angle=90))+
+              labs(x=parameter,y=sub("_"," ",moduleNr)))
+      } else {
+        stop(paste0(parameter, " has less than two levels."))
+      }
+    } else if (test == "cathegorical" && sample_size>=30){
+      annotation[,parameter]<-as.factor(annotation[,parameter])
+      if (nlevels(annotation[,parameter])==2){
+        cat("A t-test was performed for ",parameter,".\n")
+        cat("\n\n#### Test Results \n\n")
+        testresults<-t.test(annotation[,moduleNr]~annotation[,parameter])
+        
+        cat("pvalue: ",testresults$p.value,"\n\n")
+        cat("confidence interval: ",testresults$conf.int,"\n\n")
+        cat("t statistics: ",testresults$statistic,"\n\n")
+        
+        print(ggplot(annotation %>% drop_na(!!parameter),aes(x=get(parameter), y=get(moduleNr), fill=get(parameter)))+
+              geom_boxplot()+
+              theme_classic()+
+              theme(legend.position = "none")+
+              labs(x=parameter,y=sub("_"," ",moduleNr)))
+        
+      } else if (nlevels(annotation[,parameter])>2){
+        cat("An ANOVA test is performed for ",parameter, ". The levels are: ",paste0(levels(annotation[,parameter]),collapse=", "),".\n")
+        cat("\n\n#### Test Results \n\n")
+        lmod<-lm(annotation[,moduleNr]~annotation[,parameter])
+        testresults<-aov(annotation[,moduleNr]~annotation[,parameter])
+        
+        cat("pvalue: ",unlist(summary(testresults)[[1]][5])[1],"\n\n")
+        cat("F statistics: ",unlist(summary(testresults)[[1]][4])[1],"\n\n")
+        
+        print(ggplot(annotation %>% drop_na(!!parameter),aes(x=get(parameter), y=get(moduleNr), fill=get(parameter)))+
+                    geom_boxplot()+
+                    theme_classic()+
+                    theme(legend.position = "none",axis.text.x = element_text(angle=90))+
+                    labs(x="",y=sub("_"," ",moduleNr)))
+        cat("<br><br>")
+        print(ggplot(rownames_to_column(as.data.frame(TukeyHSD(testresults)$`annotation[, parameter]`),"comparison"))+
+          geom_pointrange(aes(x=comparison,y=diff,ymin=lwr,ymax=upr))+
+          geom_hline(yintercept = 0, color="gray",linetype="longdash")+
+          theme_classic()+
+          coord_flip()+
+          labs(y="Differences between two groups",x="Group comparisons")+
+          theme(axis.line.y = element_blank(),axis.ticks.y = element_blank()))
+        cat("<br><br>")
+        cat("Result table one by one analysis: \n\n")
+        print(as.data.frame(TukeyHSD(testresults)$`annotation[, parameter]`) %>% mutate(Groups=rownames(.),`p adj`= cell_spec(round(`p adj`,5), background = ifelse(`p adj` < 0.05, "green", "white"))) %>% select(Groups,`p adj`,diff,lwr,upr)%>%
+                kable(escape = F,digits=3,col.names=c("Groups","Padj","Difference","CI Lower Boundary","CI Higher Boundary")) %>%
+                kable_styling() %>%
+                scroll_box(width = "100%", height = "200px"))
+                 # colnames=c("Difference","CI Lower Boundary","CI Higher Boundary","Padj"))))
+        cat("\n\n")
+      
+        } else {
+        stop(paste0(parameter, " has only one level."))
+      }
+    } else if ( test=="ordinal" || (test == "continuous" && sample_size<30)){
+      if (test == "continuous"){
+        annotation[,parameter] <- as.numeric(annotation[,parameter])
+        cat("A Spearman Correlation was performed for ",parameter,".\n")
+        cat("\n\n#### Test Results \n\n")
+      } else {
+        annotation[,parameter]<-as.factor(annotation[,parameter])
+        cat("A Spearman correlation was calculated. The order of the factor levels is: ",paste0(levels(annotation[,parameter]),collapse=", "),".\n")
+        cat("\n\n#### Test Results \n\n")
+        annotation[,parameter]<-as.numeric(annotation[,parameter])
+      }
+
+        testresults<-suppressWarnings(cor.test(annotation[,moduleNr],as.numeric(annotation[,parameter]), method="spearman", use="complete.obs"))
+        
+        cat("pvalue: ",testresults$p.value,"\n\n")
+        cat("S statistics: ",testresults$statistic,"\n\n")
+       
+      if (test == "continuous"){ 
+        print(ggplot(annotation %>% drop_na(!!parameter),aes(x=get(parameter), y=get(moduleNr), fill=get(parameter)))+
+                  geom_point()+
+                  theme_classic()+
+                  theme(legend.position = "none")+
+                  labs(y=sub("_"," ",moduleNr),x=" "))
+      } else {
+        print(ggplot(annotation %>% drop_na(!!parameter),aes(x=as.factor(get(parameter)), y=get(moduleNr), fill=get(parameter)))+
+                  geom_boxplot()+
+                  theme_classic()+
+                  theme(legend.position = "none")+
+                  labs(y=sub("_"," ",moduleNr),x=" "))
+      }
+    } else if ( test == "continuous" && sample_size>=30){
+      cat("A Pearson Correlation was performed for ",parameter,".\n")
+      cat("\n\n#### Test Results \n\n")
+      annotation[,parameter]<-as.numeric(annotation[,parameter])
+      testresults <- suppressWarnings(cor.test(annotation[,moduleNr],as.numeric(annotation[,parameter]), method="pearson", use="complete.obs"))
+       
+      cat("pvalue: ",testresults$p.value,"\n\n")
+      cat("S statistics: ",testresults$statistic,"\n\n")
+       
+      print(ggplot(annotation %>% drop_na(!!parameter),aes(x=get(parameter), y=get(moduleNr), fill=get(parameter)))+
+                  geom_point()+
+                  geom_smooth(method="lm")+
+                  theme_classic()+
+                  theme(legend.position = "none")+
+                  labs(y=sub("_"," ",moduleNr),x=" "))
+    }
+    cat("<br><br><br>")
+} 
+```
+
+<br><br><br>
+</center>

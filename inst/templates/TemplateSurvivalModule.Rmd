@@ -1,0 +1,46 @@
+---
+title: <center>AMARETTO Regulatory Module `r toString(i)` Survival Report</center>
+output: 
+  html_document:
+    theme: cerulean
+    highlight: NULL
+
+---
+<center>
+<br><br>
+<a href="../survivalindex.html"><button type="button"  class="btn btn-primary">Index Page</button></a>
+<br><br>
+
+## Cox Proportional Hazards Regression
+<br><br><br>
+```{r coxsurvival, echo=FALSE}
+cox_reg
+```
+<br><br><br>
+```{r hazard, echo=FALSE}
+print(ggforest(cox_reg,data=datasurvfit))
+```
+<br><br><br>
+
+## Kaplan Meier Analysis based on median
+<br><br><br>
+```{r KM, echo=FALSE}
+ggsurvplot(c_meanexp,data=datasurvfit,
+                         pval = TRUE, conf.int = TRUE,
+                         risk.table = TRUE, # Add risk table
+                         risk.table.col = "strata", # Change risk table color by groups
+                         linetype = "strata", # Change line type by groups
+                         surv.median.line = NULL, # Specify median survival
+                         font.tickslab = c(12, "plain", "black"),
+                         ggtheme = theme_classic(), # Change ggplot2 theme
+                         xlab = "Time in years",
+                         legend = "bottom",
+                         legend.labs = c("Low Expression", "High Expression"),
+                         risk.table.y.text = FALSE)
+```
+<br><br><br>
+```{r KMstat, echo=FALSE}
+summary(c_meanexp)$table
+```
+<br><br><br>
+</center>

@@ -1,0 +1,26 @@
+---
+title: <center>AMARETTO Index Survival Report</center>
+output: 
+  html_document:
+    theme: cerulean
+    highlight: NULL
+
+---
+<center>
+
+## Survival Analysis
+```{r prepare data, echo=FALSE}
+library(DT)
+datatable(phenotypetable %>% mutate(ModuleNr=paste0('<a href="./modules/module',sub("Module_"," ",ModuleNr),'.html">',sub("_"," ",ModuleNr),'</a>')),
+          class = 'display',
+          extensions = 'Buttons',
+          rownames = FALSE,
+          colnames=gsub("_"," ",colnames(phenotypetable)),
+          options = list(pageLength = 10,dom = 'Bfrtip',buttons = list(list(extend = 'csv',text = "Save CSV", title="SurvivalStats"))),
+          escape=FALSE) %>%
+          formatRound(-1,3) %>% 
+          formatStyle(grep("p$|padj$",colnames(phenotypetable)), backgroundColor = styleInterval(c(0.01, 0.05),c("forestgreen","lightgreen","white")))
+
+```
+
+</center>

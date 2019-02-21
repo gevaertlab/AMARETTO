@@ -1,0 +1,24 @@
+---
+title: <center>AMARETTO Index Survival Report</center>
+output: 
+  html_document:
+    theme: cerulean
+    highlight: NULL
+
+---
+<center>
+
+## Survival Analysis
+```{r prepare data, echo=FALSE}
+library(DT)
+datatable(rownames_to_column(p_survival,"ModuleNr") %>% mutate(ModuleNr=paste0('<a href="./modules/module',ModuleNr,'.html">',ModuleNr,'</a>')) %>% select(ModuleNr,coxregwaldtestp,coxregwaldtestpadj,logranktestp,logranktestpadj),
+          class = 'display',
+          extensions = 'Buttons',
+          rownames = FALSE,
+          options = list(pageLength = 10,dom = 'Bfrtip',buttons = list(list(extend = 'csv',text = "Save CSV", title="SurvivalStats"))),escape=FALSE) %>%
+          formatSignif(c("coxregwaldtestp","coxregwaldtestpadj","logranktestp","logranktestpadj"),3) %>%
+          formatStyle(c("coxregwaldtestp","coxregwaldtestpadj","logranktestp","logranktestpadj"), backgroundColor = styleInterval(c(0.01, 0.05),c("forestgreen","lightgreen","white")))
+
+```
+
+</center>
