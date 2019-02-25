@@ -12,6 +12,7 @@
 #' @param daystoyears
 #' @param rightcensored
 #' @param printsurv
+#' @param NrCores
 #'
 #' @return A set of HTMLs, giving caracteristics of the communities
 #' 
@@ -19,10 +20,13 @@
 #' @import tidyverse
 #' @import survival
 #' @import gtools
+#' @import kableExtra
+#' @import doParallel
+#' @import foreach
 #' @return
 #' @export
 #'
-AMARETTO_HTMLCharacterisation<-function(AMARETTOresults, annotation, report_address="./",survivalanalysis=FALSE, phenotypeanalysis=FALSE, idpatients=NULL, idvitalstatus=NULL, iddaystodeath=NULL, idfollowupdays=NULL, daystoyears=FALSE, rightcensored=FALSE, parameters=NULL, typelist=NULL){
+AMARETTO_HTMLCharacterisation<-function(AMARETTOresults, annotation, report_address="./",survivalanalysis=FALSE, phenotypeanalysis=FALSE, idpatients=NULL, idvitalstatus=NULL, iddaystodeath=NULL, idfollowupdays=NULL, daystoyears=FALSE, rightcensored=FALSE, parameters=NULL, typelist=NULL, NrCores=1){
   
   full_path<-normalizePath(report_address)
   
@@ -37,7 +41,6 @@ AMARETTO_HTMLCharacterisation<-function(AMARETTOresults, annotation, report_addr
   
   annotation <- suppressMessages(inner_join(annotation, mean_expression_modules %>% dplyr::rename(!!idpatients :="idpatients")))
   
-  datatable<-AMARETTO_PhenAssociation(AMARETTOresults, annotation=annotation, idpatients=idpatients, parameters=parameters, typelist=typelist, printplots=FALSE)
   if (survivalanalysis == TRUE){
 
     daysdeath <- as.numeric(annotation[grep("dead", annotation[,idvitalstatus],ignore.case=TRUE),iddaystodeath])
@@ -64,13 +67,10 @@ AMARETTO_HTMLCharacterisation<-function(AMARETTOresults, annotation, report_addr
     
     #per module
 
-    colnames(p_survival) <- c("coxregwaldtestp","coxregwaldtestpadj","coxreg_coef","coxreg_LL","coxreg_UL","logranktestp","logranktestpadj","medianOS1","medianOS2","Lower95CI1","Upper95CI1","Lower95CI2","Upper95CI2")
-    rownames(p_survival) <- paste0("Module ",1:AMARETTOresults$NrModules)
-    
     cluster <- makeCluster(c(rep("localhost", NrCores)), type = "SOCK")
     registerDoParallel(cluster,cores=NrCores)
-    #AMARETTOresults$NrModules
-    p_survival<-foreach (i = 1:AMARETTOresults$NrModules, .packages = c('tidyverse','rmarkdown')) %dopar% {
+
+    p_survival<-foreach (i = 1:AMARETTOresults$NrModules, .packages = c('tidyverse','rmarkdown','gtools','survminer','survival')) %dopar% {
       moduleNr <- paste0("Module_",i)
       mean_dead <- annotation[grep("dead", annotation[,idvitalstatus],ignore.case=TRUE), moduleNr]
       mean_alive <- annotation[grep("alive", annotation[,idvitalstatus],ignore.case=TRUE), moduleNr]
@@ -94,12 +94,13 @@ AMARETTO_HTMLCharacterisation<-function(AMARETTOresults, annotation, report_addr
       
       return(c(coxstats,kmstats))
     }
+
+    
     stopCluster(cluster)
     cat("The survival module htmls are finished.\n")
     p_survival<-data.frame(matrix(unlist(p_survival),byrow=T,ncol=11),stringsAsFactors=FALSE)
     colnames(p_survival) <- c("coxregwaldtestp","coxreg_coef","coxreg_LL","coxreg_UL","logranktestp","medianOS1","medianOS2","Lower95CI1","Upper95CI1","Lower95CI2","Upper95CI2")
     rownames(p_survival) <- paste0("Module ",1:AMARETTOresults$NrModules)
-    rownames(p_survival) <- paste0("Module ",1:10)
     p_survival[,"logranktestpadj"]<-p.adjust(p_survival[,"logranktestp"],method="BH")
     p_survival[,"coxregwaldtestpadj"]<-p.adjust(p_survival[,"coxregwaldtestp"],method="BH")
     
@@ -108,27 +109,27 @@ AMARETTO_HTMLCharacterisation<-function(AMARETTOresults, annotation, report_addr
   }
   
   if (phenotypeanalysis == TRUE){
-    cluster <- makeCluster(c(rep("localhost", NrCores)), type = "SOCK")
-    registerDoParallel(cluster,cores=NrCores)
-    foreach (i = 1:AMARETTOresults$NrModules, .packages = c('tidyverse','rmarkdown','kableExtra')) %dopar% {
-      
+    #cluster <- makeCluster(c(rep("localhost", NrCores)), type = "SOCK")
+    #registerDoParallel(cluster,cores=NrCores)
+    #foreach (i = 1:AMARETTOresults$NrModules, .packages = c('tidyverse','rmarkdown','kableExtra')) %dopar% {
+    for(i in 1:AMARETTOresults$NrModules) {
       moduleNr <- paste0("Module_",i)
       
       modulemd<-paste0(full_path,"/AMARETTOhtmls/phenotypes/modules/module",i,".rmd")
-      #file.copy(system.file("templates/TemplatePhenotypesModule.Rmd",package="AMARETTO"),modulemd)
-      file.copy("TemplatePhenotypesModule.Rmd",modulemd)
-      parsed = rmarkdown::render(modulemd,output_file = paste0("module",i,".html"), params = list(
+      file.copy(system.file("templates/TemplatePhenotypesModule.Rmd",package="AMARETTO"),modulemd)
+      
+      rmarkdown::render(modulemd,output_file = paste0("module",i,".html"), params = list(
         parameters=parameters,
         typelist=typelist,
-        annotation=annotation,
+        annotation=annotation %>% select(!!idpatients,parameters,moduleNr),
         i=i),quiet = TRUE)
       file.remove(modulemd)
     }
-    phenotypetable<-AMARETTO_PhenAssociation(AMARETTOresults, annotation = annotation, idpatients = "ID", parameters=parameters, typelist = typelist,printplots = FALSE)
+    #stopCluster(cluster)
+    cat("The phenotype module htmls are finished.\n")
     
+    phenotypetable<-AMARETTO_PhenAssociation(AMARETTOresults, annotation = annotation, idpatients = "ID", parameters=parameters, typelist = typelist,printplots = FALSE)
     rmarkdown::render(system.file("templates/TemplatePhenotypesIndex.Rmd",package="AMARETTO"),output_file=paste0(full_path,"/AMARETTOhtmls/phenotypes/phenotypesindex.html"), params = list(
       p_survival=p_survival))
-    
-    stopCluster(cluster)
   }
 }

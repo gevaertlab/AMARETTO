@@ -11,7 +11,7 @@ output:
 ## Survival Analysis
 ```{r prepare data, echo=FALSE}
 library(DT)
-datatable(rownames_to_column(p_survival,"ModuleNr") %>% mutate(ModuleNr=paste0('<a href="./modules/module',ModuleNr,'.html">',ModuleNr,'</a>')) %>% select(ModuleNr,coxregwaldtestp,coxregwaldtestpadj,logranktestp,logranktestpadj),
+datatable(rownames_to_column(p_survival,"ModuleNr") %>% mutate(ModuleNr=paste0('<a href="./modules/module',sub("Module ","",ModuleNr),'.html">',ModuleNr,'</a>')) %>% select(ModuleNr,coxregwaldtestp,coxregwaldtestpadj,logranktestp,logranktestpadj),
           class = 'display',
           extensions = 'Buttons',
           rownames = FALSE,
