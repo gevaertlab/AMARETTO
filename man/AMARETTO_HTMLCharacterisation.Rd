@@ -8,10 +8,11 @@ AMARETTO_HTMLCharacterisation(AMARETTOresults, annotation,
   report_address = "./", survivalanalysis = FALSE,
   phenotypeanalysis = FALSE, idpatients = NULL, idvitalstatus = NULL,
   iddaystodeath = NULL, idfollowupdays = NULL, daystoyears = FALSE,
-  rightcensored = FALSE, parameters = NULL, typelist = NULL)
+  rightcensored = FALSE, parameters = NULL, typelist = NULL,
+  NrCores = 1)
 }
 \arguments{
-\item{printsurv}{}
+\item{NrCores}{}
 }
 \value{
 A set of HTMLs, giving caracteristics of the communities

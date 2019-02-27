@@ -93,6 +93,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
     }
     modulemd<-paste0(full_path,"/AMARETTOhtmls/modules/module",ModuleNr,".rmd")
     file.copy(system.file("templates/TemplateReportModule.Rmd",package="AMARETTO"),modulemd)
+    knitr::knit_meta(class=NULL, clean = TRUE)  # cleaning memory, avoiding memory to be overloaded
     rmarkdown::render(modulemd,output_file = paste0("module",ModuleNr,".html"), params = list(
       report_address = report_address,
       ModuleNr = ModuleNr,
