@@ -43,10 +43,6 @@ vignette: |
 ---
 
 
-
-
-
-
 # Introduction
 The package *AMARETTO* contains functions to use the statistical algorithm AMARETTO, an algorithm to identify cancer drivers by integrating a variety of omics data from cancer and normal tissue. Due to the increasing availability of multi-omics data sets, there is a need for computational methods that integrate multi-omics data set and create knowl-edge. Especially in the field of cancer research, large international projects such as The Cancer Genome Atlas (TCGA) and the International Cancer Genome Consortium (ICGC) are producing large quantities of multi-omics data for each cancer site. However it remains unknown which profile is the most meaningful and how to effciently integrate different omics profiles. AMARETTO is an algorithm to unravel cancer drivers by reducing the data dimensionality into cancer modules. AMARETTO first models the effects of genomic/epigenomic data on disease specific gene expression. AMARETTO's second step involves constructing co-expressed modules to connect the cancer drivers with their downstream targets. We applied AMARETTO to several cancer sites of the TCGA project allowing to identify several cancer driver genes of interest, including novel genes in addition to known drivers of cancer. This package also includes functionality to access TCGA data directly so the user can immediately run AMARETTO on the most recent version of the data.
 
@@ -54,32 +50,21 @@ The package *AMARETTO* contains functions to use the statistical algorithm AMARE
 
 # Installation Instructions
 
-To install the AMARETTO package, the easiest way is through bioconductor:
+To install AMARETTO is to first download the appropriate file for your platform from the Bioconductor
+website http://www.bioconductor.org/. For Windows, start R and select the Packages menu, then Install package from local zip file. Find and highlight the location of the zip file and click on open. For Linux/Unix, use the usual command R CMD INSTALL or install from bioconductor
 
-```{r setup}
-library(devtools)
-devtools::install_github("gevaertlab/AMARETTO")
+The package can be installed from the GitHub repository :
+
+```{r setup1, message= FALSE,results='hide',eval=FALSE}
+#-------------------------------------------------------------------------------
+
+install.packages("BiocManager",repos = "http://cran.us.r-project.org")
+BiocManager::install("gevaertlab/AMARETTO")
+
+#-------------------------------------------------------------------------------
 ```
-    
-    ------------------------------------------------------------------
-    >install.packages("BiocManager")
-    >BiocManager::install("gevaertlab/AMARETTO")
-    ------------------------------------------------------------------
 
-Another way to install AMARETTO is to first download the appropriate file for your platform from the Bioconductor
-website http://www.bioconductor.org/. For Windows, start R and select the Packages menu, then Install package
-from local zip file. Find and highlight the location of the zip file and click on open. For Linux/Unix, use the usual
-command R CMD INSTALL or install from bioconductor
-
-The package can be installed from the GitHub repository using `devtools`:
-
-    ------------------------------------------------------------------
-    >library(devtools)
-    >devtools::install_github("gevaertlab/AMARETTO")
-    ------------------------------------------------------------------
-
-Help files. Detailed information on AMARETTO package functions can be obtained in the help files. For example, to
-view the help file for the function AMARETTO in an R session, use ?AMARETTO.
+Help files. Detailed information on AMARETTO package functions can be obtained in the help files. For example, to view the help file for the function AMARETTO in an R session, use ?AMARETTO.
 
 # Data Input
 
@@ -138,112 +123,117 @@ We also added COADREAD as a combination of colon and rectal cancer, as reports h
 a single disease. The cancer code is needed to download data from TCGA and one needs to decide on a target location
 to save the data locally in the TargetDirectory, e.g. the /Downloads/ folder on a mac.
 
-```{r}
-TargetDirectory <- tempfile()
-CancerSite <- "CHOL"
-DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory)
+```{r AMARETTO_Download1, message= FALSE,results='hide',eval=FALSE}
+#-------------------------------------------------------------------------------
 
+library(AMARETTO)
+TargetDirectory <- tempfile()# data download directory
+CancerSite <- "LIHC"
+DataSetDirectories <- AMARETTO_Download(CancerSite, TargetDirectory)
+
+#-------------------------------------------------------------------------------
 ```
 
-    ------------------------------------------------------------------
-    > TargetDirectory <- tempfile()
-    > CancerSite <- "CHOL"
-    > DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory)
-    ------------------------------------------------------------------
-    
+
 We recommend to use one TargetDirectory for all cancer sites, as this will save all data in one hierarchy is convenient
 when revisting results later on. The directory structure that is created will also include the data version history, so it is
 easy to report what version of the data is used. AMARETTO_Download() downloads the data, extracts archives and provides
 the paths to the downloaded folder for preprocessing. AMARETTO_Download() can also be run without actually downloading
 the data as follows:
 
-    ------------------------------------------------------------------
-    > TargetDirectory <- tempfile()
-    > CancerSite <- "CHOL"
-    > DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory,FALSE)
-    ------------------------------------------------------------------
-    
-This is convenient when revisiting a data set because you want to redo-downstream analysis, but not the actual down-
-loading. Running this way, will only set the data paths. The next step is preprocessing.
+```{r AMARETTO_Download2, message= FALSE,results='hide',eval=FALSE}
+#-------------------------------------------------------------------------------
+
+DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory, FALSE)
+
+#-------------------------------------------------------------------------------
+```
+
+This is convenient when revisiting a data set because you want to redo-downstream analysis, but not the actual downloading. Running this way, will only set the data paths. The next step is preprocessing.
 
 ## DNA Methylation Data
 DNA methylation data has to be run by MethylMix which is also computationally intensive and therefore we have chosen to provide add the MethylMix output to the AMARETTO package instead of processing the raw DNA methylation data. This functionality is available in the [MethylMix package](https://www.bioconductor.org/packages/release/bioc/html/MethylMix.html)
+
+\newpage
 
 ## Data Preprocessing
 
 The data preprocessing step will take care of preprocessing the gene expression and DNA copy number data. Data preprocessing is done by Preprocess CancerSite which takes the CancerSite and the data set directories as parameters:
 
-    ------------------------------------------------------------------
-    > CancerSite <- 'READ'
-    > ProcessedData <- AMARETTO_Preprocess(CancerSite,DataSetDirectories)
-    ------------------------------------------------------------------
-    
-This function preprocessed the gene expression data and the DNA copy number data. For the gene expression data,
-different preprocessing is done for microarray and RNA sequencing data. This involves missing value estimation using
-K-nearest neighbors. Also genes or patients that have more than 10% missing values are removed. Next, batch correction
-is done using the Combat method. For certain cancer sites, the gene expression data is split up in separate sub-data sets.
-This function first uses the preprocessing pipeline on each sub-data set separately and combines the data afterwards.
-For the DNA copy number data, the GISTIC algorithm output data is used. All genes that are in amplifications or
-deletions based on GISTIC output are extracted and the segmented DNA copy number data is stored. The segmented
-DNA copy number data is also batch corrected using Combat.
+
+
+```{r AMARETTO_Preprocess, message= FALSE,results='hide',eval=FALSE}
+#-------------------------------------------------------------------------------
+
+ProcessedData <- AMARETTO_Preprocess(CancerSite,DataSetDirectories)
+
+#-------------------------------------------------------------------------------
+```    
+
+This function preprocessed the gene expression data and the DNA copy number data. For the gene expression data, different preprocessing is done for microarray and RNA sequencing data. This involves missing value estimation using K-nearest neighbors. Also genes or patients that have more than 10% missing values are removed. Next, batch correction is done using the Combat method. For certain cancer sites, the gene expression data is split up in separate sub-data sets. This function first uses the preprocessing pipeline on each sub-data set separately and combines the data afterwards. For the DNA copy number data, the GISTIC algorithm output data is used. All genes that are in amplifications or deletions based on GISTIC output are extracted and the segmented DNA copy number data is stored. The segmented DNA copy number data is also batch corrected using Combat.
+
+
+
+```{r ProcessedDataLIHC, message= FALSE,results='hide', echo=FALSE}
+library(AMARETTO)
+data(ProcessedDataLIHC)
+```   
 
 # Running AMARETTO
 
-In the case that you run AMARETTO with your own data, three data matrices are needed with preprocessed gene
-expression, DNA copy number and DNA methylation data, where genes are in the rows and patients are in the columns.
-Once you have your own data in this format or using a previously downloaded TCGA data set, you can start doing
-analysis with AMARETTO. First, we need to initialize the algorithm by clustering the gene expression data and creating
-the regulator data object. This is done by the AMARETTO Initialize function and the TCGA LIHC data set:
+In the case that you run AMARETTO with your own data, three data matrices are needed with preprocessed gene expression, DNA copy number and DNA methylation data, where genes are in the rows and patients are in the columns. Once you have your own data in this format or using a previously downloaded TCGA data set, you can start doing analysis with AMARETTO. First, we need to initialize the algorithm by clustering the gene expression data and creating the regulator data object. This is done by the AMARETTO Initialize function and the TCGA LIHC data set:
 
-    ------------------------------------------------------------------
-    > data(ProcessedDataLIHC)
-    > AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
-                                          CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-                                          MET_matrix = ProcessedDataLIHC$MET_matrix,
-                                          NrModules = 20, VarPercentage = 50)
-    ------------------------------------------------------------------
-    
-Besides the three data sets, you need to decide how many modules to build and how much of the gene expression data
-is going to be used. For a first run we recommend 100 modules and to use the top 25% most varying genes. The
-AMARETTOinit object now contains cluster information to initialize an AMARETTO run and also stores the parameters
-that are required for AMARETTO.
+
+```{r AMARETTO_Initialize, message= FALSE,results='hide'}
+#-------------------------------------------------------------------------------
+
+AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
+                                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
+                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
+                                    NrModules = 20, VarPercentage = 50)
+
+#-------------------------------------------------------------------------------
+```    
+
+
+Besides the three data sets, you need to decide how many modules to build and how much of the gene expression data is going to be used. For a first run we recommend 100 modules and to use the top 25% most varying genes. The AMARETTOinit object now contains cluster information to initialize an AMARETTO run and also stores the parameters that are required for AMARETTO.
 Now we can run AMARETTO as follows:
+```{r AMARETTO_Run, message= FALSE,warning=FALSE,results='hide'}
+#-------------------------------------------------------------------------------
 
-    ------------------------------------------------------------------
-    > AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
-    ------------------------------------------------------------------
-    
-This can take anywhere from 10 minutes up to 1 hour to build the modules for the TCGA cohorts depending on the
-number of genes that is modeled and the number of patients that is available. The breast cancer data set (BRCA) is the
-largest data set and will take the longest time to converge. AMARETTO will stop when less than 1% of the genes are
-reassigned to other modules. Next, one can test the AMARETTO model on the training set by calculating the Rsquare
+AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
+
+#-------------------------------------------------------------------------------
+```    
+This can take anywhere from 10 minutes up to 1 hour to build the modules for the TCGA cohorts depending on the number of genes that is modeled and the number of patients that is available. The breast cancer data set (BRCA) is the largest data set and will take the longest time to converge. AMARETTO will stop when less than 1% of the genes are reassigned to other modules. Next, one can test the AMARETTO model on the training set by calculating the Rsquare
 for each module using the AMARETTO EvaluateTestSet function:
 
-    ------------------------------------------------------------------
-    > AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults,
-                            AMARETTOinit$MA_TCGA_Var,AMARETTOinit$RegulatorData)
-    ------------------------------------------------------------------
 
-This function will use the training data to calculate the performance for predicting genes expression values based on the
-selected regulators. Of course, it is more interesting to use an independent test set. In this case only a gene expression
-data set is needed, for example from the GEO database. This will allow to check how well the AMARETTO modules are
-generalizing to new data. Take care that the an independent data set needs to be centered and scaled to unit variance.
-The AMARETTOtestReport will also give information of how many regulators and cluster members are actually present.
-The Rsquare performance has to be interpreted in this context as if many regulators are absent in the test data set due
-to platform limitations, the performance will be adversely affected.
+```{r AMARETTO_EvaluateTestSet, message= FALSE,results='hide'}
+#-------------------------------------------------------------------------------
+
+AMARETTOtestReport <- AMARETTO_EvaluateTestSet(
+                      AMARETTOresults = AMARETTOresults,
+                      MA_Data_TestSet = AMARETTOinit$MA_matrix_Var,
+                      RegulatorData_TestSet = AMARETTOinit$RegulatorData
+                      )
+
+#-------------------------------------------------------------------------------
+```    
+
+This function will use the training data to calculate the performance for predicting genes expression values based on the selected regulators. Of course, it is more interesting to use an independent test set. In this case only a gene expression data set is needed, for example from the GEO database. This will allow to check how well the AMARETTO modules are generalizing to new data. Take care that the an independent data set needs to be centered and scaled to unit variance. The AMARETTOtestReport will also give information of how many regulators and cluster members are actually present. The Rsquare performance has to be interpreted in this context as if many regulators are absent in the test data set due to platform limitations, the performance will be adversely affected.
 Finally, modules can be visualized using the AMARETTO VisualizeModule function:
 
-    
-    ------------------------------------------------------------------
-    > AMARETTO_VisualizeModule(AMARETTOinit,AMARETTOresults,
-                        ProcessedDataLIHC$CNV_matrix,ProcessedDataLIHC$MET_matrix,ModuleNr=1)
-    ------------------------------------------------------------------
+```{r AMARETTO_VisualizeModule, message= FALSE, fig.height=5, fig.width=5, retina=1}
+#-------------------------------------------------------------------------------
+AMARETTO_VisualizeModule(AMARETTOinit,AMARETTOresults,
+                        ProcessedDataLIHC$CNV_matrix,
+                        ProcessedDataLIHC$MET_matrix,
+                        ModuleNr=1)
+
+```    
 
 Additionaly, to a standard version of the heatmap, one can add sample annotations to interogate biological phenotypes.
-
-<left>
-![fig.13](../files/Module1_LIHC.png)
-
 
 \newpage
 
@@ -251,19 +241,25 @@ Additionaly, to a standard version of the heatmap, one can add sample annotation
 
 To retrieve heatmaps for all of the modules and additional tables with gene set enrichment data one can run a HTML report. 
 
-    ------------------------------------------------------------------
-    > gmt_file<-system.file("templates/H.C2CP.genesets.gmt",package="AMARETTO")
-    > AMARETTO_HTMLreport(AMARETTOinit,AMARETTOresults,
-                        ProcessedDataLIHC$CNV_matrix,ProcessedDataLIHC$MET_matrix,
-                        hyper_geo_test_bool = TRUE,hyper_geo_reference = gmt_file, MSIGDB=TRUE)
-    ------------------------------------------------------------------
-    
+
+
+```{r AMARETTO_HTMLreport, message= FALSE,results='hide', eval=FALSE}
+#-------------------------------------------------------------------------------
+
+gmt_file<-system.file("templates/H.C2CP.genesets.gmt",package="AMARETTO")
+AMARETTO_HTMLreport(AMARETTOinit,AMARETTOresults,
+                    ProcessedDataLIHC$CNV_matrix,ProcessedDataLIHC$MET_matrix,
+                    hyper_geo_test_bool = TRUE,hyper_geo_reference = gmt_file, 
+                    MSIGDB=TRUE)
+
+#-------------------------------------------------------------------------------
+```    
+
 # References
 
 1.	Champion, M. et al. Module Analysis Captures Pancancer Genetically and Epigenetically Deregulated Cancer Driver Genes for Smoking and Antiviral Response. EBioMedicine 27, 156–166 (2018).
 2.	Gevaert, O., Villalobos, V., Sikic, B. I. & Plevritis, S. K. Identification of ovarian cancer driver genes by using module network integration of multi-omics data. Interface Focus 3, 20130013–20130013 (2013).
 3.	Gevaert, O. MethylMix: an R package for identifying DNA methylation-driven genes. Bioinformatics 31, 1839–1841 (2015).
-
 
 
 \newpage

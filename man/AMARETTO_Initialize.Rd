@@ -48,12 +48,12 @@ data('Driver_Genes')
 AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-                                    NrModules = 20, VarPercentage = 60)
+                                    NrModules = 5, VarPercentage = 50)
 \dontrun{
 AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
                                     CNV_matrix = NULL,
                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
                                     Driver_list = Driver_Genes[['MSigDB']],
-                                    NrModules = 20, VarPercentage = 60)
+                                    NrModules = 5, VarPercentage = 50)
 }
 }

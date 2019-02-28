@@ -3,7 +3,7 @@
 
 <p align="center">
   <a href="https://github.com/gevaertlab/AMARETTO">
-    <img height="150" src="https://github.com/gevaertlab/AMARETTO/blob/master/files/logo.jpg">
+    <img height="150" src="https://github.com/gevaertlab/AMARETTO/blob/master/inst/extdata/logo.jpg">
   </a>
   <h1 align="center"></h1>
 </p>

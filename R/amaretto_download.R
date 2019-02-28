@@ -8,18 +8,19 @@
 #' @import RCurl
 #' @import curatedTCGAData
 #' @import limma
-#' @importFrom RCurl getURL
+#' @importFrom httr GET stop_for_status write_memory write_disk progress
 #' @importFrom limma strsplit2
 #' @importFrom utils data download.file read.csv untar write.table zip
+#' @importFrom BiocFileCache BiocFileCache bfcrpath bfcquery bfcnew
 #' @export
 #' @examples
 #' CancerSite <- 'CHOL'
-#' DataSetDirectories <- AMARETTO_Download(CancerSite,"./", FALSE)
+#' DataSetDirectories <- AMARETTO_Download(CancerSite,'./', FALSE)
 AMARETTO_Download <- function(CancerSite, TargetDirectory, 
     downloadData = TRUE) {
     ori.dir <- getwd()
-    cat("Downloading MA, CNV and MET data for:", CancerSite, 
-        "\n")
+    message("Downloading MA, CNV and MET data for:", 
+        CancerSite, "\n")
     Cancers = c("BLCA", "BRCA", "LUAD", "LUSC", "COADREAD", 
         "HNSC", "KIRC", "GBM", "OV", "LAML", "UCEC", 
         "COAD", "READ")
@@ -33,14 +34,18 @@ AMARETTO_Download <- function(CancerSite, TargetDirectory,
         assays, FALSE)
     saveRDS(MAEO, file = paste0(TargetDirectory, CancerSite, 
         "_RNASeq_MAEO.rds"))
+    
     dataType = "analyses"
     dataFileTag = "CopyNumber_Gistic2.Level_4"
-    cat("Searching CNV data for:", CancerSite, "\n")
+    message("Searching CNV data for:", CancerSite, 
+        "\n")
     CNVdirectory = get_firehoseData(downloadData, saveDir = TargetDirectory, 
         TCGA_acronym_uppercase = TCGA_acronym_uppercase, 
         dataType = dataType, dataFileTag = dataFileTag)
-    setwd(ori.dir)
+    
+    on.exit(setwd(ori.dir))
     return(list(MAdirectory = TargetDirectory, CNVdirectory = CNVdirectory))
+    
 }
 
 #' get_firehoseData
@@ -67,6 +72,7 @@ get_firehoseData <- function(downloadData = TRUE, saveDir = "./",
     untarUngzip = TRUE, printDisease_abbr = FALSE) {
     # Cases Shipped by BCR # Cases with Data* Date Last
     # Updated (mm/dd/yy)
+    ori.dir <- getwd()
     cancers <- c("Acute Myeloid Leukemia [LAML] \n", 
         "Adrenocortical carcinoma [ACC]\t\n", "Bladder Urothelial Carcinoma [BLCA] \n", 
         "Brain Lower Grade Glioma [LGG] \n", "Breast invasive carcinoma [BRCA] \n", 
@@ -96,12 +102,13 @@ get_firehoseData <- function(downloadData = TRUE, saveDir = "./",
         "THCA", "UCS", "UCEC", "UVM")
     
     if (printDisease_abbr) {
-        return(cat("here are the possible TCGA database disease acronyms. \nRe-run this function with printDisease_abbr=FALSE to then run an actual query.\n\n", 
+        message(cat("here are the possible TCGA database disease acronyms. \nRe-run this function with printDisease_abbr=FALSE to then run an actual query.\n\n", 
             cancers))
     }
     if (TCGA_acronym_uppercase %in% cancers_acronyms) {
+        
         gdacURL_orig <- gdacURL
-        urlData <- getURL(gdacURL)
+        urlData <- web.lnk <- httr::GET(gdacURL)
         urlData <- strsplit2(urlData, paste(dataType, 
             "__", sep = ""))
         urlData <- urlData[, 2:dim(urlData)[2]]
@@ -116,7 +123,8 @@ get_firehoseData <- function(downloadData = TRUE, saveDir = "./",
         gdacURL <- paste(gdacURL, dataType, "__", lastDate, 
             "/data/", TCGA_acronym_uppercase, "/", 
             lastDateCompress, "/", sep = "")
-        urlData <- getURL(gdacURL)
+        
+        urlData <- web.lnk <- httr::GET(gdacURL)
         urlData <- strsplit2(urlData, "href=\\\"")
         while (length(grep("was not found", urlData)) > 
             0) {
@@ -134,19 +142,14 @@ get_firehoseData <- function(downloadData = TRUE, saveDir = "./",
             gdacURL <- paste(gdacURL_orig, dataType, 
                 "__", lastDate, "/data/", TCGA_acronym_uppercase, 
                 "/", lastDateCompress, "/", sep = "")
-            urlData <- getURL(gdacURL)
+            urlData <- web.lnk <- httr::GET(gdacURL)
+            
             urlData <- strsplit2(urlData, "href=\\\"")
             if (length(dateData) <= 1) {
                 break
             }
         }
-        if (length(grep("was not found", urlData)) > 
-            0) {
-            # this disease may not even be in the analyses
-            # directory yet.
-            stop(paste0("\nNot returning any viable url data paths after searching by date for disease ", 
-                TCGA_acronym_uppercase, ". No data was downloaded.\n"))
-        }
+        stop_for_status(web.lnk, task = "FALIED to download input TCGA data type")
         if (FFPE) {
             urlData <- urlData[grep("FFPE", urlData)]
             if (length(urlData) == 0) {
@@ -172,26 +175,28 @@ get_firehoseData <- function(downloadData = TRUE, saveDir = "./",
             1]
         fileName <- paste(fileName, fileType, sep = "")
         gdacURL <- paste(gdacURL, fileName, sep = "")
+        
         print(fileName)
         saveDir <- paste(saveDir, "gdac_", lastDateCompress, 
             "/", sep = "")
         if (downloadData) {
-            cat("\tDownloading", dataFileTag, "data, version:", 
+            message("\tDownloading", dataFileTag, "data, version:", 
                 lastDate, "\n")
-            cat("\tThis may take 10-60 minutes depending on the size of the data set.\n")
+            message("\tThis may take 10-60 minutes depending on the size of the data set.\n")
             dir.create(saveDir, showWarnings = FALSE)
             setwd(saveDir)
-            download.file(gdacURL, fileName, quiet = TRUE, 
-                mode = "wb")
-            if (fileType == "tar.gz" && untarUngzip) {
-                cat("\tUnpacking data.\n")
-                tarfile = fileName
-                untar(tarfile)
-                fileToRemove <- strsplit2(gdacURL, 
-                  "/")[, ncol(strsplit2(gdacURL, "/"))]
-                file.remove(paste0(fileToRemove))
-            } else if (untarUngzip) {
-                warning("File expansion/opening only built in for tar.gz files at the moment.\n")
+            download_file <- httr::GET(gdacURL, write_memory(), 
+                write_disk(fileName, overwrite = TRUE), 
+                progress())
+            bfc <- BiocFileCache(ask = FALSE)
+            full_filename <- bfcrpath(bfc, gdacURL)
+            if (untarUngzip) {
+                rname <- basename(tools::file_path_sans_ext(full_filename))
+                if (nrow(bfcquery(bfc, query = rname, 
+                  field = "rname"))) {
+                  untar(full_filename)
+                  bfcnew(bfc, rname)
+                }
             }
             finalDir <- strsplit2(gdacURL, "/")[, ncol(strsplit2(gdacURL, 
                 "/"))]
@@ -199,10 +204,10 @@ get_firehoseData <- function(downloadData = TRUE, saveDir = "./",
             finalDir <- substr(finalDir, start = 0, 
                 stop = (nchar(finalDir) - 1))
             finalDir <- paste0(saveDir, finalDir)
-            cat("\tFinished downloading", dataFileTag, 
+            message("\tFinished downloading", dataFileTag, 
                 "data to", finalDir, "\n")
         } else {
-            cat("download data url is :\n ", gdacURL, 
+            message("download data url is :\n ", gdacURL, 
                 "\n")
             finalDir <- strsplit2(gdacURL, "/")[, ncol(strsplit2(gdacURL, 
                 "/"))]
@@ -217,6 +222,7 @@ get_firehoseData <- function(downloadData = TRUE, saveDir = "./",
         return(cat(paste0("No data correspond to cancer ", 
             TCGA_acronym_uppercase, "\n")))
     }
+    on.exit(setwd(ori.dir))
 }
 
 
@@ -236,17 +242,13 @@ get_firehoseData <- function(downloadData = TRUE, saveDir = "./",
 #'
 #' @examples
 #' data('ProcessedDataLIHC')
-#' \dontrun{
 #' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
 #'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
 #'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-#'                                     NrModules = 20, VarPercentage = 60)
+#'                                     NrModules = 5, VarPercentage = 50)
 #' 
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
-#'}
-#' load(system.file('extdata','AMARETTOinit.rda',package = 'AMARETTO'))
-#' load(system.file('extdata','AMARETTOresults.rda',package = 'AMARETTO'))
-#' AMARETTO_ExportResults(AMARETTOinit,AMARETTOresults,'./')
+#' AMARETTO_ExportResults(AMARETTOinit,AMARETTOresults,'./',Heatmaps = FALSE)
 
 AMARETTO_ExportResults <- function(AMARETTOinit, AMARETTOresults, 
     data_address, Heatmaps = TRUE, CNV_matrix = NULL, 

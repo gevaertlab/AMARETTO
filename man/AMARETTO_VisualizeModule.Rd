@@ -6,7 +6,8 @@
 \usage{
 AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults,
   CNV_matrix = NULL, MET_matrix = NULL, ModuleNr,
-  SAMPLE_annotation = NULL, ID = NULL, order_samples = NULL)
+  SAMPLE_annotation = NULL, ID = NULL, order_samples = NULL,
+  printHM = FALSE)
 }
 \arguments{
 \item{AMARETTOinit}{List output from AMARETTO_Initialize().}
@@ -24,6 +25,8 @@ AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults,
 \item{ID}{Column used as sample name.}
 
 \item{order_samples}{Order samples in heatmap by mean or by clustering.}
+
+\item{printHM}{Boolean print heatmap directly}
 }
 \value{
 result
@@ -33,15 +36,12 @@ Function to visualize the gene modules
 }
 \examples{
 data('ProcessedDataLIHC')
-\dontrun{
 AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-                                    NrModules = 20, VarPercentage = 60)
+                                    NrModules = 5, VarPercentage = 50)
+
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
-}
-load(system.file('extdata','AMARETTOinit.rda',package = 'AMARETTO'))
-load(system.file('extdata','AMARETTOresults.rda',package = 'AMARETTO'))
 
 AMARETTO_VisualizeModule(AMARETTOinit = AMARETTOinit,AMARETTOresults = AMARETTOresults,
                          CNV_matrix = ProcessedDataLIHC$CNV,

@@ -316,15 +316,11 @@ AMARETTO_ReassignGenesToClusters <- function(Data,
 #' @export
 #' @examples
 #' data('ProcessedDataLIHC')
-#'\dontrun{
 #' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
 #'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
 #'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-#'                                     NrModules = 20, VarPercentage = 60)
+#'                                     NrModules = 5, VarPercentage = 50)
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
-#' }
-#' load(system.file('extdata','AMARETTOinit.rda',package = 'AMARETTO'))
-#' load(system.file('extdata','AMARETTOresults.rda',package = 'AMARETTO'))
 #' AMARETTO_MD <- AMARETTO_CreateModuleData(AMARETTOinit, AMARETTOresults)
 AMARETTO_CreateModuleData <- function(AMARETTOinit, 
     AMARETTOresults) {
@@ -355,15 +351,11 @@ AMARETTO_CreateModuleData <- function(AMARETTOinit,
 #' @export
 #' @examples
 #' data('ProcessedDataLIHC')
-#'\dontrun{
 #' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
 #'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
 #'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-#'                                     NrModules = 20, VarPercentage = 60)
+#'                                     NrModules = 5, VarPercentage = 50)
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
-#' }
-#' load(system.file('extdata','AMARETTOinit.rda',package = 'AMARETTO'))
-#' load(system.file('extdata','AMARETTOresults.rda',package = 'AMARETTO'))
 #' AMARETTO_RP <- AMARETTO_CreateRegulatorPrograms(AMARETTOinit,AMARETTOresults)
 AMARETTO_CreateRegulatorPrograms <- function(AMARETTOinit, 
     AMARETTOresults) {

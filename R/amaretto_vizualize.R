@@ -21,15 +21,12 @@
 #'
 #' @examples
 #' data('ProcessedDataLIHC')
-#' \dontrun{
 #' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
 #'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
 #'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-#'                                     NrModules = 20, VarPercentage = 60)
+#'                                     NrModules = 5, VarPercentage = 50)
+#' 
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
-#'}
-#' load(system.file('extdata','AMARETTOinit.rda',package = 'AMARETTO'))
-#' load(system.file('extdata','AMARETTOresults.rda',package = 'AMARETTO'))
 #'
 #' AMARETTO_VisualizeModule(AMARETTOinit = AMARETTOinit,AMARETTOresults = AMARETTOresults,
 #'                          CNV_matrix = ProcessedDataLIHC$CNV,
@@ -39,40 +36,40 @@
 AMARETTO_VisualizeModule <- function(AMARETTOinit, 
     AMARETTOresults, CNV_matrix = NULL, MET_matrix = NULL, 
     ModuleNr, SAMPLE_annotation = NULL, ID = NULL, 
-    order_samples = NULL, printHM=FALSE) {
+    order_samples = NULL, printHM = FALSE) {
     if (ModuleNr > AMARETTOresults$NrModules) {
         stop("\tCannot plot Module", ModuleNr, " since the total number of modules is", 
             AMARETTOresults$N, ".\n")
     }
-    ModuleData <- as.data.frame(AMARETTOinit$MA_matrix_Var)[AMARETTOresults$ModuleMembership == ModuleNr, ]
-    ModuleRegulators <- AMARETTOresults$AllRegulators[which(AMARETTOresults$RegulatoryPrograms[ModuleNr, ] != 0)]
-    RegulatorData <- as.data.frame(AMARETTOinit$RegulatorData)[ModuleRegulators, ]
+    ModuleData <- as.data.frame(AMARETTOinit$MA_matrix_Var)[AMARETTOresults$ModuleMembership == 
+        ModuleNr, ]
+    ModuleRegulators <- AMARETTOresults$AllRegulators[which(AMARETTOresults$RegulatoryPrograms[ModuleNr, 
+        ] != 0)]
+    RegulatorData <- as.data.frame(AMARETTOinit$RegulatorData)[ModuleRegulators, 
+        ]
     ModuleGenes <- rownames(ModuleData)
     cat("Module", ModuleNr, "has", length(rownames(ModuleData)), 
         "genes and", length(ModuleRegulators), "regulators for", 
         length(colnames(ModuleData)), "samples.\n")
-    Alterations <- tibble::rownames_to_column(as.data.frame(AMARETTOinit$RegulatorAlterations$Summary), "HGNC_symbol") %>% 
-        dplyr::rename(DriverList = "Driver List") %>% 
+    Alterations <- tibble::rownames_to_column(as.data.frame(AMARETTOinit$RegulatorAlterations$Summary), 
+        "HGNC_symbol") %>% dplyr::rename(DriverList = "Driver List") %>% 
         dplyr::filter(HGNC_symbol %in% ModuleRegulators)
-    Alterations <- Alterations %>% dplyr::mutate(
-        CNVMet_Alterations = case_when(
-          MET == 1 & CNV == 1 ~ "Methylation and copy number alterations", 
-          CNV == 1 ~ "Copy number alterations", 
-          MET == 1 ~ "Methylation aberrations", 
-          MET == 0 & CNV == 0 ~ "Not Altered"), 
-        DriversList_Alterations = case_when(
-          DriverList == 0 ~ "Driver not predefined", 
-          DriverList == 1 ~ "Driver predefined"))
+    Alterations <- Alterations %>% dplyr::mutate(CNVMet_Alterations = case_when(MET == 
+        1 & CNV == 1 ~ "Methylation and copy number alterations", 
+        CNV == 1 ~ "Copy number alterations", MET == 
+            1 ~ "Methylation aberrations", MET == 0 & 
+            CNV == 0 ~ "Not Altered"), DriversList_Alterations = case_when(DriverList == 
+        0 ~ "Driver not predefined", DriverList == 
+        1 ~ "Driver predefined"))
     
-    ha_drivers <- HeatmapAnnotation(df = column_to_rownames(Alterations, "HGNC_symbol") %>% 
-          dplyr::select(CNVMet_Alterations, DriversList_Alterations), 
-          col = list(CNVMet_Alterations = c(`Copy number alterations` = "#eca400", `Methylation aberrations` = "#006992", `Methylation and copy number alterations` = "#d95d39", 
-        `Not Altered` = "lightgray"), 
-        DriversList_Alterations = c(`Driver not predefined` = "lightgray", `Driver predefined` = "#588B5B")), 
-        which = "column", 
-        height = unit(0.3, "cm"), 
-        name = "", 
-        annotation_legend_param = list(title_gp = gpar(fontsize = 8), labels_gp = gpar(fontsize = 6)))
+    ha_drivers <- HeatmapAnnotation(df = column_to_rownames(Alterations, 
+        "HGNC_symbol") %>% dplyr::select(CNVMet_Alterations, 
+        DriversList_Alterations), col = list(CNVMet_Alterations = c(`Copy number alterations` = "#eca400", 
+        `Methylation aberrations` = "#006992", `Methylation and copy number alterations` = "#d95d39", 
+        `Not Altered` = "lightgray"), DriversList_Alterations = c(`Driver not predefined` = "lightgray", 
+        `Driver predefined` = "#588B5B")), which = "column", 
+        height = unit(0.3, "cm"), name = "", annotation_legend_param = list(title_gp = gpar(fontsize = 8), 
+            labels_gp = gpar(fontsize = 6)))
     
     if (is.null(MET_matrix) && is.null(CNV_matrix)) {
         overlapping_samples <- colnames(ModuleData)
@@ -109,10 +106,13 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,
         cluster_rows = FALSE, cluster_columns = TRUE, 
         show_column_dend = FALSE, show_column_names = TRUE, 
         show_row_names = FALSE, column_names_gp = gpar(fontsize = 6), 
-        top_annotation = ha_drivers, column_title_gp = gpar(fontsize = 6, fontface = "bold"), 
-        col = colorRamp2(c(-max(abs(ClustRegulatorData)), 0, max(abs(ClustRegulatorData))), c("darkblue", "white", "darkred")), 
-        heatmap_legend_param = list(color_bar = "continuous", legend_direction = "horizontal", title_gp = gpar(fontsize = 8), labels_gp = gpar(fontsize = 6)), 
-        width = unit(Regwidth,"cm"))
+        top_annotation = ha_drivers, column_title_gp = gpar(fontsize = 6, 
+            fontface = "bold"), col = colorRamp2(c(-max(abs(ClustRegulatorData)), 
+            0, max(abs(ClustRegulatorData))), c("darkblue", 
+            "white", "darkred")), heatmap_legend_param = list(color_bar = "continuous", 
+            legend_direction = "horizontal", title_gp = gpar(fontsize = 8), 
+            labels_gp = gpar(fontsize = 6)), width = unit(Regwidth, 
+            "cm"))
     
     if (length(ClustModuleData) < 50) {
         fontsizeMo = 6
@@ -127,14 +127,18 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,
         cluster_rows = FALSE, cluster_columns = TRUE, 
         show_column_dend = FALSE, show_column_names = TRUE, 
         show_row_names = FALSE, column_names_gp = gpar(fontsize = fontsizeMo), 
-        show_heatmap_legend = FALSE, column_title_gp = gpar(fontsize = 6, fontface = "bold"), 
-        col = colorRamp2(c(-max(abs(ClustModuleData)), 0, max(abs(ClustModuleData))), c("darkblue", "white", "darkred")), 
-        heatmap_legend_param = list(color_bar = "continuous", legend_direction = "horizontal", title_gp = gpar(fontsize = 8), labels_gp = gpar(fontsize = 6)))
+        show_heatmap_legend = FALSE, column_title_gp = gpar(fontsize = 6, 
+            fontface = "bold"), col = colorRamp2(c(-max(abs(ClustModuleData)), 
+            0, max(abs(ClustModuleData))), c("darkblue", 
+            "white", "darkred")), heatmap_legend_param = list(color_bar = "continuous", 
+            legend_direction = "horizontal", title_gp = gpar(fontsize = 8), 
+            labels_gp = gpar(fontsize = 6)))
     
     ha_list <- ha_Reg + ha_Module
     
     if (!is.null(MET_matrix)) {
-        METreg <- intersect(rownames(AMARETTOinit$RegulatorAlterations$MET), ModuleRegulators)
+        METreg <- intersect(rownames(AMARETTOinit$RegulatorAlterations$MET), 
+            ModuleRegulators)
         print("MET regulators will be included when available")
         if (length(METreg) > 0) {
             MET_matrix = as.data.frame(MET_matrix)
@@ -154,10 +158,10 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,
                 cluster_rows = FALSE, cluster_columns = TRUE, 
                 show_column_dend = FALSE, show_column_names = TRUE, 
                 show_row_names = FALSE, column_names_gp = gpar(fontsize = 6), 
-                show_heatmap_legend = TRUE, column_title_gp = gpar(fontsize = 6, fontface = "bold"), 
-                col = Met_col, 
-                width = unit(Metwidth, "cm"), 
-                heatmap_legend_param = list(title_gp = gpar(fontsize = 8), labels_gp = gpar(fontsize = 6)))
+                show_heatmap_legend = TRUE, column_title_gp = gpar(fontsize = 6, 
+                  fontface = "bold"), col = Met_col, 
+                width = unit(Metwidth, "cm"), heatmap_legend_param = list(title_gp = gpar(fontsize = 8), 
+                  labels_gp = gpar(fontsize = 6)))
             ha_list <- ha_Met + ha_list
         }
     }
@@ -207,25 +211,28 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,
             col <- c()
             for (sample_column in colnames(SAMPLE_annotation_fil)[colnames(SAMPLE_annotation_fil) != 
                 ID]) {
-                newcol <- rand_color(n= length(unique(SAMPLE_annotation_fil[, sample_column])), luminosity = "bright")
-                names(newcol) <- unique(SAMPLE_annotation_fil[, sample_column])
+                newcol <- rand_color(n = length(unique(SAMPLE_annotation_fil[, 
+                  sample_column])), luminosity = "bright")
+                names(newcol) <- unique(SAMPLE_annotation_fil[, 
+                  sample_column])
                 col <- c(col, newcol)
             }
             ha_anot <- Heatmap(SAMPLE_annotation_fil, 
                 name = "Sample Annotation", column_title = "Sample\nAnnotation", 
-                column_title_gp = gpar(fontsize = 6, fontface = "bold"), 
-                col = col, show_row_names = FALSE, 
+                column_title_gp = gpar(fontsize = 6, 
+                  fontface = "bold"), col = col, show_row_names = FALSE, 
                 width = unit(4, "mm"), column_names_gp = gpar(fontsize = 6), 
-                heatmap_legend_param = list(title_gp = gpar(fontsize = 8),labels_gp = gpar(fontsize = 6)))
+                heatmap_legend_param = list(title_gp = gpar(fontsize = 8), 
+                  labels_gp = gpar(fontsize = 6)))
             ha_list <- ha_list + ha_anot
         } else {
             print("The ID is not identified as a column name in the annotation")
         }
     }
-    if (printHM == TRUE){
-    ComplexHeatmap::draw(ha_list, heatmap_legend_side = "bottom", 
-        annotation_legend_side = "bottom")
+    if (printHM == TRUE) {
+        ComplexHeatmap::draw(ha_list, heatmap_legend_side = "bottom", 
+            annotation_legend_side = "bottom")
     } else {
-      return(ha_list)
+        return(ha_list)
     }
 }
