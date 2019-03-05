@@ -96,8 +96,8 @@ AMARETTO_unite_results<-function(results_list){
   for (i in 1:length(results_list)){
     if (results_list[[i]]$test_type=="COXPROPHAZARD"){
       df<-results_list[[i]]$test_result
-      statistics_str<-gsub("(","[",unlist(strsplit(df$"HR (95% CI for HR)"," "))[2])
-      statistics_str<-gsub(")","]",statistics_str)
+      statistics_str<-gsub("\\(","[",unlist(strsplit(df$"HR (95% CI for HR)"," "))[2])
+      statistics_str<-gsub("\\)","]",statistics_str)
       statistics_str<-gsub("-",",",statistics_str)
       df<-add_column(df,
                      Phenotypes=paste0(results_list[[i]]$phenotype1," (COXPROPHAZARDTIMETOEVENT), ",results_list[[i]]$phenotype2," (COXPROPHAZARDRIGHTCENSORING)"),

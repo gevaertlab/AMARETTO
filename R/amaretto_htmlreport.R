@@ -105,8 +105,9 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
     if (!is.null(phenotype_association_table)){
       module_number<-ModuleNr
       module_phenotype_association_datatable<-datatable(phenotype_association_table%>%filter(ModuleNr==paste0("Module ",module_number))%>%
-                                                          select(-ModuleNr)%>%formatSignif(c('p.value','q.value'),2),class='display',extensions = 'Buttons',rownames = FALSE,options = list(
-                                                            pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf'),escape = FALSE,colnames=c("Phenotypes","Statistical Test","p-value","FDR q-value","Descriptive Statistics")))
+                                                          select(-ModuleNr),class='display',extensions = 'Buttons',rownames = FALSE,options = list(
+                                                            pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf'),escape = FALSE,colnames=c("Phenotypes","Statistical Test","p-value","FDR q-value","Descriptive Statistics")))%>%
+                                                            formatSignif(c('p.value','q.value'),2)
     }
     else{
       module_phenotype_association_datatable<-"Phenotype association resuls were not provided."
@@ -167,9 +168,9 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
   }
   if (!is.null(phenotype_association_table)){
     print(phenotype_association_table$ModuleNr)
-    phenotype_association_datatable<-datatable(phenotype_association_table%>% mutate(ModuleNr=paste0('<a href="./modules/module',gsub("Module ","",GBM_phenotype_tests_all$ModuleNr),'.html">',ModuleNr,'</a>'))%>%formatSignif(c('p.value','q.value'),2),class='display',extensions = 'Buttons',rownames = FALSE,
+    phenotype_association_datatable<-datatable(phenotype_association_table%>% mutate(ModuleNr=paste0('<a href="./modules/module',gsub("Module ","",GBM_phenotype_tests_all$ModuleNr),'.html">',ModuleNr,'</a>')),class='display',extensions = 'Buttons',rownames = FALSE,
                                                options = list(colnames=c("ModuleNr","Phenotypes","Statistical Test","p-value","FDR q-value","Descriptive Statistics"),
-      pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf')),escape = FALSE)
+      pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf')),escape = FALSE)%>%formatSignif(c('p.value','q.value'),2)
   }
   else{
     phenotype_association_datatable<-"Phenotype association resuls were not provided."
