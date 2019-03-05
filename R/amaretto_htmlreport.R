@@ -37,7 +37,7 @@
 #' AMARETTO_HTMLreport(AMARETTOinit= AMARETTOinit,AMARETTOresults= AMARETTOresults,CNV_matrix=ProcessedDataLIHC$CNV_matrix,
 #'                    MET_matrix = ProcessedDataLIHC$MET_matrix,VarPercentage=10,hyper_geo_test_bool=FALSE,output_address='./')
 #'
-AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET_matrix=NULL,show_row_names=FALSE,SAMPLE_annotation=NULL,ID=NULL,VarPercentage,hyper_geo_test_bool=FALSE,hyper_geo_reference=NULL,output_address='./',MSIGDB=FALSE,driverGSEA=TRUE){
+AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET_matrix=NULL,show_row_names=FALSE,SAMPLE_annotation=NULL,ID=NULL,VarPercentage,hyper_geo_test_bool=FALSE,hyper_geo_reference=NULL,output_address='./',MSIGDB=FALSE,driverGSEA=TRUE,phenotype_association_table=NULL){
 
   NrModules<-AMARETTOresults$NrModules
   NrCores<-AMARETTOinit$NrCores
@@ -62,17 +62,27 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
   registerDoParallel(cluster,cores=NrCores)
 
   full_path<-normalizePath(report_address)
+  
   ModuleOverviewTable<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT','rmarkdown')) %dopar% {
+  # ModuleOverviewTable<-c()
+  # for (ModuleNr in 1:NrModules){
+    # tryCatch({
+      #quartz()
+    print(paste0("ModuleNr = ",ModuleNr))
     heatmap_module<-AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, CNV_matrix, MET_matrix, show_row_names = show_row_names, SAMPLE_annotation=SAMPLE_annotation, ID=ID, ModuleNr=ModuleNr)
+    print("visualization is done")
     ModuleRegulators <- AMARETTOresults$RegulatoryPrograms[ModuleNr,which(AMARETTOresults$RegulatoryPrograms[ModuleNr,] != 0)]
+    print("ModuleRegulators is done")
     dt_regulators<-datatable(rownames_to_column(as.data.frame(ModuleRegulators),"RegulatorIDs") %>% dplyr::rename(Weights="ModuleRegulators") %>% mutate(RegulatorIDs=paste0('<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=',RegulatorIDs,'">',RegulatorIDs,'</a>'))%>%dplyr::arrange(Weights),
                              class = 'display',extensions = 'Buttons',rownames = FALSE, options = list(
                                columnDefs = list(list(width = '200px', targets = "_all")),pageLength = 10,dom = 'Bfrtip',
                                buttons = c('csv', 'excel', 'pdf')),escape = 'Weights') %>% formatRound('Weights',3) %>% formatStyle('Weights',color = styleInterval(0, c('darkblue', 'darkred')))
+    print("dt_regulators is done")
     dt_targets<-datatable(as.data.frame(AMARETTOresults$ModuleMembership) %>% rownames_to_column("TargetIDs")%>% arrange(TargetIDs) %>% rename(moduleNr=ModuleNr) %>% filter(moduleNr==ModuleNr) %>% select(-moduleNr) %>% mutate(TargetIDs=paste0('<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=',TargetIDs,'">',TargetIDs,'</a>')),
                              class = 'display',extensions = 'Buttons',rownames = FALSE, options = list(
                                columnDefs = list(list(width = '200px', targets = "_all")),pageLength = 10,dom = 'Bfrtip',
                                buttons = c('csv', 'excel', 'pdf')),escape = FALSE)
+    print("dt_targets is done")
     if (hyper_geo_test_bool){
       output_hgt_filter<-output_hgt %>% dplyr::filter(Testset==paste0("Module_",as.character(ModuleNr))) %>% dplyr::arrange(padj)
       output_hgt_filter<-left_join(output_hgt_filter,GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% mutate(overlap_perc=n_Overlapping/NumberGenes) %>% dplyr::select(Geneset,Description,n_Overlapping,Overlapping_genes,overlap_perc,p_value,padj)
@@ -91,19 +101,38 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
       dt_genesets<-"Genesets were not analysed as they were not provided."
       ngenesets<-"NA"
     }
+    print("hypergeotest is done")
+    if (!is.null(phenotype_association_table)){
+      module_number<-ModuleNr
+      module_phenotype_association_datatable<-datatable(phenotype_association_table%>%filter(ModuleNr==paste0("Module ",module_number))%>%
+                                                          select(-ModuleNr)%>%formatSignif(c('p.value','q.value'),2),class='display',extensions = 'Buttons',rownames = FALSE,options = list(
+                                                            pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf'),escape = FALSE,colnames=c("Phenotypes","Statistical Test","p-value","FDR q-value","Descriptive Statistics")))
+    }
+    else{
+      module_phenotype_association_datatable<-"Phenotype association resuls were not provided."
+    }
+    print("phenotype is done!")
     modulemd<-paste0(full_path,"/AMARETTOhtmls/modules/module",ModuleNr,".rmd")
     file.copy(system.file("templates/TemplateReportModule.Rmd",package="AMARETTO"),modulemd)
-    knitr::knit_meta(class=NULL, clean = TRUE)  # cleaning memory, avoiding memory to be overloaded
+    print("file.copy is done!")
+    knitr::knit_meta(class=NULL, clean = TRUE)
     rmarkdown::render(modulemd,output_file = paste0("module",ModuleNr,".html"), params = list(
       report_address = report_address,
       ModuleNr = ModuleNr,
       heatmap_module = heatmap_module,
       dt_regulators = dt_regulators,
       dt_targets = dt_targets,
-      dt_genesets = dt_genesets),quiet = TRUE)
+      dt_genesets = dt_genesets,
+      module_phenotype_association_datatable=module_phenotype_association_datatable),quiet = TRUE)
+    print("rmarkdown is done and module html is created :)")
     file.remove(modulemd)
+    print("file removed successfully :) Done!")
+    # ModuleOverviewTable<-rbind(ModuleOverviewTable,c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),ngenesets))
     return(c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),ngenesets))
+    dev.off()
+    # },error=function(e){message(paste("an error occured for Module", ModuleNr))})
   }
+
 
   stopCluster(cluster)
   cat("The module htmls are finished.\n")
@@ -136,6 +165,15 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
   }else{
     dt_genesetsall<-"Genesets were not analysed as they were not provided."
   }
+  if (!is.null(phenotype_association_table)){
+    print(phenotype_association_table$ModuleNr)
+    phenotype_association_datatable<-datatable(phenotype_association_table%>% mutate(ModuleNr=paste0('<a href="./modules/module',gsub("Module ","",GBM_phenotype_tests_all$ModuleNr),'.html">',ModuleNr,'</a>'))%>%formatSignif(c('p.value','q.value'),2),class='display',extensions = 'Buttons',rownames = FALSE,
+                                               options = list(colnames=c("ModuleNr","Phenotypes","Statistical Test","p-value","FDR q-value","Descriptive Statistics"),
+      pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf')),escape = FALSE)
+  }
+  else{
+    phenotype_association_datatable<-"Phenotype association resuls were not provided."
+  }
   rmarkdown::render(system.file("templates/TemplateIndexPage.Rmd",package="AMARETTO"), output_dir=paste0(full_path,"/AMARETTOhtmls/"),output_file= "index.html", params = list(
     nExp = nExp,
     nCNV = nCNV,
@@ -145,7 +183,8 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
     nMod = nMod,
     dt_overview = dt_overview,
     dt_genes=dt_genes,
-    dt_genesetsall = dt_gensesetsall),quiet = TRUE)
+    dt_genesetsall = dt_gensesetsall,
+    phenotype_association_datatable=phenotype_association_datatable),quiet = TRUE)
   cat("The report is ready to use\n")
 }
 
@@ -168,11 +207,15 @@ HyperGTestGeneEnrichment<-function(gmtfile,testgmtfile,NrCores,ref.numb.genes=45
   ###########################  Parallelizing :
   cluster <- makeCluster(c(rep("localhost", NrCores)), type = "SOCK")
   registerDoParallel(cluster,cores=NrCores)
-
+  
+  #resultloop<-c()
   resultloop<-foreach(j=1:length(test.gmt), .combine='rbind') %do% {
     #print(j)
     foreach(i=1:length(gmt.path),.combine='rbind') %dopar% {
       #print(i)
+  # for(j in 1:length(test.gmt)){
+  #   print(paste0("test_gmt = ",j))
+  #   for(i in 1:length(gmt.path)){
       l<-length(gmt.path[[i]])
       k<-sum(gmt.path[[i]] %in% test.gmt[[j]])
       m<-ref.numb.genes
@@ -182,6 +225,7 @@ HyperGTestGeneEnrichment<-function(gmtfile,testgmtfile,NrCores,ref.numb.genes=45
       if (k>0){
         overlapping.genes<-gmt.path[[i]][gmt.path[[i]] %in% test.gmt[[j]]]
         overlapping.genes<-paste(overlapping.genes,collapse = ', ')
+        # resultloop<-rbind(resultloop,c(Geneset=names(gmt.path[i]),Testset=names(test.gmt[j]),p_value=p1,n_Overlapping=k,Overlapping_genes=overlapping.genes))
         c(Geneset=names(gmt.path[i]),Testset=names(test.gmt[j]),p_value=p1,n_Overlapping=k,Overlapping_genes=overlapping.genes)
       }
     }

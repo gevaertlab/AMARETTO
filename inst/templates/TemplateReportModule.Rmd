@@ -37,5 +37,17 @@ dt_targets
 ```{r geneset, echo=FALSE,out.width='25%'}
 dt_genesets
 ```
+
 <br><br><br>
+
+## Associations of Phenotypes with Regulatory Module
+
+<br><br><br>
+
+```{r module_Phenotypes,echo=FALSE}
+module_phenotype_association_datatable
+```
+
+<br><br><br>
+
 </center>
