@@ -409,7 +409,7 @@ all_module_TIMESERIESEDGE_test<-function(AMARETTOinit,AMARETTOresults,test_sampl
   # cov.time<-TIMESERIESEDGETIME
   # cov.cond<-TIMESERIESEDGECONDITION
   # cov.replicate<-TIMESERIESEDGETIMEREPLICATE
-  edge_obj <- build_study(data = as.matrix(mods), adj.var = cov.cond, tme = cov.time, ind = NULL, sampling = "timecourse")
+  edge_obj <- edge::build_study(data = as.matrix(mods), adj.var = cov.cond, tme = cov.time, ind = NULL, sampling = "timecourse")
   #edge_obj <- build_study(data = as.matrix(mods), adj.var = cov.cond, tme = cov.time, ind = cov.replicate, sampling = "timecourse")
   de_obj <- edge_obj 
   full_matrix<-fullModel(de_obj)
