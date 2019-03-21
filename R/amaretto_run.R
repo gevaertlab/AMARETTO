@@ -27,6 +27,7 @@ AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData,
         cat("\tAutoregulation is turned OFF.\n")
     }
     NrReassignGenes = length(Data_rownames)
+    run_history <- NrReassignGenes
     while (NrReassignGenes > 0.01 * length(Data_rownames)) {
         ptm <- proc.time()
         switch(Parameters$Mode, larsen = {
@@ -59,6 +60,7 @@ AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData,
         NrReassignGenes = ReassignGenesToClusters$NrReassignGenes
         Clusters = ReassignGenesToClusters$Clusters
         printf("Nr of reassignments is: %i \n", NrReassignGenes)
+        run_history <- c(run_history, NrReassignGenes)
     }
     ptm1 <- proc.time() - ptm1
     printf("Elapsed time is %f seconds\n", ptm1[3])
@@ -68,7 +70,8 @@ AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData,
     result <- list(NrModules = length(unique(Clusters)), 
         RegulatoryPrograms = regulatoryPrograms$Beta, 
         AllRegulators = rownames(RegulatorData), AllGenes = rownames(Data), 
-        ModuleMembership = ModuleMembership, AutoRegulationReport = regulatoryPrograms$AutoRegulationReport)
+        ModuleMembership = ModuleMembership, AutoRegulationReport = regulatoryPrograms$AutoRegulationReport, 
+        run_history = run_history)
     return(result)
 }
 
@@ -98,7 +101,6 @@ AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data,
     NrSamples = ncol(Data)
     NrInterpolateSteps = 100
     if (AutoRegulation >= 1) {
-        
     } else if (AutoRegulation == 0) {
         BetaSpecial = list(NrClusters, 1)
         RegulatorPositions = list(NrClusters, 1)
@@ -129,8 +131,9 @@ AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data,
                   Data_rownames[CurrentClusterPositions]), 
                   ]
             }
-            fit = cv.glmnet(t(X), y, alpha = alpha, 
-                pmax = pmax)
+            fit = suppressMessages(cv.glmnet(t(X), 
+                y, alpha = alpha, pmax = pmax, lambda = Lambda_Sequence(t(X), 
+                  y)))
             nonZeroLambdas <- fit$lambda[which(fit$nzero > 
                 0)]
             nonZeroCVMs <- fit$cvm[which(fit$nzero > 
@@ -147,7 +150,7 @@ AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data,
             b_opt <- c(b_o[2:length(b_o)])
             if (AutoRegulation == 2) {
                 CurrentUsedRegulators = RegulatorData_rownames[which(b_opt != 
-                  0, arr.ind = TRUE)]
+                  0, arr.ind = T)]
                 CurrentClusterMembers = Data_rownames[CurrentClusterPositions]
                 nrIterations = 0
                 while (length(CurrentClusterMembers[CurrentClusterMembers %in% 
@@ -164,8 +167,10 @@ AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data,
                     } else {
                       y = Data[names, ]
                     }
-                    fit = cv.glmnet(t(X), y, alpha = alpha, 
-                      pmax = pmax)
+                    fit = suppressMessages(cv.glmnet(t(X), 
+                      y, alpha = alpha, pmax = pmax, 
+                      lambda = Lambda_Sequence(t(X), 
+                        y)))
                     nonZeroLambdas <- fit$lambda[which(fit$nzero > 
                       0)]
                     nonZeroCVMs <- fit$cvm[which(fit$nzero > 
@@ -202,7 +207,6 @@ AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data,
                 }
             }
             if (AutoRegulation >= 1) {
-                
             } else {
                 BetaSpecial[i] = b_opt
                 RegulatorPositions[i] = (RegulatorData_rownames %in% 
@@ -316,10 +320,8 @@ AMARETTO_ReassignGenesToClusters <- function(Data,
 #' @export
 #' @examples
 #' data('ProcessedDataLIHC')
-#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
-#'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-#'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-#'                                     NrModules = 5, VarPercentage = 50)
+#' AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
+#'                                     NrModules = 2, VarPercentage = 50)
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 #' AMARETTO_MD <- AMARETTO_CreateModuleData(AMARETTOinit, AMARETTOresults)
 AMARETTO_CreateModuleData <- function(AMARETTOinit, 
@@ -351,10 +353,8 @@ AMARETTO_CreateModuleData <- function(AMARETTOinit,
 #' @export
 #' @examples
 #' data('ProcessedDataLIHC')
-#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
-#'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-#'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-#'                                     NrModules = 5, VarPercentage = 50)
+#' AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
+#'                                     NrModules = 2, VarPercentage = 50)
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 #' AMARETTO_RP <- AMARETTO_CreateRegulatorPrograms(AMARETTOinit,AMARETTOresults)
 AMARETTO_CreateRegulatorPrograms <- function(AMARETTOinit, 
@@ -375,4 +375,22 @@ AMARETTO_CreateRegulatorPrograms <- function(AMARETTOinit,
             RegulatorData
     }
     return(RegulatorProgramData)
+}
+
+
+#' Lambda_Sequence
+#'
+#' @param sx 
+#' @param sy 
+#' @return result
+#' @keywords internal
+#' @examples
+Lambda_Sequence <- function(sx, sy) {
+    n <- nrow(sx)
+    lambda_max <- max(abs(colSums(sx * sy)))/n
+    epsilon <- 1e-04
+    K <- 100
+    lambdaseq <- round(exp(seq(log(lambda_max), log(lambda_max * 
+        epsilon), length.out = K)), digits = 10)
+    return(lambdaseq)
 }

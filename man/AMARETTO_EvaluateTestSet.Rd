@@ -23,10 +23,8 @@ Code to evaluate AMARETTO on a new gene expression test set. Uses output from AM
 }
 \examples{
 data('ProcessedDataLIHC')
-AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
-                                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
-                                    NrModules = 5, VarPercentage = 50)
+AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
+                                    NrModules = 2, VarPercentage = 50)
 
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults = AMARETTOresults,

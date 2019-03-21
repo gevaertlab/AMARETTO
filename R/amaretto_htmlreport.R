@@ -13,40 +13,40 @@
 #' @param output_address Output directory for the html files.
 #' @param MSIGDB TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.
 #' @param GMTURL TRUE if second column of gmt contains URLs to gene set, FALSE if it contains a description
-#'
-#' @import tidyverse
-#' @import doParallel
-#' @import htmltools
-#' @import DT
-#' @import reshape2
-#' @rawNamespace import(dplyr, except = count)
-#' @import readr
-#' @import tibble
-#' @importFrom rmarkdown run
+#' @importFrom doParallel registerDoParallel
+#' @importFrom DT datatable formatRound formatSignif  formatStyle styleColorBar styleInterval
+#' @importFrom reshape2 melt
+#' @importFrom dplyr arrange  group_by  left_join mutate  select  summarise
+#' @importFrom foreach foreach
+#' @importFrom parallel makeCluster stopCluster
+#' @importFrom utils  write.table
+#' @importFrom tibble rownames_to_column
+#' @importFrom stats  p.adjust  phyper
+#' @importFrom rmarkdown render
 #' @return result
 #' @export
-#'
 #' @examples
 #'\dontrun{
 #' data('ProcessedDataLIHC')
-#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
-#'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-#'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-#'                                     NrModules = 5, VarPercentage = 50)
+#' AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
+#'                                     NrModules = 2, VarPercentage = 50)
 #'
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 #'
 #' AMARETTO_HTMLreport(AMARETTOinit= AMARETTOinit,AMARETTOresults= AMARETTOresults,
-#'                     CNV_matrix=ProcessedDataLIHC$CNV_matrix,
-#'                     MET_matrix = ProcessedDataLIHC$MET_matrix,
+#'                     ProcessedData = ProcessedDataLIHC,
 #'                     VarPercentage=10,hyper_geo_test_bool=FALSE,
 #'                     output_address='./')
 #'}
 AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults, 
-    CNV_matrix = NULL, MET_matrix = NULL, SAMPLE_annotation = NULL, 
-    ID = NULL, VarPercentage, hyper_geo_test_bool = FALSE, 
-    hyper_geo_reference = NULL, output_address = "./", 
-    MSIGDB = FALSE, GMTURL = FALSE) {
+    ProcessedData, SAMPLE_annotation = NULL, ID = NULL, 
+    VarPercentage, hyper_geo_test_bool = FALSE, hyper_geo_reference = NULL, 
+    output_address = "./", MSIGDB = FALSE, GMTURL = FALSE) {
+    
+    
+    CNV_matrix <- ProcessedData[[2]]
+    MET_matrix <- ProcessedData[[3]]
+    
     
     NrModules <- AMARETTOresults$NrModules
     NrCores <- AMARETTOinit$NrCores
@@ -71,12 +71,12 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
     }
     cat("The hyper geometric test results are calculated.\n")
     
-    cluster <- makeCluster(c(rep("localhost", NrCores)), 
-        type = "SOCK")
+    cluster <- parallel::makeCluster(c(rep("localhost", 
+        NrCores)), type = "SOCK")
     registerDoParallel(cluster, cores = NrCores)
     
     full_path <- normalizePath(report_address)
-    ModuleOverviewTable <- foreach(ModuleNr = 1:NrModules, 
+    ModuleOverviewTable <- foreach::foreach(ModuleNr = 1:NrModules, 
         .packages = c("AMARETTO", "tidyverse", "DT", 
             "rmarkdown")) %dopar% {
         heatmap_module <- invisible(AMARETTO_VisualizeModule(AMARETTOinit, 
@@ -87,32 +87,32 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
             which(AMARETTOresults$RegulatoryPrograms[ModuleNr, 
                 ] != 0)]
         
-        dt_regulators <- datatable(rownames_to_column(as.data.frame(ModuleRegulators), 
+        dt_regulators <- DT::datatable(tibble::rownames_to_column(as.data.frame(ModuleRegulators), 
             "RegulatorIDs") %>% dplyr::rename(Weights = "ModuleRegulators") %>% 
-            mutate(RegulatorIDs = paste0("<a href=\"https://www.genecards.org/cgi-bin/carddisp.pl?gene=", 
+            dplyr::mutate(RegulatorIDs = paste0("<a href=\"https://www.genecards.org/cgi-bin/carddisp.pl?gene=", 
                 RegulatorIDs, "\">", RegulatorIDs, 
                 "</a>")), class = "display", extensions = "Buttons", 
             rownames = FALSE, options = list(columnDefs = list(list(width = "200px", 
                 targets = "_all")), pageLength = 10, 
                 dom = "Bfrtip", buttons = c("csv", 
                   "excel", "pdf")), escape = "Weights") %>% 
-            formatRound("Weights", 3) %>% formatStyle("Weights", 
-            color = styleInterval(0, c("darkblue", 
+            DT::formatRound("Weights", 3) %>% DT::formatStyle("Weights", 
+            color = DT::styleInterval(0, c("darkblue", 
                 "darkred")))
         
         if (hyper_geo_test_bool) {
             output_hgt_filter <- output_hgt %>% dplyr::filter(Testset == 
                 paste0("Module_", as.character(ModuleNr))) %>% 
                 dplyr::arrange(padj)
-            output_hgt_filter <- left_join(output_hgt_filter, 
+            output_hgt_filter <- dplyr::left_join(output_hgt_filter, 
                 GeneSetDescriptions, by = c(Geneset = "GeneSet")) %>% 
-                mutate(overlap_perc = n_Overlapping/NumberGenes) %>% 
+                dplyr::mutate(overlap_perc = n_Overlapping/NumberGenes) %>% 
                 dplyr::select(Geneset, Description, 
                   n_Overlapping, Overlapping_genes, 
                   overlap_perc, p_value, padj)
             if (MSIGDB == TRUE & GMTURL == FALSE) {
-                dt_genesets <- datatable(output_hgt_filter %>% 
-                  mutate(Geneset = paste0("<a href=\"http://software.broadinstitute.org/gsea/msigdb/cards/", 
+                dt_genesets <- DT::datatable(output_hgt_filter %>% 
+                  dplyr::mutate(Geneset = paste0("<a href=\"http://software.broadinstitute.org/gsea/msigdb/cards/", 
                     Geneset, "\">", gsub("_", " ", 
                       Geneset), "</a>")), class = "display", 
                   extensions = "Buttons", rownames = FALSE, 
@@ -122,14 +122,14 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
                     "# Genes in Overlap", "Overlapping Genes", 
                     "Percent of GeneSet overlapping", 
                     "p-value", "FDR q-value"), escape = FALSE) %>% 
-                  formatSignif(c("p_value", "padj", 
-                    "overlap_perc"), 2) %>% formatStyle("overlap_perc", 
-                  background = styleColorBar(c(0, 1), 
-                    "lightblue"), backgroundSize = "98% 88%", 
+                  DT::formatSignif(c("p_value", "padj", 
+                    "overlap_perc"), 2) %>% DT::formatStyle("overlap_perc", 
+                  background = DT::styleColorBar(c(0, 
+                    1), "lightblue"), backgroundSize = "98% 88%", 
                   backgroundRepeat = "no-repeat", backgroundPosition = "center")
             } else if (MSIGDB == TRUE & GMTURL == TRUE) {
-                dt_genesets <- datatable(output_hgt_filter %>% 
-                  dplyr::select(-Description) %>% mutate(Geneset = paste0("<a href=\"http://software.broadinstitute.org/gsea/msigdb/cards/", 
+                dt_genesets <- DT::datatable(output_hgt_filter %>% 
+                  dplyr::select(-Description) %>% dplyr::mutate(Geneset = paste0("<a href=\"http://software.broadinstitute.org/gsea/msigdb/cards/", 
                   Geneset, "\">", gsub("_", " ", Geneset), 
                   "</a>")), class = "display", extensions = "Buttons", 
                   rownames = FALSE, options = list(pageLength = 10, 
@@ -138,14 +138,14 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
                     "# Genes in Overlap", "Overlapping Genes", 
                     "Percent of GeneSet overlapping", 
                     "p-value", "FDR q-value"), escape = FALSE) %>% 
-                  formatSignif(c("p_value", "padj", 
-                    "overlap_perc"), 2) %>% formatStyle("overlap_perc", 
-                  background = styleColorBar(c(0, 1), 
-                    "lightblue"), backgroundSize = "98% 88%", 
+                  DT::formatSignif(c("p_value", "padj", 
+                    "overlap_perc"), 2) %>% DT::formatStyle("overlap_perc", 
+                  background = DT::styleColorBar(c(0, 
+                    1), "lightblue"), backgroundSize = "98% 88%", 
                   backgroundRepeat = "no-repeat", backgroundPosition = "center")
             } else if (MSIGDB == FALSE & GMTURL == TRUE) {
-                dt_genesets <- datatable(output_hgt_filter %>% 
-                  mutate(Geneset = paste0("<a href=\"", 
+                dt_genesets <- DT::datatable(output_hgt_filter %>% 
+                  dplyr::mutate(Geneset = paste0("<a href=\"", 
                     Description, "\">", gsub("_", " ", 
                       Geneset), "</a>")) %>% dplyr::select(-Description), 
                   class = "display", extensions = "Buttons", 
@@ -155,18 +155,18 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
                     "Description", "# Genes in Overlap", 
                     "Overlapping Genes", "Percent of GeneSet overlapping", 
                     "p-value", "FDR q-value"), escape = FALSE) %>% 
-                  formatSignif(c("p_value", "padj", 
-                    "overlap_perc"), 2) %>% formatStyle("overlap_perc", 
-                  background = styleColorBar(c(0, 1), 
-                    "lightblue"), backgroundSize = "98% 88%", 
+                  DT::formatSignif(c("p_value", "padj", 
+                    "overlap_perc"), 2) %>% DT::formatStyle("overlap_perc", 
+                  background = DT::styleColorBar(c(0, 
+                    1), "lightblue"), backgroundSize = "98% 88%", 
                   backgroundRepeat = "no-repeat", backgroundPosition = "center")
             } else {
-                dt_genesets <- datatable(output_hgt_filter, 
+                dt_genesets <- DT::datatable(output_hgt_filter, 
                   class = "display", extensions = "Buttons", 
                   rownames = FALSE, options = list(autoWidth = TRUE, 
                     pageLength = 10, dom = "Bfrtip", 
                     buttons = c("csv", "excel", "pdf"))) %>% 
-                  formatSignif(c("p_value", "padj", 
+                  DT::formatSignif(c("p_value", "padj", 
                     "overlap_perc"), 2)
             }
             ngenesets <- nrow(output_hgt_filter %>% 
@@ -189,7 +189,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
             ModuleNr)), length(ModuleRegulators), ngenesets))
     }
     
-    stopCluster(cluster)
+    parallel::stopCluster(cluster)
     cat("The module htmls are finished.\n")
     ModuleOverviewTable <- data.frame(matrix(unlist(ModuleOverviewTable), 
         byrow = TRUE, ncol = 4), stringsAsFactors = FALSE)
@@ -209,38 +209,38 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
     nGenes = length(AMARETTOresults$AllGenes)
     nMod = AMARETTOresults$NrModules
     
-    dt_overview <- datatable(ModuleOverviewTable %>% 
-        mutate(ModuleNr = paste0("<a href=\"./modules/module", 
+    dt_overview <- DT::datatable(ModuleOverviewTable %>% 
+        dplyr::mutate(ModuleNr = paste0("<a href=\"./modules/module", 
             ModuleNr, ".html\">Module ", ModuleNr, 
             "</a>")), class = "display", extensions = "Buttons", 
         rownames = FALSE, options = list(pageLength = 10, 
             dom = "Bfrtip", buttons = c("csv", "excel", 
                 "pdf")), escape = FALSE)
     
-    all_targets <- rownames_to_column(data.frame(AMARETTOinit$ModuleMembership), 
+    all_targets <- tibble::rownames_to_column(data.frame(AMARETTOinit$ModuleMembership), 
         "Genes") %>% dplyr::rename(Module = "AMARETTOinit.ModuleMembership") %>% 
-        mutate(Type = "Target")
-    all_regulators <- melt(rownames_to_column(as.data.frame(AMARETTOresults$RegulatoryPrograms), 
+        dplyr::mutate(Type = "Target")
+    all_regulators <- reshape2::melt(tibble::rownames_to_column(as.data.frame(AMARETTOresults$RegulatoryPrograms), 
         "Module"), id.vars = "Module") %>% dplyr::filter(value > 
         0) %>% dplyr::select(variable, Module) %>% 
-        mutate(Module = sub("Module_", "", Module), 
+        dplyr::mutate(Module = sub("Module_", "", Module), 
             Type = "Regulator") %>% dplyr::rename(Genes = "variable")
     all_genes <- rbind(all_targets, all_regulators) %>% 
-        arrange(Genes) %>% dplyr::mutate(Module = paste0("<a href=\"./modules/module", 
+        dplyr::arrange(Genes) %>% dplyr::mutate(Module = paste0("<a href=\"./modules/module", 
         Module, ".html\">Module ", Module, "</a>"))
-    dt_genes <- datatable(all_genes, class = "display", 
+    dt_genes <- DT::datatable(all_genes, class = "display", 
         extensions = "Buttons", rownames = FALSE, options = list(pageLength = 10, 
             dom = "Bfrtip", buttons = c("csv", "excel", 
                 "pdf")), escape = FALSE)
     if (hyper_geo_test_bool) {
-        dt_genesetsall <- datatable(left_join(output_hgt %>% 
+        dt_genesetsall <- DT::datatable(dplyr::left_join(output_hgt %>% 
             dplyr::filter(padj < 0.05 & n_Overlapping > 
                 1) %>% dplyr::group_by(Geneset) %>% 
             dplyr::mutate(Testset = paste0("<a href=\"./modules/module", 
                 sub("Module_", "", Testset), ".html\">", 
-                Testset, "</a>")) %>% summarise(Modules = paste(Testset, 
+                Testset, "</a>")) %>% dplyr::summarise(Modules = paste(Testset, 
             collapse = ", ")), GeneSetDescriptions, 
-            by = c(Geneset = "GeneSet")) %>% mutate(Geneset = gsub("_", 
+            by = c(Geneset = "GeneSet")) %>% dplyr::mutate(Geneset = gsub("_", 
             " ", Geneset), Modules = gsub("_", " ", 
             Modules)), class = "display", extensions = "Buttons", 
             rownames = FALSE, options = list(pageLength = 10, 
@@ -277,42 +277,41 @@ HyperGTestGeneEnrichment <- function(gmtfile, testgmtfile,
     gmt.path <- readGMT(gmtfile)  # the hallmarks_and_co2...
     
     ########################### Parallelizing :
-    cluster <- makeCluster(c(rep("localhost", NrCores)), 
-        type = "SOCK")
+    cluster <- parallel::makeCluster(c(rep("localhost", 
+        NrCores)), type = "SOCK")
     registerDoParallel(cluster, cores = NrCores)
     
-    resultloop <- foreach(j = 1:length(test.gmt), .combine = "rbind") %do% 
-        {
-            # print(j)
-            foreach(i = 1:length(gmt.path), .combine = "rbind") %dopar% 
-                {
-                  # print(i)
-                  l <- length(gmt.path[[i]])
-                  k <- sum(gmt.path[[i]] %in% test.gmt[[j]])
-                  m <- ref.numb.genes
-                  n <- length(test.gmt[[j]])
-                  p1 <- phyper(k - 1, l, m - l, n, 
-                    lower.tail = FALSE)
-                  
-                  if (k > 0) {
-                    overlapping.genes <- gmt.path[[i]][gmt.path[[i]] %in% 
-                      test.gmt[[j]]]
-                    overlapping.genes <- paste(overlapping.genes, 
-                      collapse = ", ")
-                    c(Geneset = names(gmt.path[i]), 
-                      Testset = names(test.gmt[j]), 
-                      p_value = p1, n_Overlapping = k, 
-                      Overlapping_genes = overlapping.genes)
-                  }
+    resultloop <- foreach::foreach(j = 1:length(test.gmt), 
+        .combine = "rbind") %do% {
+        # print(j)
+        foreach::foreach(i = 1:length(gmt.path), .combine = "rbind") %dopar% 
+            {
+                # print(i)
+                l <- length(gmt.path[[i]])
+                k <- sum(gmt.path[[i]] %in% test.gmt[[j]])
+                m <- ref.numb.genes
+                n <- length(test.gmt[[j]])
+                p1 <- stats::phyper(k - 1, l, m - l, 
+                  n, lower.tail = FALSE)
+                
+                if (k > 0) {
+                  overlapping.genes <- gmt.path[[i]][gmt.path[[i]] %in% 
+                    test.gmt[[j]]]
+                  overlapping.genes <- paste(overlapping.genes, 
+                    collapse = ", ")
+                  c(Geneset = names(gmt.path[i]), Testset = names(test.gmt[j]), 
+                    p_value = p1, n_Overlapping = k, 
+                    Overlapping_genes = overlapping.genes)
                 }
-        }
+            }
+    }
     
-    stopCluster(cluster)
+    parallel::stopCluster(cluster)
     resultloop <- as.data.frame(resultloop, stringsAsFactors = FALSE)
     resultloop$p_value <- as.numeric(resultloop$p_value)
     resultloop$n_Overlapping <- as.numeric((resultloop$n_Overlapping))
-    resultloop[, "padj"] <- p.adjust(resultloop[, "p_value"], 
-        method = "BH")
+    resultloop[, "padj"] <- stats::p.adjust(resultloop[, 
+        "p_value"], method = "BH")
     return(resultloop)
 }
 
@@ -322,10 +321,10 @@ HyperGTestGeneEnrichment <- function(gmtfile, testgmtfile,
 #' @param AMARETTOresults List output from AMARETTO_Run().
 #' @keywords internal
 GmtFromModules <- function(AMARETTOinit, AMARETTOresults) {
-    ModuleMembership <- rownames_to_column(as.data.frame(AMARETTOresults$ModuleMembership), 
+    ModuleMembership <- tibble::rownames_to_column(as.data.frame(AMARETTOresults$ModuleMembership), 
         "GeneNames")
     NrModules <- AMARETTOresults$NrModules
-    ModuleMembership <- ModuleMembership %>% arrange(GeneNames)
+    ModuleMembership <- ModuleMembership %>% dplyr::arrange(GeneNames)
     
     ModuleMembers_list <- split(ModuleMembership$GeneNames, 
         ModuleMembership$ModuleNr)
@@ -333,10 +332,11 @@ GmtFromModules <- function(AMARETTOinit, AMARETTOresults) {
         names(ModuleMembers_list))
     
     gmt_file = "./Modules_targets_only.gmt"
-    write.table(sapply(names(ModuleMembers_list), function(x) paste(x, 
-        paste(ModuleMembers_list[[x]], collapse = "\t"), 
-        sep = "\t")), gmt_file, quote = FALSE, row.names = TRUE, 
-        col.names = FALSE, sep = "\t")
+    utils::write.table(sapply(names(ModuleMembers_list), 
+        function(x) paste(x, paste(ModuleMembers_list[[x]], 
+            collapse = "\t"), sep = "\t")), gmt_file, 
+        quote = FALSE, row.names = TRUE, col.names = FALSE, 
+        sep = "\t")
 }
 
 #' GeneSetDescription

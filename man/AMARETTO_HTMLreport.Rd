@@ -4,20 +4,15 @@
 \alias{AMARETTO_HTMLreport}
 \title{AMARETTO_HTMLreport}
 \usage{
-AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, CNV_matrix = NULL,
-  MET_matrix = NULL, SAMPLE_annotation = NULL, ID = NULL,
-  VarPercentage, hyper_geo_test_bool = FALSE,
-  hyper_geo_reference = NULL, output_address = "./", MSIGDB = FALSE,
-  GMTURL = FALSE)
+AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
+  SAMPLE_annotation = NULL, ID = NULL, VarPercentage,
+  hyper_geo_test_bool = FALSE, hyper_geo_reference = NULL,
+  output_address = "./", MSIGDB = FALSE, GMTURL = FALSE)
 }
 \arguments{
 \item{AMARETTOinit}{AMARETTO initialize output}
 
 \item{AMARETTOresults}{AMARETTO results output}
-
-\item{CNV_matrix}{Processed CNV matrix ($CNV_matrix element from Preprocess_CancerSite() list output).}
-
-\item{MET_matrix}{Processed methylation matrix ($MET_matrix element from Preprocess_CancerSite() list output).}
 
 \item{SAMPLE_annotation}{SAMPLE annotation will be added to heatmap}
 
@@ -34,6 +29,10 @@ AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, CNV_matrix = NULL,
 \item{MSIGDB}{TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.}
 
 \item{GMTURL}{TRUE if second column of gmt contains URLs to gene set, FALSE if it contains a description}
+
+\item{CNV_matrix}{Processed CNV matrix ($CNV_matrix element from Preprocess_CancerSite() list output).}
+
+\item{MET_matrix}{Processed methylation matrix ($MET_matrix element from Preprocess_CancerSite() list output).}
 }
 \value{
 result
@@ -44,16 +43,13 @@ Retrieve an interactive html report, including gene set enrichment analysis if a
 \examples{
 \dontrun{
 data('ProcessedDataLIHC')
-AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
-                                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
-                                    NrModules = 5, VarPercentage = 50)
+AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
+                                    NrModules = 2, VarPercentage = 50)
 
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 
 AMARETTO_HTMLreport(AMARETTOinit= AMARETTOinit,AMARETTOresults= AMARETTOresults,
-                    CNV_matrix=ProcessedDataLIHC$CNV_matrix,
-                    MET_matrix = ProcessedDataLIHC$MET_matrix,
+                    ProcessedData = ProcessedDataLIHC,
                     VarPercentage=10,hyper_geo_test_bool=FALSE,
                     output_address='./')
 }

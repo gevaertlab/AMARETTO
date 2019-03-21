@@ -4,11 +4,9 @@
 \alias{AMARETTO_Preprocess}
 \title{AMARETTO_Preprocess}
 \usage{
-AMARETTO_Preprocess(CancerSite, DataSetDirectories)
+AMARETTO_Preprocess(DataSetDirectories = DataSetDirectories)
 }
 \arguments{
-\item{CancerSite}{CancerSite}
-
 \item{DataSetDirectories}{DataSetDirectories}
 }
 \value{
@@ -20,9 +18,9 @@ Wrapper code that analyzes process TCGA GISTIC (CNV) and gene expression (rna-se
 \examples{
 \dontrun{
 data('BatchData')
-TargetDirectory <- file.path(getwd(),'Downloads/') # path to data download directory
-CancerSite <- 'LIHC'
+TargetDirectory <-  tempdir()  # path to data download directory
+CancerSite <- 'CHOL'
 DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory)
-ProcessedData <- AMARETTO_Preprocess(CancerSite,DataSetDirectories)
+ProcessedData <- AMARETTO_Preprocess(DataSetDirectories)
 }
 }

@@ -13,12 +13,6 @@
 #' @export
 #' @keywords internal
 #' @examples
-#' data('ProcessedDataLIHC')
-#' CreateRegulatorData(MA_matrix = ProcessedDataLIHC$MA_matrix,
-#'                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-#'                      MET_matrix= ProcessedDataLIHC$MET_matrix,
-#'                      PvalueThreshold = 0.001, RsquareThreshold = 0.1)
-#'
 CreateRegulatorData <- function(MA_matrix = MA_matrix, 
     CNV_matrix = NULL, MET_matrix = NULL, Driver_list = NULL, 
     PvalueThreshold = 0.001, RsquareThreshold = 0.1, 

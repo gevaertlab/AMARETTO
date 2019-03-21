@@ -3,9 +3,7 @@
 #' Code used to initialize the seed clusters for an AMARETTO run.
 #' Requires processed gene expressiosn (rna-seq or microarray), CNV (usually from a GISTIC run), and methylation (from MethylMix, provided in this package) data.
 #' Uses the function CreateRegulatorData() and results are fed into the function AMARETTO_Run().
-#' @param MA_matrix Expression matrix, with genes in rows and samples in columns.
-#' @param CNV_matrix CNV matrix, with genes in rows and samples in columns.
-#' @param MET_matrix Methylation matrix, with genes in rows and samples in columns.
+#' @param ProcessedData List of Expression, CNV and MethylMix data matrices, with genes in rows and samples in columns.
 #' @param Driver_list Custom list of driver genes to be considered in analysis
 #' @param NrModules How many gene co-expression modules should AMARETTO search for? Usually around 100 is acceptable, given the large number of possible driver-passenger gene combinations.
 #' @param VarPercentage Minimum percentage by variance for filtering of genes; for example, 75\% would indicate that the CreateRegulatorData() function only analyses genes that have a variance above the 75th percentile across all samples.
@@ -17,31 +15,29 @@
 #' @param method Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.
 #' @export
 #' @return result
-#' @import matrixStats
 #' @rawNamespace import(callr, except = run)
 #' @import Rcpp
-#' @importFrom matrixStats rowVars
-#' @importFrom matrixStats rowMads
+#' @importFrom matrixStats rowVars rowMads
 #' @importFrom stats aov coef cor density dist dnorm hclust kmeans lm na.omit p.adjust phyper prcomp qqline qqnorm qqplot rgamma var
 #' @examples
 #' data('ProcessedDataLIHC')
 #' data('Driver_Genes')
-#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
-#'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-#'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-#'                                     NrModules = 5, VarPercentage = 50)
+#' AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
+#'                                     NrModules = 2, VarPercentage = 50)
 #' \dontrun{
-#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
-#'                                     CNV_matrix = NULL,
-#'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
+#' AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
 #'                                     Driver_list = Driver_Genes[['MSigDB']],
-#'                                     NrModules = 5, VarPercentage = 50)
+#'                                     NrModules = 2, VarPercentage = 50)
 #'}
-AMARETTO_Initialize <- function(MA_matrix = MA_matrix, 
-    CNV_matrix = NULL, MET_matrix = NULL, Driver_list = NULL, 
-    NrModules, VarPercentage, PvalueThreshold = 0.001, 
+AMARETTO_Initialize <- function(ProcessedData = ProcessedData, 
+    Driver_list = NULL, NrModules, VarPercentage, PvalueThreshold = 0.001, 
     RsquareThreshold = 0.1, pmax = 10, NrCores = 1, 
     OneRunStop = 0, method = "union") {
+    
+    MA_matrix <- ProcessedData[[1]]
+    CNV_matrix <- ProcessedData[[2]]
+    MET_matrix <- ProcessedData[[3]]
+    
     if (is.null(MET_matrix) & is.null(CNV_matrix) & 
         is.null(Driver_list)) {
         stop("Please select the correct input data types")
@@ -97,6 +93,7 @@ AMARETTO_Initialize <- function(MA_matrix = MA_matrix,
     }
 }
 
+
 #' AMARETTO_Run
 #'
 #' Function to run AMARETTO, a statistical algorithm to identify cancer drivers by integrating a variety of omics data from cancer and normal tissue.
@@ -104,18 +101,12 @@ AMARETTO_Initialize <- function(MA_matrix = MA_matrix,
 #'
 #' @return result
 #' @export
-#' @import doParallel
-#' @import foreach
-#' @import glmnet
-#' @import parallel
 #' @importFrom doParallel registerDoParallel
-#'
+#' @importFrom glmnet cv.glmnet
 #' @examples
 #' data('ProcessedDataLIHC')
-#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
-#'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-#'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-#'                                     NrModules = 5, VarPercentage = 50)
+#' AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
+#'                                     NrModules = 2, VarPercentage = 50)
 #' 
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 AMARETTO_Run <- function(AMARETTOinit) {
@@ -154,10 +145,8 @@ AMARETTO_Run <- function(AMARETTOinit) {
 #'
 #' @examples
 #' data('ProcessedDataLIHC')
-#' AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
-#'                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-#'                                     MET_matrix = ProcessedDataLIHC$MET_matrix,
-#'                                     NrModules = 5, VarPercentage = 50)
+#' AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
+#'                                     NrModules = 2, VarPercentage = 50)
 #'
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 #' AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults = AMARETTOresults,

@@ -4,7 +4,8 @@
 \alias{AMARETTO_Download}
 \title{AMARETTO_Download}
 \usage{
-AMARETTO_Download(CancerSite, TargetDirectory, downloadData = TRUE)
+AMARETTO_Download(CancerSite = "CHOL",
+  TargetDirectory = TargetDirectory)
 }
 \arguments{
 \item{CancerSite}{TCGA cancer code for data download}
@@ -20,6 +21,7 @@ result
 Downloading TCGA dataset for AMARETTO analysis
 }
 \examples{
+TargetDirectory <- file.path(getwd(),"Downloads/");dir.create(TargetDirectory)
 CancerSite <- 'CHOL'
-DataSetDirectories <- AMARETTO_Download(CancerSite,'./', FALSE)
+DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory = TargetDirectory)
 }

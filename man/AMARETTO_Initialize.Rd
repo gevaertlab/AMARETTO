@@ -4,17 +4,13 @@
 \alias{AMARETTO_Initialize}
 \title{AMARETTO_Initialize (version: reorder and filter MA_Matrix)}
 \usage{
-AMARETTO_Initialize(MA_matrix = MA_matrix, CNV_matrix = NULL,
-  MET_matrix = NULL, Driver_list = NULL, NrModules, VarPercentage,
-  PvalueThreshold = 0.001, RsquareThreshold = 0.1, pmax = 10,
-  NrCores = 1, OneRunStop = 0, method = "union")
+AMARETTO_Initialize(ProcessedData = ProcessedData, Driver_list = NULL,
+  NrModules, VarPercentage, PvalueThreshold = 0.001,
+  RsquareThreshold = 0.1, pmax = 10, NrCores = 1, OneRunStop = 0,
+  method = "union")
 }
 \arguments{
-\item{MA_matrix}{Expression matrix, with genes in rows and samples in columns.}
-
-\item{CNV_matrix}{CNV matrix, with genes in rows and samples in columns.}
-
-\item{MET_matrix}{Methylation matrix, with genes in rows and samples in columns.}
+\item{ProcessedData}{List of Expression, CNV and MethylMix data matrices, with genes in rows and samples in columns.}
 
 \item{Driver_list}{Custom list of driver genes to be considered in analysis}
 
@@ -45,15 +41,11 @@ Uses the function CreateRegulatorData() and results are fed into the function AM
 \examples{
 data('ProcessedDataLIHC')
 data('Driver_Genes')
-AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
-                                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
-                                    NrModules = 5, VarPercentage = 50)
+AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
+                                    NrModules = 2, VarPercentage = 50)
 \dontrun{
-AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
-                                    CNV_matrix = NULL,
-                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
+AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
                                     Driver_list = Driver_Genes[['MSigDB']],
-                                    NrModules = 5, VarPercentage = 50)
+                                    NrModules = 2, VarPercentage = 50)
 }
 }

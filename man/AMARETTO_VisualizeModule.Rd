@@ -4,19 +4,14 @@
 \alias{AMARETTO_VisualizeModule}
 \title{AMARETTO_VisualizeModule}
 \usage{
-AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults,
-  CNV_matrix = NULL, MET_matrix = NULL, ModuleNr,
-  SAMPLE_annotation = NULL, ID = NULL, order_samples = NULL,
-  printHM = FALSE)
+AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, ProcessedData,
+  ModuleNr, SAMPLE_annotation = NULL, ID = NULL,
+  order_samples = NULL, printHM = FALSE)
 }
 \arguments{
 \item{AMARETTOinit}{List output from AMARETTO_Initialize().}
 
 \item{AMARETTOresults}{List output from AMARETTO_Run().}
-
-\item{CNV_matrix}{CNV matrix, with genes in rows and samples in columns.}
-
-\item{MET_matrix}{Methylation matrix, with genes in rows and samples in columns.}
 
 \item{ModuleNr}{Module number to visualize.}
 
@@ -27,6 +22,10 @@ AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults,
 \item{order_samples}{Order samples in heatmap by mean or by clustering.}
 
 \item{printHM}{Boolean print heatmap directly}
+
+\item{CNV_matrix}{CNV matrix, with genes in rows and samples in columns.}
+
+\item{MET_matrix}{Methylation matrix, with genes in rows and samples in columns.}
 }
 \value{
 result
@@ -36,15 +35,11 @@ Function to visualize the gene modules
 }
 \examples{
 data('ProcessedDataLIHC')
-AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
-                                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
-                                    NrModules = 5, VarPercentage = 50)
+AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
+                                    NrModules = 2, VarPercentage = 50)
 
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 
 AMARETTO_VisualizeModule(AMARETTOinit = AMARETTOinit,AMARETTOresults = AMARETTOresults,
-                         CNV_matrix = ProcessedDataLIHC$CNV,
-                         MET_matrix = ProcessedDataLIHC$MET,
-                         ModuleNr = 1)
+                         ProcessedData = ProcessedDataLIHC, ModuleNr = 1)
 }

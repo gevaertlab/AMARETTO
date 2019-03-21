@@ -1,24 +1,29 @@
 #' AMARETTO_Preprocess
 #'
 #' Wrapper code that analyzes process TCGA GISTIC (CNV) and gene expression (rna-seq or microarray) data  via one call
-#' @param CancerSite CancerSite
 #' @param DataSetDirectories DataSetDirectories
-#'
+#' @importFrom graphics lines par title
+#' @import grDevices
+#' @importFrom limma  strsplit2
+#' @importFrom MultiAssayExperiment experiments
+#' @importFrom stats aov  prcomp  qqline  qqnorm  qqplot  rgamma
+#' @importFrom utils data read.csv  write.table
 #' @return result
 #' @export
 #'
 #' @examples
 #'\dontrun{
 #' data('BatchData')
-#' TargetDirectory <- file.path(getwd(),'Downloads/') # path to data download directory
-#' CancerSite <- 'LIHC'
+#' TargetDirectory <-  tempdir()  # path to data download directory
+#' CancerSite <- 'CHOL'
 #' DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory)
-#' ProcessedData <- AMARETTO_Preprocess(CancerSite,DataSetDirectories)
+#' ProcessedData <- AMARETTO_Preprocess(DataSetDirectories)
 #'}
-AMARETTO_Preprocess <- function(CancerSite, DataSetDirectories) {
+AMARETTO_Preprocess <- function(DataSetDirectories = DataSetDirectories) {
     data(BatchData)
+    CancerSite <- DataSetDirectories[1]
     MinPerBatch = 5
-    MAEO <- readRDS(paste0(DataSetDirectories[1], "/", 
+    MAEO <- readRDS(paste0(DataSetDirectories[2], "/", 
         CancerSite, "_RNASeq_MAEO.rds"))
     query1 <- grep("RNASeq", names(experiments(MAEO)))
     MAEO_ge <- as.matrix(assay(MAEO[[query1]]))
@@ -55,12 +60,14 @@ AMARETTO_Preprocess <- function(CancerSite, DataSetDirectories) {
     rownames(CNV_TCGA) = SplitGenes[, 1]
     CNV_TCGA = TCGA_GENERIC_MergeData(unique(rownames(CNV_TCGA)), 
         CNV_TCGA)
-    AllCancers = c("COADREAD", "BLCA", "BRCA", "COAD", 
-        "GBM", "HNSC", "KIRC", "LAML", "LUAD", "LUSC", 
-        "OV", "READ", "UCEC")
+    AllCancers = c("BLCA", "BRCA", "CESC", "CHOL", 
+        "COAD", "ESCA", "GBM", "HNSC", "KIRC", "KIRP", 
+        "LAML", "LGG", "LIHC", "LUAD", "LUSC", "OV", 
+        "PAAD", "PCPG", "READ", "SARC", "STAD", "THCA", 
+        "THYM", "UCEC", "COADREAD")
     if (length(intersect(CancerSite, AllCancers)) > 
         0) {
-        cat("Loading methylation data.\n")
+        cat("Loading MethylMix data.\n")
         cat("\tGetting MethylMix methylation states.\n")
         data("MethylStates")
         eval(parse(text = paste("MET_TCGA=MethylStates$", 
@@ -200,7 +207,6 @@ Preprocess_MAdata <- function(CancerSite, MAEO_ge) {
 #' @param MAEO_ge
 #'
 #' @return result
-#' @import impute
 #' @importFrom impute impute.knn
 #' @keywords internal
 #' @examples

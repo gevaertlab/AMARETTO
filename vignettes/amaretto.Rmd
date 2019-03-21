@@ -73,51 +73,10 @@ AMARETTO combines gene expression, DNA copy number and DNA methylation data into
 ## Data Access
 
 The data in this vignette is accessible at The Cancer Genome Atlas (TCGA) portal. A programmatic way of downloading
-data is through the firehose get tool developed by the broad institute ("https://confluence.broadinstitute.org/display/GDAC/
-Download"). Firehose get provides a unified way to download data for all cancer sites and all platforms. 
+data is through the firehose get tool developed by the broad institute (" https://gdac.broadinstitute.org/"). Firehose get provides a unified way to download data for all cancer sites and all platforms. 
 
 ## Gene Expression and Copy Number Alterations
-We have provided R functions that directly link with firehose get to download mRNA expression data and copy number data processed by GISTIC. Downloading TCGA data has been tested for twenty five cancer sites:
-
-\begin{center}
-\begin{tabular}{|l|l|l|l|}
-\hline
-Cancer code & Cancer site  \\
-\hline
-\\
-BLCA & bladder urothelial carcinoma  \\
-BRCA & breast invasive carcinoma  \\
-CESC & cervical squamous cell carcinoma and endocervical adenocarcinoma\\
-CHOL & cholangiocarcinoma\\
-COAD & colon adenocarcinoma \\
-ESCA & esophageal carcinoma\\
-GBM & glioblastoma multiforme\\
-HNSC & head and neck squamous cell carcinoma \\
-KIRC & kidney renal clear cell carcinoma  \\
-KIRP & kidney renal papillary cell carcinoma\\
-LAML & acute myeloid leukemia \\
-LGG & brain lower grade glioma\\
-LIHC & liver hepatocellular carcinoma\\
-LUAD & lung adenocarcinoma \\
-LUSC & lung squamous cell carcinoma \\
-OV & ovarian serous cystadenocarcinoma \\
-PAAD & pancreatic adenocarcinoma\\
-PCPG & pheochromocytoma and paraganglioma\\
-READ & rectum adenocarcinoma \\
-SARC & sarcoma\\
-STAD & stomach adenocarcinoma\\
-THCA & thyroid carcinoma\\
-THYM & thymoma\\
-UCEC & endometrial carcinoma \\
-\\
-%\hdashline
-COADREAD & colon cancer + rectal cancer \\
-\hline
-\end{tabular}
-\end{center}
-
-
-\newpage
+We have provided R functions that directly link with firehose get to download mRNA expression data and copy number data processed by GISTIC. Downloading TCGA data has been tested for twenty five cancer sites (Refer Appendix section for TCGA cancer codes)
 
 We also added COADREAD as a combination of colon and rectal cancer, as reports have shown that both can be seen as
 a single disease. The cancer code is needed to download data from TCGA and one needs to decide on a target location
@@ -165,7 +124,7 @@ The data preprocessing step will take care of preprocessing the gene expression 
 ```{r AMARETTO_Preprocess, message= FALSE,results='hide',eval=FALSE}
 #-------------------------------------------------------------------------------
 
-ProcessedData <- AMARETTO_Preprocess(CancerSite,DataSetDirectories)
+ProcessedData <- AMARETTO_Preprocess(DataSetDirectories)
 
 #-------------------------------------------------------------------------------
 ```    
@@ -187,10 +146,7 @@ In the case that you run AMARETTO with your own data, three data matrices are ne
 ```{r AMARETTO_Initialize, message= FALSE,results='hide'}
 #-------------------------------------------------------------------------------
 
-AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
-                                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
-                                    NrModules = 20, VarPercentage = 50)
+AMARETTOinit <- AMARETTO_Initialize(ProcessedDataLIHC, NrModules = 2, VarPercentage = 50)
 
 #-------------------------------------------------------------------------------
 ```    
@@ -224,12 +180,14 @@ AMARETTOtestReport <- AMARETTO_EvaluateTestSet(
 This function will use the training data to calculate the performance for predicting genes expression values based on the selected regulators. Of course, it is more interesting to use an independent test set. In this case only a gene expression data set is needed, for example from the GEO database. This will allow to check how well the AMARETTO modules are generalizing to new data. Take care that the an independent data set needs to be centered and scaled to unit variance. The AMARETTOtestReport will also give information of how many regulators and cluster members are actually present. The Rsquare performance has to be interpreted in this context as if many regulators are absent in the test data set due to platform limitations, the performance will be adversely affected.
 Finally, modules can be visualized using the AMARETTO VisualizeModule function:
 
-```{r AMARETTO_VisualizeModule, message= FALSE, fig.height=5, fig.width=5, retina=1}
+```{r AMARETTO_VisualizeModule, message= FALSE, fig.height=5, fig.width=7, retina=1}
 #-------------------------------------------------------------------------------
-AMARETTO_VisualizeModule(AMARETTOinit,AMARETTOresults,
-                        ProcessedDataLIHC$CNV_matrix,
-                        ProcessedDataLIHC$MET_matrix,
-                        ModuleNr=1)
+ModuleNr <- 1 #define the module number to visualize
+
+AMARETTO_VisualizeModule(AMARETTOinit = AMARETTOinit, AMARETTOresults = AMARETTOresults,
+                         ProcessedData = ProcessedDataLIHC, ModuleNr = ModuleNr)
+
+#-------------------------------------------------------------------------------
 
 ```    
 
@@ -243,12 +201,12 @@ To retrieve heatmaps for all of the modules and additional tables with gene set 
 
 
 
-```{r AMARETTO_HTMLreport, message= FALSE,results='hide', eval=FALSE}
+```{r AMARETTO_HTMLreport, message= FALSE,results='hide', eval=FALSE,eval=FALSE}
 #-------------------------------------------------------------------------------
 
 gmt_file<-system.file("templates/H.C2CP.genesets.gmt",package="AMARETTO")
 AMARETTO_HTMLreport(AMARETTOinit,AMARETTOresults,
-                    ProcessedDataLIHC$CNV_matrix,ProcessedDataLIHC$MET_matrix,
+                    ProcessedDataLIHC,
                     hyper_geo_test_bool = TRUE,hyper_geo_reference = gmt_file, 
                     MSIGDB=TRUE)
 
@@ -260,6 +218,46 @@ AMARETTO_HTMLreport(AMARETTOinit,AMARETTOresults,
 1.	Champion, M. et al. Module Analysis Captures Pancancer Genetically and Epigenetically Deregulated Cancer Driver Genes for Smoking and Antiviral Response. EBioMedicine 27, 156–166 (2018).
 2.	Gevaert, O., Villalobos, V., Sikic, B. I. & Plevritis, S. K. Identification of ovarian cancer driver genes by using module network integration of multi-omics data. Interface Focus 3, 20130013–20130013 (2013).
 3.	Gevaert, O. MethylMix: an R package for identifying DNA methylation-driven genes. Bioinformatics 31, 1839–1841 (2015).
+
+# Appendix 
+
+\begin{center}
+\begin{tabular}{|l|l|l|l|}
+\hline
+Cancer code & Cancer site  \\
+\hline
+\\
+BLCA & bladder urothelial carcinoma  \\
+BRCA & breast invasive carcinoma  \\
+CESC & cervical squamous cell carcinoma and endocervical adenocarcinoma\\
+CHOL & cholangiocarcinoma\\
+COAD & colon adenocarcinoma \\
+ESCA & esophageal carcinoma\\
+GBM & glioblastoma multiforme\\
+HNSC & head and neck squamous cell carcinoma \\
+KIRC & kidney renal clear cell carcinoma  \\
+KIRP & kidney renal papillary cell carcinoma\\
+LAML & acute myeloid leukemia \\
+LGG & brain lower grade glioma\\
+LIHC & liver hepatocellular carcinoma\\
+LUAD & lung adenocarcinoma \\
+LUSC & lung squamous cell carcinoma \\
+OV & ovarian serous cystadenocarcinoma \\
+PAAD & pancreatic adenocarcinoma\\
+PCPG & pheochromocytoma and paraganglioma\\
+READ & rectum adenocarcinoma \\
+SARC & sarcoma\\
+STAD & stomach adenocarcinoma\\
+THCA & thyroid carcinoma\\
+THYM & thymoma\\
+UCEC & endometrial carcinoma \\
+\\
+%\hdashline
+COADREAD & colon cancer + rectal cancer \\
+\hline
+\end{tabular}
+\end{center}
+
 
 
 \newpage

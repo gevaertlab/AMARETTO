@@ -30,12 +30,4 @@ result
 Determine potential regulator genes.
 Function to identify which genes' CNV and/or methylation statuses significantly predict expression of that gene. Input is output from Preprocess_CancerSite(). This function is used by AMARETTO_Initialize().
 }
-\examples{
-data('ProcessedDataLIHC')
-CreateRegulatorData(MA_matrix = ProcessedDataLIHC$MA_matrix,
-                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-                     MET_matrix= ProcessedDataLIHC$MET_matrix,
-                     PvalueThreshold = 0.001, RsquareThreshold = 0.1)
-
-}
 \keyword{internal}
