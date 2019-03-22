@@ -1,14 +1,14 @@
-#' AMARETTO_LarsenBased
-#'
+#' @import foreach
+#' @import MultiAssayExperiment
+#' @import graphics
 #' @param Data
 #' @param Clusters
 #' @param RegulatorData
 #' @param Parameters
 #' @param NrCores
-#'
 #' @return result
 #' @keywords internal
-#' @examples
+# this is not exported
 AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData, 
     Parameters, NrCores) {
     registerDoParallel(cores = NrCores)
@@ -131,7 +131,8 @@ AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data,
                   Data_rownames[CurrentClusterPositions]), 
                   ]
             }
-            fit = suppressMessages(cv.glmnet(t(X), 
+suppressWM = function(...) suppressWarnings(suppressMessages(...))
+            fit = suppressWM(cv.glmnet(t(X), 
                 y, alpha = alpha, pmax = pmax, lambda = Lambda_Sequence(t(X), 
                   y)))
             nonZeroLambdas <- fit$lambda[which(fit$nzero > 
@@ -142,7 +143,7 @@ AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data,
                 na.rm = TRUE))) == 0) {
                 warnMessage <- paste0("\nOn cluster ", 
                   i, " there were no cv.glm results that gave non-zero coefficients.")
-                warning(warnMessage)
+                message(warnMessage)
             }
             bestNonZeroLambda <- nonZeroLambdas[which(nonZeroCVMs == 
                 min(nonZeroCVMs, na.rm = TRUE))]
@@ -167,7 +168,7 @@ AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data,
                     } else {
                       y = Data[names, ]
                     }
-                    fit = suppressMessages(cv.glmnet(t(X), 
+                    fit = suppressWM(cv.glmnet(t(X), 
                       y, alpha = alpha, pmax = pmax, 
                       lambda = Lambda_Sequence(t(X), 
                         y)))
@@ -180,7 +181,7 @@ AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data,
                       0) {
                       warnMessage <- paste0("\nOn cluster ", 
                         i, " there were no cv.glm results that gave non-zero coefficients during the Autoregulation step.")
-                      warning(warnMessage)
+                      message(warnMessage)
                     }
                     bestNonZeroLambda <- nonZeroLambdas[which(nonZeroCVMs == 
                       min(nonZeroCVMs, na.rm = TRUE))]

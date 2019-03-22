@@ -13,7 +13,6 @@
 #' @param OneRunStop OneRunStop
 #' @param NrCores A numeric variable indicating the number of computer/server cores to use for paralellelization. Default is 1, i.e. no parallelization. Please check your computer or server's computing capacities before increasing this number.  Parallelization is done via the RParallel package. Mac vs. Windows environments may behave differently when using parallelization.
 #' @param method Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.
-#' @export
 #' @return result
 #' @rawNamespace import(callr, except = run)
 #' @import Rcpp
@@ -29,6 +28,7 @@
 #'                                     Driver_list = Driver_Genes[['MSigDB']],
 #'                                     NrModules = 2, VarPercentage = 50)
 #'}
+#' @export
 AMARETTO_Initialize <- function(ProcessedData = ProcessedData, 
     Driver_list = NULL, NrModules, VarPercentage, PvalueThreshold = 0.001, 
     RsquareThreshold = 0.1, pmax = 10, NrCores = 1, 
@@ -95,20 +95,17 @@ AMARETTO_Initialize <- function(ProcessedData = ProcessedData,
 
 
 #' AMARETTO_Run
-#'
 #' Function to run AMARETTO, a statistical algorithm to identify cancer drivers by integrating a variety of omics data from cancer and normal tissue.
 #' @param AMARETTOinit List output from AMARETTO_Initialize().
-#'
 #' @return result
-#' @export
 #' @importFrom doParallel registerDoParallel
 #' @importFrom glmnet cv.glmnet
 #' @examples
 #' data('ProcessedDataLIHC')
 #' AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
 #'                                     NrModules = 2, VarPercentage = 50)
-#' 
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
+#' @export
 AMARETTO_Run <- function(AMARETTOinit) {
     if (length(AMARETTOinit) == 0) {
         cat("For cancer ", CancerSite, " no drivers were find during the initialization step of AMARETTO")

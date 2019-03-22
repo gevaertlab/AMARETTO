@@ -2,7 +2,8 @@
 % Please edit documentation in R/amaretto_functions.R
 \name{AMARETTO_Run}
 \alias{AMARETTO_Run}
-\title{AMARETTO_Run}
+\title{AMARETTO_Run
+Function to run AMARETTO, a statistical algorithm to identify cancer drivers by integrating a variety of omics data from cancer and normal tissue.}
 \usage{
 AMARETTO_Run(AMARETTOinit)
 }
@@ -13,12 +14,12 @@ AMARETTO_Run(AMARETTOinit)
 result
 }
 \description{
+AMARETTO_Run
 Function to run AMARETTO, a statistical algorithm to identify cancer drivers by integrating a variety of omics data from cancer and normal tissue.
 }
 \examples{
 data('ProcessedDataLIHC')
 AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
                                     NrModules = 2, VarPercentage = 50)
-
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 }
