@@ -5,7 +5,7 @@
 \title{AMARETTO_Download}
 \usage{
 AMARETTO_Download(CancerSite = "CHOL",
-  TargetDirectory = TargetDirectory)
+  TargetDirectory = TargetDirectory, BPPARAM)
 }
 \arguments{
 \item{CancerSite}{TCGA cancer code for data download}

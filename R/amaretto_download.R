@@ -69,10 +69,8 @@ AMARETTO_Download <- function(CancerSite = "CHOL",
 #' @param gdacURL
 #' @param untarUngzip
 #' @param printDisease_abbr
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 get_firehoseData <- function(downloadData = TRUE, saveDir = "./", 
     TCGA_acronym_uppercase = "LUAD", dataType = "stddata", 
     dataFileTag = "mRNAseq_Preprocess.Level_3", FFPE = FALSE, 
@@ -207,8 +205,6 @@ get_firehoseData <- function(downloadData = TRUE, saveDir = "./",
 #' @param CNV_matrix CNV_matrix
 #' @param MET_matrix MET_matrix
 #' @return result
-#' @export
-#'
 #' @examples
 #' data('ProcessedDataLIHC')
 #' TargetDirectory <- file.path(getwd(),"Downloads/");dir.create(TargetDirectory)
@@ -217,7 +213,7 @@ get_firehoseData <- function(downloadData = TRUE, saveDir = "./",
 #' 
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 #' AMARETTO_ExportResults(AMARETTOinit,AMARETTOresults,TargetDirectory,Heatmaps = FALSE)
-
+#' @export
 AMARETTO_ExportResults <- function(AMARETTOinit, AMARETTOresults, 
     data_address, Heatmaps = TRUE, CNV_matrix = NULL, 
     MET_matrix = NULL) {
@@ -234,9 +230,9 @@ AMARETTO_ExportResults <- function(AMARETTOinit, AMARETTOresults,
     NrModules <- AMARETTOresults$NrModules
     
     # parallelize the heatmap production
-    cluster <- parallel::makeCluster(c(rep("localhost", 
-        NrCores)), type = "SOCK")
-    doParallel::registerDoParallel(cluster, cores = NrCores)
+#    cluster <- parallel::makeCluster(c(rep("localhost", 
+#        NrCores)), type = "SOCK")
+#    doParallel::registerDoParallel(cluster, cores = NrCores)
     
     if (Heatmaps == TRUE) {
         foreach::foreach(ModuleNr = 1:NrModules, .packages = c("AMARETTO")) %dopar% 
@@ -251,7 +247,7 @@ AMARETTO_ExportResults <- function(AMARETTOinit, AMARETTOresults,
             }
     }
     
-    parallel::stopCluster(cluster)
+#    parallel::stopCluster(cluster)
     # save rdata files for AMARETTO_Run and
     # AMARETTO_Initialize output
     save(AMARETTOresults, file = file.path(data_address, 
@@ -283,13 +279,10 @@ AMARETTO_ExportResults <- function(AMARETTOinit, AMARETTOresults,
 
 
 #' write_gct
-#'
 #' @param data_in
 #' @param file_address
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 write_gct <- function(data_in, file_address) {
     header_gct <- paste0("#1.2\n", nrow(data_in), "\t", 
         ncol(data_in))
@@ -303,13 +296,10 @@ write_gct <- function(data_in, file_address) {
 
 
 #' computeGisticURL
-#'
 #' @param url 
 #' @param acronym 
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 computeGisticURL <- function(url = NULL, acronym = "CHOL") {
     if (!is.null(url)) 
         return(url)
@@ -319,13 +309,10 @@ computeGisticURL <- function(url = NULL, acronym = "CHOL") {
 
 
 #' cacheResource
-#'
 #' @param cache 
 #' @param resource 
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 cacheResource <- function(cache = BiocFileCache::BiocFileCache(TargetDirectory), 
     resource) {
     chk = bfcquery(cache, resource)

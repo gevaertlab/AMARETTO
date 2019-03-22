@@ -11,9 +11,6 @@ get_firehoseData(downloadData = TRUE, saveDir = "./",
   gdacURL = "http://gdac.broadinstitute.org/runs/", untarUngzip = TRUE,
   printDisease_abbr = FALSE)
 }
-\arguments{
-\item{printDisease_abbr}{}
-}
 \value{
 result
 }

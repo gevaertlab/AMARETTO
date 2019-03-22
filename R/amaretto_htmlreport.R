@@ -71,9 +71,9 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
     }
     cat("The hyper geometric test results are calculated.\n")
     
-    cluster <- parallel::makeCluster(c(rep("localhost", 
-        NrCores)), type = "SOCK")
-    registerDoParallel(cluster, cores = NrCores)
+#    cluster <- parallel::makeCluster(c(rep("localhost", 
+#        NrCores)), type = "SOCK")
+#    registerDoParallel(cluster, cores = NrCores)
     
     full_path <- normalizePath(report_address)
     ModuleOverviewTable <- foreach::foreach(ModuleNr = 1:NrModules, 
@@ -189,7 +189,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
             ModuleNr)), length(ModuleRegulators), ngenesets))
     }
     
-    parallel::stopCluster(cluster)
+#    parallel::stopCluster(cluster)
     cat("The module htmls are finished.\n")
     ModuleOverviewTable <- data.frame(matrix(unlist(ModuleOverviewTable), 
         byrow = TRUE, ncol = 4), stringsAsFactors = FALSE)
@@ -277,9 +277,9 @@ HyperGTestGeneEnrichment <- function(gmtfile, testgmtfile,
     gmt.path <- readGMT(gmtfile)  # the hallmarks_and_co2...
     
     ########################### Parallelizing :
-    cluster <- parallel::makeCluster(c(rep("localhost", 
-        NrCores)), type = "SOCK")
-    registerDoParallel(cluster, cores = NrCores)
+#    cluster <- parallel::makeCluster(c(rep("localhost", 
+#        NrCores)), type = "SOCK")
+#    registerDoParallel(cluster, cores = NrCores)
     
     resultloop <- foreach::foreach(j = 1:length(test.gmt), 
         .combine = "rbind") %do% {
@@ -306,7 +306,7 @@ HyperGTestGeneEnrichment <- function(gmtfile, testgmtfile,
             }
     }
     
-    parallel::stopCluster(cluster)
+#    parallel::stopCluster(cluster)
     resultloop <- as.data.frame(resultloop, stringsAsFactors = FALSE)
     resultloop$p_value <- as.numeric(resultloop$p_value)
     resultloop$n_Overlapping <- as.numeric((resultloop$n_Overlapping))
