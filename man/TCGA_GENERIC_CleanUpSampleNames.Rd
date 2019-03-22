@@ -6,9 +6,6 @@
 \usage{
 TCGA_GENERIC_CleanUpSampleNames(GEN_Data, IDlength = 12)
 }
-\arguments{
-\item{IDlength}{}
-}
 \value{
 result
 }

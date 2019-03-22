@@ -1,14 +1,9 @@
-#' @import foreach
+#' AMARETTO_LarsenBased
+#' 
 #' @import MultiAssayExperiment
 #' @import graphics
-#' @param Data
-#' @param Clusters
-#' @param RegulatorData
-#' @param Parameters
-#' @param NrCores
 #' @return result
 #' @keywords internal
-# this is not exported
 AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData, 
     Parameters, NrCores) {
     registerDoParallel(cores = NrCores)
@@ -77,21 +72,12 @@ AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData,
 
 #' AMARETTO_LearnRegulatoryProgramsLarsen
 #'
-#' @param Data
-#' @param Clusters
-#' @param RegulatorData
-#' @param RegulatorSign
-#' @param Lambda
-#' @param AutoRegulation
-#' @param alpha
-#' @param pmax
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data, 
     Clusters, RegulatorData, RegulatorSign, Lambda, 
     AutoRegulation, alpha, pmax) {
+    `%dopar%` <- foreach::`%dopar%`
     RegulatorData_rownames = rownames(RegulatorData)
     Data_rownames = rownames(Data)
     trace = 0
@@ -111,7 +97,7 @@ AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data,
     cnt <- 1:NrClusters
     ptm1 <- proc.time()
     BetaY_all <- foreach(i = 1:NrClusters, .combine = cbind, 
-        .init = list(list(), list(), list()), .packages = "glmnet") %dopar% 
+        .init = list(list(), list(), list()), .packages = "glmnet") %dopar%
         {
             if (length(which(Clusters == ClusterIDs[i])) > 
                 1) {
@@ -151,7 +137,7 @@ suppressWM = function(...) suppressWarnings(suppressMessages(...))
             b_opt <- c(b_o[2:length(b_o)])
             if (AutoRegulation == 2) {
                 CurrentUsedRegulators = RegulatorData_rownames[which(b_opt != 
-                  0, arr.ind = T)]
+                  0, arr.ind = TRUE)]
                 CurrentClusterMembers = Data_rownames[CurrentClusterPositions]
                 nrIterations = 0
                 while (length(CurrentClusterMembers[CurrentClusterMembers %in% 
@@ -240,19 +226,12 @@ suppressWM = function(...) suppressWarnings(suppressMessages(...))
 
 #' AMARETTO_ReassignGenesToClusters
 #'
-#' @param Data
-#' @param RegulatorData
-#' @param Beta
-#' @param Clusters
-#' @param AutoRegulation
-#'
 #' @return result
-#' @import Matrix
 #' @importFrom Matrix nnzero
 #' @keywords internal
-#' @examples
 AMARETTO_ReassignGenesToClusters <- function(Data, 
     RegulatorData, Beta, Clusters, AutoRegulation) {
+    `%dopar%` <- foreach::`%dopar%`
     RegulatorData_rownames = rownames(RegulatorData)
     Data_rownames = rownames(Data)
     NrGenes = nrow(Data)
@@ -263,7 +242,7 @@ AMARETTO_ReassignGenesToClusters <- function(Data,
     ModuleVectors = Beta %*% X1
     GeneNames = rownames(Data)
     ptm1 <- proc.time()
-    nc <- foreach(i = 1:NrGenes, .combine = c) %dopar% 
+    nc <- foreach(i = 1:NrGenes, .combine = c) %dopar%
         {
             OldModule = Clusters[i]
             CurrentGeneVector = Data[i, , drop = FALSE]
@@ -317,7 +296,6 @@ AMARETTO_ReassignGenesToClusters <- function(Data,
 #' @param AMARETTOresults List output from AMARETTO_Run()
 #'
 #' @return result
-#' @keywords 
 #' @export
 #' @examples
 #' data('ProcessedDataLIHC')
@@ -350,7 +328,6 @@ AMARETTO_CreateModuleData <- function(AMARETTOinit,
 #' @param AMARETTOresults List output from AMARETTO_Run()
 #'
 #' @return result
-#' @keywords 
 #' @export
 #' @examples
 #' data('ProcessedDataLIHC')
@@ -381,11 +358,8 @@ AMARETTO_CreateRegulatorPrograms <- function(AMARETTOinit,
 
 #' Lambda_Sequence
 #'
-#' @param sx 
-#' @param sy 
 #' @return result
 #' @keywords internal
-#' @examples
 Lambda_Sequence <- function(sx, sy) {
     n <- nrow(sx)
     lambda_max <- max(abs(colSums(sx * sy)))/n

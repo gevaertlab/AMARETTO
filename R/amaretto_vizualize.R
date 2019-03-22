@@ -3,12 +3,11 @@
 #' Function to visualize the gene modules
 #' @param AMARETTOinit List output from AMARETTO_Initialize().
 #' @param AMARETTOresults List output from AMARETTO_Run().
-#' @param CNV_matrix CNV matrix, with genes in rows and samples in columns.
-#' @param MET_matrix Methylation matrix, with genes in rows and samples in columns.
-#' @param ModuleNr Module number to visualize.
-#' @param SAMPLE_annotation Matrix or Dataframe with sample annotation.
-#' @param ID Column used as sample name.
-#' @param order_samples Order samples in heatmap by mean or by clustering.
+#' @param ProcessedData List of processed input data
+#' @param ModuleNr Module number to visualize
+#' @param SAMPLE_annotation Matrix or Dataframe with sample annotation
+#' @param ID Column used as sample name
+#' @param order_samples Order samples in heatmap by mean or by clustering
 #' @param printHM Boolean print heatmap directly
 #' @importFrom circlize colorRamp2  rand_color
 #' @importFrom grid gpar unit

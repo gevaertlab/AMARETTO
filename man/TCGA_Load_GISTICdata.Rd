@@ -6,9 +6,6 @@
 \usage{
 TCGA_Load_GISTICdata(GisticDirectory)
 }
-\arguments{
-\item{GisticDirectory}{}
-}
 \value{
 result
 }

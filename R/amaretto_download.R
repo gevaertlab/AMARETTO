@@ -3,7 +3,6 @@
 #' Downloading TCGA dataset for AMARETTO analysis
 #' @param CancerSite TCGA cancer code for data download
 #' @param TargetDirectory Directory path to download data
-#' @param downloadData TRUE
 #' @return result
 #' @importFrom curatedTCGAData curatedTCGAData
 #' @importFrom httr GET stop_for_status
@@ -59,16 +58,6 @@ AMARETTO_Download <- function(CancerSite = "CHOL",
 #' get_firehoseData
 #'
 #' Downloading TCGA dataset via firehose
-#' @param downloadData
-#' @param saveDir
-#' @param TCGA_acronym_uppercase
-#' @param dataType
-#' @param dataFileTag
-#' @param FFPE
-#' @param fileType
-#' @param gdacURL
-#' @param untarUngzip
-#' @param printDisease_abbr
 #' @return result
 #' @keywords internal
 get_firehoseData <- function(downloadData = TRUE, saveDir = "./", 
@@ -217,6 +206,7 @@ get_firehoseData <- function(downloadData = TRUE, saveDir = "./",
 AMARETTO_ExportResults <- function(AMARETTOinit, AMARETTOresults, 
     data_address, Heatmaps = TRUE, CNV_matrix = NULL, 
     MET_matrix = NULL) {
+  `%dopar%` <- foreach::`%dopar%`
     if (!dir.exists(data_address)) {
         stop("Output directory is not existing.")
     }
@@ -235,7 +225,7 @@ AMARETTO_ExportResults <- function(AMARETTOinit, AMARETTOresults,
 #    doParallel::registerDoParallel(cluster, cores = NrCores)
     
     if (Heatmaps == TRUE) {
-        foreach::foreach(ModuleNr = 1:NrModules, .packages = c("AMARETTO")) %dopar% 
+        foreach::foreach(ModuleNr = 1:NrModules, .packages = c("AMARETTO")) %dopar%
             {
                 pdf(file = file.path(data_address, 
                   output_dir, paste0("Module_", as.character(ModuleNr), 
@@ -279,8 +269,7 @@ AMARETTO_ExportResults <- function(AMARETTOinit, AMARETTOresults,
 
 
 #' write_gct
-#' @param data_in
-#' @param file_address
+#' 
 #' @return result
 #' @keywords internal
 write_gct <- function(data_in, file_address) {
@@ -296,8 +285,7 @@ write_gct <- function(data_in, file_address) {
 
 
 #' computeGisticURL
-#' @param url 
-#' @param acronym 
+#' 
 #' @return result
 #' @keywords internal
 computeGisticURL <- function(url = NULL, acronym = "CHOL") {
@@ -309,8 +297,7 @@ computeGisticURL <- function(url = NULL, acronym = "CHOL") {
 
 
 #' cacheResource
-#' @param cache 
-#' @param resource 
+#' 
 #' @return result
 #' @keywords internal
 cacheResource <- function(cache = BiocFileCache::BiocFileCache(TargetDirectory), 

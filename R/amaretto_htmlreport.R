@@ -3,8 +3,7 @@
 #' Retrieve an interactive html report, including gene set enrichment analysis if asked for.
 #' @param AMARETTOinit AMARETTO initialize output
 #' @param AMARETTOresults AMARETTO results output
-#' @param CNV_matrix Processed CNV matrix ($CNV_matrix element from Preprocess_CancerSite() list output).
-#' @param MET_matrix Processed methylation matrix ($MET_matrix element from Preprocess_CancerSite() list output).
+#' @param ProcessedData List of processed input data
 #' @param SAMPLE_annotation SAMPLE annotation will be added to heatmap
 #' @param ID ID column of the SAMPLE annotation data frame
 #' @param VarPercentage Original Var Percentage used
@@ -43,7 +42,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
     VarPercentage, hyper_geo_test_bool = FALSE, hyper_geo_reference = NULL, 
     output_address = "./", MSIGDB = FALSE, GMTURL = FALSE) {
     
-    
+    `%dopar%` <- foreach::`%dopar%`
     CNV_matrix <- ProcessedData[[2]]
     MET_matrix <- ProcessedData[[3]]
     
@@ -263,16 +262,13 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
 #' Hyper Geometric Geneset Enrichement Test
 #'
 #' Calculates the p-values for unranked gene set enrichment based on two gmt files as input and the hyper geometric test.
-#'
-#' @param gmtfile The gmt file with reference gene set.
-#' @param testgmtfile The gmt file with gene sets to test. In our case, the gmt file of the modules.
-#' @param NrCores Number of cores used for parallelization.
-#' @param ref.numb.genes The total number of genes teste, standard equal to 45 956 (MSIGDB standard).
 #' @return result
 #' @import doParallel
 #' @keywords internal
 HyperGTestGeneEnrichment <- function(gmtfile, testgmtfile, 
     NrCores, ref.numb.genes = 45956) {
+    `%dopar%` <- foreach::`%dopar%`
+    `%do%` <- foreach::`%do%`
     test.gmt <- readGMT(testgmtfile)  # our gmt_file_output_from Amaretto
     gmt.path <- readGMT(gmtfile)  # the hallmarks_and_co2...
     
@@ -284,7 +280,7 @@ HyperGTestGeneEnrichment <- function(gmtfile, testgmtfile,
     resultloop <- foreach::foreach(j = 1:length(test.gmt), 
         .combine = "rbind") %do% {
         # print(j)
-        foreach::foreach(i = 1:length(gmt.path), .combine = "rbind") %dopar% 
+        foreach::foreach(i = 1:length(gmt.path), .combine = "rbind") %dopar%
             {
                 # print(i)
                 l <- length(gmt.path[[i]])
@@ -317,8 +313,6 @@ HyperGTestGeneEnrichment <- function(gmtfile, testgmtfile,
 
 #' GmtFromModules
 #' @return result
-#' @param AMARETTOinit List output from AMARETTO_Initialize().
-#' @param AMARETTOresults List output from AMARETTO_Run().
 #' @keywords internal
 GmtFromModules <- function(AMARETTOinit, AMARETTOresults) {
     ModuleMembership <- tibble::rownames_to_column(as.data.frame(AMARETTOresults$ModuleMembership), 
@@ -340,11 +334,9 @@ GmtFromModules <- function(AMARETTOinit, AMARETTOresults) {
 }
 
 #' GeneSetDescription
-#' @param filename The name of the gmt file.
 #'
 #' @return result
 #' @keywords internal
-#' @examples
 GeneSetDescription <- function(filename) {
     gmtLines <- strsplit(readLines(filename), "\t")
     gmtLines_description <- lapply(gmtLines, function(x) {
@@ -360,16 +352,14 @@ GeneSetDescription <- function(filename) {
 }
 
 #' readGMT
-#' @param filename
 #'
 #' @return result
 #' @keywords internal
 #'
-#' @examples
 readGMT <- function(filename) {
     gmtLines <- strsplit(readLines(filename), "\t")
-    gmtLines_genes <- lapply(gmtLines, tail, -2)
-    names(gmtLines_genes) <- sapply(gmtLines, head, 
+    gmtLines_genes <- lapply(gmtLines, utils::tail, -2)
+    names(gmtLines_genes) <- sapply(gmtLines, utils::head, 
         1)
     return(gmtLines_genes)
 }

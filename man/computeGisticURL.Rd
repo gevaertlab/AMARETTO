@@ -6,11 +6,6 @@
 \usage{
 computeGisticURL(url = NULL, acronym = "CHOL")
 }
-\arguments{
-\item{url}{}
-
-\item{acronym}{}
-}
 \value{
 result
 }

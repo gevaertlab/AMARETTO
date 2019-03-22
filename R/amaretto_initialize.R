@@ -1,18 +1,8 @@
 #' CreateRegulatorData
 #'
 #' Determine potential regulator genes.
-#' Function to identify which genes' CNV and/or methylation statuses significantly predict expression of that gene. Input is output from Preprocess_CancerSite(). This function is used by AMARETTO_Initialize().
-#' @param MA_matrix Processed gene expression data matrix ($MA_matrix element from Preprocess_CancerSite() list output).
-#' @param CNV_matrix Processed CNV matrix ($CNV_matrix element from Preprocess_CancerSite() list output).
-#' @param MET_matrix Processed methylation matrix ($MET_matrix element from Preprocess_CancerSite() list output).
-#' @param Driver_list Custom list of driver genes.
-#' @param PvalueThreshold Threshold used to find relevant driver genes with CNV alterations: maximal p-value.
-#' @param RsquareThreshold Threshold used to find relevant driver genes with CNV alterations: minimal R-square value between CNV and gene expression data.
-#' @param method Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.
 #' @return result
-#' @export
 #' @keywords internal
-#' @examples
 CreateRegulatorData <- function(MA_matrix = MA_matrix, 
     CNV_matrix = NULL, MET_matrix = NULL, Driver_list = NULL, 
     PvalueThreshold = 0.001, RsquareThreshold = 0.1, 
@@ -125,15 +115,8 @@ CreateRegulatorData <- function(MA_matrix = MA_matrix,
 #' FindTranscriptionallyPredictive_CNV
 #'
 #' Function to identify which genes CNV significantly predict expression of that gene.
-#' @param MA_matrix Processed gene expression data matrix ($MA_matrix element from Preprocess_CancerSite() list output).
-#' @param CNV_matrix Processed CNV matrix ($CNV_matrix element from Preprocess_CancerSite() list output).
-#' @param PvalueThreshold Threshold used to find relevant driver genes with CNV alterations: maximal p-value.
-#' @param RsquareThreshold Threshold used to find relevant driver genes with CNV alterations: minimal R-square value between CNV and gene expression data.
-#'
 #' @return result
 #' @keywords internal
-#'
-#' @examples
 FindTranscriptionallyPredictive_CNV <- function(MA_matrix, 
     CNV_matrix, PvalueThreshold = 0.001, RsquareThreshold = 0.1) {
     OverlapGenes = Reduce(intersect, list(rownames(MA_matrix), 
@@ -185,14 +168,8 @@ FindTranscriptionallyPredictive_CNV <- function(MA_matrix,
 #' geneFiltering
 #'
 #' Function to filter gene expression matrix
-#' @param Type
-#' @param MAdata Processed gene expression data matrix ($MA_matrix element from Preprocess_CancerSite() list output).
-#' @param Percentage Minimum percentage by variance for filtering of genes; for example, 75\% would indicate that the CreateRegulatorData() function only analyses genes that have a variance above the 75th percentile across all samples.
-#'
 #' @return result
 #' @keywords internal
-#'
-#' @examples
 geneFiltering <- function(Type, MAdata, Percentage) {
     switch(Type, Variance = {
         GeneVariances = rowVars(MAdata)
@@ -218,11 +195,8 @@ geneFiltering <- function(Type, MAdata, Percentage) {
 #' printf
 #'
 #' Wrapper function for C-style formatted output.
-#'
-#' @param ...
 #' @return result
 #' @keywords internal
-#' @examples
 printf <- function(...) {
     cat(sprintf(...))
 }

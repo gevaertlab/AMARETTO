@@ -7,11 +7,6 @@
 cacheResource(cache = BiocFileCache::BiocFileCache(TargetDirectory),
   resource)
 }
-\arguments{
-\item{cache}{}
-
-\item{resource}{}
-}
 \value{
 result
 }

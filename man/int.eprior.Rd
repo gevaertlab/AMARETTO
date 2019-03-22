@@ -6,9 +6,6 @@
 \usage{
 int.eprior(sdat, g.hat, d.hat)
 }
-\arguments{
-\item{d.hat}{}
-}
 \value{
 result
 }

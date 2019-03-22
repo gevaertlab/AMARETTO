@@ -6,9 +6,6 @@
 \usage{
 Beta.NA(y, X)
 }
-\arguments{
-\item{X}{}
-}
 \value{
 result
 }

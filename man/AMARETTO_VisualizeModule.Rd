@@ -13,19 +13,17 @@ AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, ProcessedData,
 
 \item{AMARETTOresults}{List output from AMARETTO_Run().}
 
-\item{ModuleNr}{Module number to visualize.}
+\item{ProcessedData}{List of processed input data}
 
-\item{SAMPLE_annotation}{Matrix or Dataframe with sample annotation.}
+\item{ModuleNr}{Module number to visualize}
 
-\item{ID}{Column used as sample name.}
+\item{SAMPLE_annotation}{Matrix or Dataframe with sample annotation}
 
-\item{order_samples}{Order samples in heatmap by mean or by clustering.}
+\item{ID}{Column used as sample name}
+
+\item{order_samples}{Order samples in heatmap by mean or by clustering}
 
 \item{printHM}{Boolean print heatmap directly}
-
-\item{CNV_matrix}{CNV matrix, with genes in rows and samples in columns.}
-
-\item{MET_matrix}{Methylation matrix, with genes in rows and samples in columns.}
 }
 \value{
 result

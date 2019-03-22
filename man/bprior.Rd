@@ -6,9 +6,6 @@
 \usage{
 bprior(gamma.hat)
 }
-\arguments{
-\item{gamma.hat}{}
-}
 \value{
 result
 }

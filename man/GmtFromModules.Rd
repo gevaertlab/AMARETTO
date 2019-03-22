@@ -6,11 +6,6 @@
 \usage{
 GmtFromModules(AMARETTOinit, AMARETTOresults)
 }
-\arguments{
-\item{AMARETTOinit}{List output from AMARETTO_Initialize().}
-
-\item{AMARETTOresults}{List output from AMARETTO_Run().}
-}
 \value{
 result
 }

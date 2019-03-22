@@ -6,9 +6,6 @@
 \usage{
 TCGA_GENERIC_BatchCorrection(GEN_Data, BatchData)
 }
-\arguments{
-\item{BatchData}{}
-}
 \value{
 result
 }

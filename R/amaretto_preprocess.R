@@ -20,7 +20,6 @@
 #' ProcessedData <- AMARETTO_Preprocess(DataSetDirectories)
 #'}
 AMARETTO_Preprocess <- function(DataSetDirectories = DataSetDirectories) {
-    data(BatchData)
     CancerSite <- DataSetDirectories[1]
     MinPerBatch = 5
     MAEO <- readRDS(paste0(DataSetDirectories[2], "/", 
@@ -69,7 +68,6 @@ AMARETTO_Preprocess <- function(DataSetDirectories = DataSetDirectories) {
         0) {
         cat("Loading MethylMix data.\n")
         cat("\tGetting MethylMix methylation states.\n")
-        data("MethylStates")
         eval(parse(text = paste("MET_TCGA=MethylStates$", 
             CancerSite, sep = "")), envir = environment())
         SampleNames = colnames(MET_TCGA)
@@ -112,12 +110,9 @@ AMARETTO_Preprocess <- function(DataSetDirectories = DataSetDirectories) {
 }
 
 #' TCGA_Load_GISTICdata
-#'
-#' @param GisticDirectory
-#'
+#' 
 #' @return result
 #' @keywords internal
-#' @examples
 TCGA_Load_GISTICdata <- function(GisticDirectory) {
     GenesFile = paste(GisticDirectory, "all_data_by_genes.txt", 
         sep = "")
@@ -170,14 +165,9 @@ TCGA_Load_GISTICdata <- function(GisticDirectory) {
 
 #' Preprocess_MAdata
 #'
-#' @param CancerSite
-#' @param MAEO_ge
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 Preprocess_MAdata <- function(CancerSite, MAEO_ge) {
-    data(BatchData)
     MinPerBatch = 5
     cat("\tMissing value estimation.\n")
     MA_TCGA = TCGA_Load_MolecularData(MAEO_ge)
@@ -204,12 +194,9 @@ Preprocess_MAdata <- function(CancerSite, MAEO_ge) {
 
 #' TCGA_Load_MolecularData
 #'
-#' @param MAEO_ge
-#'
 #' @return result
 #' @importFrom impute impute.knn
 #' @keywords internal
-#' @examples
 TCGA_Load_MolecularData <- function(MAEO_ge) {
     MET_Data <- MAEO_ge
     if (rownames(MET_Data)[1] == "Composite Element REF") {
@@ -254,13 +241,9 @@ TCGA_Load_MolecularData <- function(MAEO_ge) {
 
 
 #' TCGA_GENERIC_CleanUpSampleNames
-#'
-#' @param GEN_Data
-#' @param IDlength
-#'
+#' 
 #' @return result
 #' @keywords internal
-#' @examples
 TCGA_GENERIC_CleanUpSampleNames <- function(GEN_Data, 
     IDlength = 12) {
     SampleNames = colnames(GEN_Data)
@@ -288,11 +271,8 @@ TCGA_GENERIC_CleanUpSampleNames <- function(GEN_Data,
 
 #' TCGA_GENERIC_GetSampleGroups
 #'
-#' @param SampleNames
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 TCGA_GENERIC_GetSampleGroups <- function(SampleNames) {
     SampleGroups = list()
     Matches = regexpr("TCGA[.|-]\\w\\w[.|-]\\w\\w\\w\\w[.|-]01[.|-]*", 
@@ -326,14 +306,9 @@ TCGA_GENERIC_GetSampleGroups <- function(SampleNames) {
 }
 
 #' TCGA_BatchCorrection_MolecularData
-#'
-#' @param GEN_Data
-#' @param BatchData
-#' @param MinInBatch
-#'
+#' 
 #' @return result
 #' @keywords internal
-#' @examples
 TCGA_BatchCorrection_MolecularData <- function(GEN_Data, 
     BatchData, MinInBatch) {
     if (length(-which(BatchData[, 3] == 0)) > 0) {
@@ -383,12 +358,8 @@ TCGA_BatchCorrection_MolecularData <- function(GEN_Data,
 
 #' TCGA_GENERIC_BatchCorrection
 #'
-#' @param GEN_Data
-#' @param BatchData
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 TCGA_GENERIC_BatchCorrection <- function(GEN_Data, 
     BatchData) {
     WithBatchSamples = is.element(colnames(GEN_Data), 
@@ -415,20 +386,9 @@ TCGA_GENERIC_BatchCorrection <- function(GEN_Data,
 }
 
 #' ComBat_NoFiles
-#'
-#' @param dat
-#' @param saminfo
-#' @param type
-#' @param write
-#' @param covariates
-#' @param par.prior
-#' @param filter
-#' @param skip
-#' @param prior.plots
-#'
+#' 
 #' @return result
 #' @keywords internal
-#' @examples
 ComBat_NoFiles <- function(dat, saminfo, type = "txt", 
     write = FALSE, covariates = "all", par.prior = TRUE, 
     filter = FALSE, skip = 0, prior.plots = FALSE) {
@@ -594,12 +554,8 @@ ComBat_NoFiles <- function(dat, saminfo, type = "txt",
 #' filter.absent
 #'
 #' filters data based on presence/absence call
-#' @param x
-#' @param pct
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 filter.absent <- function(x, pct) {
     present <- TRUE
     col <- length(x)/2
@@ -614,13 +570,8 @@ filter.absent <- function(x, pct) {
 #' build.design
 #'
 #' Next two functions make the design matrix (X) from the sample info file
-#' @param vec
-#' @param des
-#' @param start
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 build.design <- function(vec, des = NULL, start = 2) {
     tmp <- matrix(0, length(vec), nlevels(vec) - start + 
         1)
@@ -633,11 +584,8 @@ build.design <- function(vec, des = NULL, start = 2) {
 
 #' design.mat
 #'
-#' @param saminfo
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 design.mat <- function(saminfo) {
     tmp <- which(colnames(saminfo) == "Batch")
     tmp1 <- as.factor(saminfo[, tmp])
@@ -658,11 +606,8 @@ design.mat <- function(saminfo) {
 #' list.batch
 #'
 #' Makes a list with elements pointing to which array belongs to which batch
-#' @param saminfo
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 list.batch <- function(saminfo) {
     tmp1 <- as.factor(saminfo[, which(colnames(saminfo) == 
         "Batch")])
@@ -674,11 +619,8 @@ list.batch <- function(saminfo) {
 #' trim.dat
 #'
 #' Trims the data of extra columns, note your array names cannot be named 'X' or start with 'X.'
-#' @param dat
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 trim.dat <- function(dat) {
     tmp <- strsplit(colnames(dat), "\\.")
     tr <- sapply(1:length(tmp), function(x) tmp[[x]][1] != 
@@ -689,11 +631,8 @@ trim.dat <- function(dat) {
 #' aprior
 #'
 #' Following four find empirical hyper-prior values
-#' @param gamma.hat
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 aprior <- function(gamma.hat) {
     m = mean(gamma.hat)
     s2 = var(gamma.hat)
@@ -702,11 +641,8 @@ aprior <- function(gamma.hat) {
 
 #' bprior
 #'
-#' @param gamma.hat
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 bprior <- function(gamma.hat) {
     m = mean(gamma.hat)
     s2 = var(gamma.hat)
@@ -715,15 +651,8 @@ bprior <- function(gamma.hat) {
 
 #' postmean
 #'
-#' @param g.hat
-#' @param g.bar
-#' @param n
-#' @param d.star
-#' @param t2
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 postmean <- function(g.hat, g.bar, n, d.star, t2) {
     return((t2 * n * g.hat + d.star * g.bar)/(t2 * 
         n + d.star))
@@ -731,14 +660,8 @@ postmean <- function(g.hat, g.bar, n, d.star, t2) {
 
 #' postvar
 #'
-#' @param sum2
-#' @param n
-#' @param a
-#' @param b
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 postvar <- function(sum2, n, a, b) {
     return((0.5 * sum2 + b)/(n/2 + a - 1))
 }
@@ -746,18 +669,9 @@ postvar <- function(sum2, n, a, b) {
 #' it.sol
 #'
 #' Pass in entire data set, the design matrix for the entire data, the batch means, the batch variances, priors (m, t2, a, b), columns of the data  matrix for the batch. Uses the EM to find the parametric batch adjustments
-#' @param sdat
-#' @param g.hat
-#' @param d.hat
-#' @param g.bar
-#' @param t2
-#' @param a
-#' @param b
-#' @param conv
-#'
+#' 
 #' @return result
 #' @keywords internal
-#' @examples
 it.sol <- function(sdat, g.hat, d.hat, g.bar, t2, a, 
     b, conv = 1e-04) {
     n <- apply(!is.na(sdat), 1, sum)
@@ -784,14 +698,9 @@ it.sol <- function(sdat, g.hat, d.hat, g.bar, t2, a,
 #' L
 #'
 #' likelihood function
-#'
-#' @param x
-#' @param g.hat
-#' @param d.hat
-#'
+#' 
 #' @return result
 #' @keywords internal
-#' @examples
 L <- function(x, g.hat, d.hat) {
     return(prod(dnorm(x, g.hat, sqrt(d.hat))))
 }
@@ -799,13 +708,8 @@ L <- function(x, g.hat, d.hat) {
 #' int.eprior
 #'
 #'Monte Carlo integration function to find the nonparametric adjustments
-#' @param sdat
-#' @param g.hat
-#' @param d.hat
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 int.eprior <- function(sdat, g.hat, d.hat) {
     g.star <- d.star <- NULL
     r <- nrow(sdat)
@@ -833,12 +737,8 @@ int.eprior <- function(sdat, g.hat, d.hat) {
 
 #' Beta.NA
 #'
-#' @param y
-#' @param X
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 Beta.NA = function(y, X) {
     des = X[!is.na(y), ]
     y1 = y[!is.na(y)]
@@ -848,13 +748,8 @@ Beta.NA = function(y, X) {
 
 #' TCGA_GENERIC_MergeData
 #'
-#' @param NewIDListUnique
-#' @param DataMatrix
-#' @param MergeMethod
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 TCGA_GENERIC_MergeData <- function(NewIDListUnique, 
     DataMatrix, MergeMethod) {
     NrUniqueGenes = length(NewIDListUnique)
@@ -872,12 +767,8 @@ TCGA_GENERIC_MergeData <- function(NewIDListUnique,
 
 #' TCGA_GENERIC_CheckBatchEffect
 #'
-#' @param GEN_Data
-#' @param BatchData
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 TCGA_GENERIC_CheckBatchEffect <- function(GEN_Data, 
     BatchData) {
     Order = match(colnames(GEN_Data), BatchData[, 1])
@@ -898,14 +789,8 @@ TCGA_GENERIC_CheckBatchEffect <- function(GEN_Data,
 
 #' Save_CancerSite
 #'
-#' @param CancerSite
-#' @param TargetDirectory
-#' @param DataSetDirectories
-#' @param ProcessedData
-#'
 #' @return result
 #' @keywords internal
-#' @examples
 Save_CancerSite <- function(CancerSite, TargetDirectory, 
     DataSetDirectories, ProcessedData) {
     if (length(DataSetDirectories$MAdirectory) > 1) {

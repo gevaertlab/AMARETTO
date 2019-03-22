@@ -6,9 +6,6 @@
 \usage{
 TCGA_BatchCorrection_MolecularData(GEN_Data, BatchData, MinInBatch)
 }
-\arguments{
-\item{MinInBatch}{}
-}
 \value{
 result
 }

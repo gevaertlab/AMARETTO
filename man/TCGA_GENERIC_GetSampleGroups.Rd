@@ -6,9 +6,6 @@
 \usage{
 TCGA_GENERIC_GetSampleGroups(SampleNames)
 }
-\arguments{
-\item{SampleNames}{}
-}
 \value{
 result
 }

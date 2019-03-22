@@ -6,9 +6,6 @@
 \usage{
 trim.dat(dat)
 }
-\arguments{
-\item{dat}{}
-}
 \value{
 result
 }

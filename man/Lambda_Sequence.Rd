@@ -6,11 +6,6 @@
 \usage{
 Lambda_Sequence(sx, sy)
 }
-\arguments{
-\item{sx}{}
-
-\item{sy}{}
-}
 \value{
 result
 }
