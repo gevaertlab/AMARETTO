@@ -10,36 +10,40 @@
 #'
 #' @return 
 #' 
-
 #' @import tidyverse
 #' @return
 #' @export
-AMARETTO_PhenAssociation<- function(AMARETTOresults, annotation, idpatients, parameters=NULL, typelist=NULL, printplots=FALSE, pdfname="phenotypes.pdf"){
+AMARETTO_PhenAssociation<- function(AMARETTOresults, annotation, idpatients, phenotypes, printplots=FALSE, pdfname="phenotypes.pdf"){
   
   mean_expression_modules <- t(AMARETTOresults$ModuleData)
   mean_expression_modules <- rownames_to_column(as.data.frame(mean_expression_modules),"idpatients")
+  ### test matching sample ids
   if (sum(annotation[,idpatients] %in% mean_expression_modules[,"idpatients"],na.rm=TRUE)==0){
-    stop("No overlap between patients ids")
+    stop("No overlap between patients ids.")
   } else {
     print(paste0("Phenotypic association will be calculated on ",length(annotation[,idpatients] %in% mean_expression_modules[,"idpatients"]), " patients."))
   }
+  annotation <- suppressMessages(dplyr::inner_join(annotation, mean_expression_modules %>% dplyr::rename(!!idpatients :="idpatients")))
   
-  annotation <- suppressMessages(inner_join(annotation, mean_expression_modules %>% dplyr::rename(!!idpatients :="idpatients")))
+  ### select phenotypes for which a ligid test is given
+  if (!phenotypes$test %in% c("WILCOXONRANKSUMTEST","KRUSKALWALLISTEST","TTEST","ANOVATEST","PEARSONCORRTEST","SPEARMANCORRTEST","cathegorical","ordinal","continous")){
+    stop("There are no tests that match the options.")
+  }
+  
   result_df<-data.frame(ModuleNr=rep(paste0("Module_",1:AMARETTOresults$NrModules)))
   if (printplots==TRUE){pdf(pdfname)}
   
-  for(parameter in parameters){
+  for(parameter in phenotypetests$Phenotypes){
   #p_survival<-matrix(nrow=AMARETTOresults$NrModules, ncol=11)
     
-    sample_size<-nrow(annotation%>%select(!!parameter) %>% drop_na())
+    sample_size<-nrow(annotation %>% dplyr::select(!!parameter) %>% drop_na())
     
     print(paste0("Phenotypic association is calculated for ",parameter, " on ",sample_size," patients."))
-    test<-typelist[parameter]
-    
+    test<-phenotypetests[phenotypetests$Phenotypes==parameter,"test"]
 
-    if (test == "cathegorical" && sample_size<30 ){
+    if ((test == "cathegorical" && sample_size<30) || (test %in% c("WILCOXONRANKSUMTEST","KRUSKALWALLISTEST")){
       annotation[,parameter]<-as.factor(annotation[,parameter])
-      if (nlevels(annotation[,parameter])==2){
+      if ((nlevels(annotation[,parameter])==2) || (test == "WILCOXONRANKSUMTEST")){
         print(paste0("A wilcox test is performed for ",parameter))
         colnames_result_df<-rep(paste0(parameter,c("_Wilcoxon_p","_Wilcoxon_padj","_Wilcoxon_95LI","_Wilcoxon_95HI")))
         result_df[,colnames_result_df]<-NA
@@ -60,16 +64,16 @@ AMARETTO_PhenAssociation<- function(AMARETTOresults, annotation, idpatients, par
           }
         }
        result_df[,colnames_result_df[2]]<-p.adjust(result_df[,colnames_result_df[1]],method = "BH")
-      } else if (nlevels(annotation[,parameter])>2){
+      } else if ((nlevels(annotation[,parameter])>2) || (test == "KRUSKALWALLISTEST")){
         print(paste0("A Kruskal-Wallis Rank sum test is performed for ",parameter))
         colnames_result_df<-rep(paste0(parameter,c("_KrusW_p","_KrusW_padj","_KrusW_stat")))
         result_df[,colnames_result_df]<-NA
         for(i in 1:AMARETTOresults$NrModules){
           moduleNr <- paste0("Module_",i)
             testresults<-kruskal.test(annotation[,i]~annotation[,parameter])
+            #return results
             result_df[i,colnames_result_df[1]]<-testresults$p.value
             result_df[i,colnames_result_df[3]]<-testresults$statistic
-            
             if(printplots==TRUE){
               print(ggplot(annotation %>% drop_na(!!parameter),aes(x=get(parameter), y=get(moduleNr), fill=get(parameter)))+
                       geom_boxplot()+
@@ -80,19 +84,19 @@ AMARETTO_PhenAssociation<- function(AMARETTOresults, annotation, idpatients, par
             }
           }
         result_df[,colnames_result_df[2]]<-p.adjust(result_df[,colnames_result_df[1]],method = "BH")
-      } else {
-        stop(paste0(parameter, " has less than two levels."))
+      } else if {(nlevels(annotation[,parameter])<2)}
+        stop(paste0(parameter, " has only one or no levels"))
       }
-    } else if (test == "cathegorical" && sample_size>=30){
+    } else if ((test == "cathegorical" && sample_size>=30) || (test %in% c("TTEST","ANOVATEST")){
       annotation[,parameter]<-as.factor(annotation[,parameter])
-      if (nlevels(annotation[,parameter])==2){
+      if ((nlevels(annotation[,parameter])==2) || (test == "TTEST")){
         print(paste0("A t-test is performed for ",parameter))
         colnames_result_df<-rep(paste0(parameter,c("_Ttest_p","_Ttest_padj","_Ttest_95LI","_Ttest_95HI")))
         result_df[,colnames_result_df]<-NA
         for(i in 1:AMARETTOresults$NrModules){
           moduleNr <- paste0("Module_",i)
           testresults<-t.test(annotation[,moduleNr]~annotation[,parameter])
-          
+          #return results
           result_df[i,colnames_result_df[1]]<-testresults$p.value
           result_df[i,colnames_result_df[3]]<-testresults$conf.int[1]
           result_df[i,colnames_result_df[4]]<-testresults$conf.int[2]
@@ -105,7 +109,7 @@ AMARETTO_PhenAssociation<- function(AMARETTOresults, annotation, idpatients, par
           }
         }
         result_df[,colnames_result_df[2]]<-p.adjust(result_df[,colnames_result_df[1]],method = "BH")
-      } else if (nlevels(annotation[,parameter])>2){
+      } else if ((nlevels(annotation[,parameter])>2) || (test =="ANOVATEST"){
         print(paste0("An ANOVA test is performed for ",parameter, ". The levels are: ",paste0(levels(annotation[,parameter]),collapse=", "),"."))
         colnames_result_df<-rep(paste0(parameter,c("_Anova_p","_Anova_padj")))
         result_df[,colnames_result_df]<-NA
@@ -113,7 +117,7 @@ AMARETTO_PhenAssociation<- function(AMARETTOresults, annotation, idpatients, par
           moduleNr <- paste0("Module_",i)
           lmod<-lm(annotation[,moduleNr]~annotation[,parameter])
           testresults<-anova(lmod)
-          
+          #returns results
           result_df[i,colnames_result_df[1]]<-as.numeric(testresults[1,5])
 
           if(printplots==TRUE){
@@ -125,11 +129,11 @@ AMARETTO_PhenAssociation<- function(AMARETTOresults, annotation, idpatients, par
           }
         }
         result_df[,colnames_result_df[2]]<-p.adjust(result_df[,colnames_result_df[1]],method = "BH")
-      } else {
-        stop(paste0(parameter, " has only one level."))
+      } else if {(nlevels(annotation[,parameter])<2)}
+        stop(paste0(parameter, " has only one or no levels"))
       }
-    } else if ( test=="ordinal" || (test == "continuous" && sample_size<30)){
-      if (test == "continuous"){
+    } else if ( (test %in% c("ordinal","SPEARMANCORRTEST") || (test == "continuous" && sample_size<30)){
+      if (test == "continuous" || test =="SPEARMANCORRTEST"){
         annotation[,parameter] <- as.numeric(annotation[,parameter])
         print(paste0("A Spearman Correlation is performed for ",parameter))
       } else {
@@ -154,7 +158,7 @@ AMARETTO_PhenAssociation<- function(AMARETTOresults, annotation, idpatients, par
         }  
       }
       result_df[,colnames_result_df[2]]<-p.adjust(result_df[,colnames_result_df[1]],method = "BH")
-    } else if ( test == "continuous" && sample_size>=30){
+    } else if ( (test == "continuous" && sample_size>=30) || test == "PEARSONCORRTEST"){
       print(paste0("A Pearson Correlation is performed for ",parameter))
       colnames_result_df<-rep(paste0(parameter,c("_Pearson_p","_Pearson_padj","_Pearson95LI","_Pearson95HI")))
       result_df[,colnames_result_df]<-NA
@@ -212,7 +216,7 @@ AMARETTO_phenotypesshiny<- function(AMARETTOresults, annotation, idpatients){
     print(paste0("Phenotypic association will be calculated on ",length(annotation[,idpatients] %in% mean_expression_modules[,"idpatients"]), " patients."))
   }
   
-  annotation <- suppressMessages(inner_join(annotation, mean_expression_modules %>% dplyr::rename(!!idpatients :="idpatients")))
+  annotation <- suppressMessages(dplyr::inner_join(annotation, mean_expression_modules %>% dplyr::rename(!!idpatients :="idpatients")))
   
   modules <- paste0("Module ", seq(1:AMARETTOresults$NrModules))
   
@@ -255,7 +259,7 @@ AMARETTO_phenotypesshiny<- function(AMARETTOresults, annotation, idpatients){
       test<-input$TypeTest
       moduleNr<-input$Module
       moduleNr <-sub(" ","_",moduleNr)
-      sample_size<-nrow(annotation%>%select(!!parameter) %>% drop_na())
+      sample_size<-nrow(annotation %>% dplyr::select(!!parameter) %>% drop_na())
       if (test == "cathegorical" && sample_size<30 ){
         annotation[,parameter]<-as.factor(annotation[,parameter])
         if (nlevels(annotation[,parameter])==2){
@@ -324,10 +328,10 @@ AMARETTO_phenotypesshiny<- function(AMARETTOresults, annotation, idpatients){
       moduleNr <-sub(" ","_",moduleNr)
       parameter<-input$Parameter
       if(input$TypeTest!="continuous"){
-        data_summary<-annotation %>% select(!!idpatients,!!parameter,!!moduleNr) %>% drop_na(!!parameter) %>% group_by_at(vars(!!parameter)) %>% summarise(mean=mean(get(!!moduleNr)),median=median(get(!!moduleNr)),nobservations=n(),sd=sd(get(!!moduleNr)))
+        data_summary<-annotation %>% dplyr::select(!!idpatients,!!parameter,!!moduleNr) %>% drop_na(!!parameter) %>% dplyr::group_by_at(vars(!!parameter)) %>% dplyr::summarise(mean=mean(get(!!moduleNr)),median=median(get(!!moduleNr)),nobservations=n(),sd=sd(get(!!moduleNr)))
         datatable_summary<-datatable(data_summary) %>% formatRound(c('mean','median','sd'),digits=3)
       } else {
-        data_summary<-annotation %>% select(!!idpatients,!!parameter,!!moduleNr) %>% drop_na(!!parameter) %>% summarise(median=median(get(!!moduleNr)),sd=sd(get(!!moduleNr)),parameter_min=min(as.numeric(get(!!parameter)),na.rm=TRUE),parameter_max=max(as.numeric(get(!!parameter)),na.rm=TRUE),nobservations=n())
+        data_summary<-annotation %>% dplyr::select(!!idpatients,!!parameter,!!moduleNr) %>% drop_na(!!parameter) %>% dplyr::summarise(median=median(get(!!moduleNr)),sd=sd(get(!!moduleNr)),parameter_min=min(as.numeric(get(!!parameter)),na.rm=TRUE),parameter_max=max(as.numeric(get(!!parameter)),na.rm=TRUE),nobservations=n())
         datatable_summary<-datatable(data_summary) %>% formatRound(c('median','sd'),digits=3)
       }
       datatable_summary

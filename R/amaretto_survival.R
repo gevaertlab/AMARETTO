@@ -28,7 +28,7 @@ AMARETTO_survival<- function(AMARETTOresults, SurvivalAnnotation, idpatients, id
     print(paste0("Survival data will be calculated on ",length(SurvivalAnnotation[,idpatients] %in% mean_expression_modules[,"idpatients"]), " patients."))
   }
   
-  SurvivalAnnotation <- suppressMessages(inner_join(SurvivalAnnotation, mean_expression_modules %>% dplyr::rename(!!idpatients :="idpatients")))
+  SurvivalAnnotation <- suppressMessages(dplyr::inner_join(SurvivalAnnotation, mean_expression_modules %>% dplyr::rename(!!idpatients :="idpatients")))
 
   daysdeath <- as.numeric(SurvivalAnnotation[grep("dead", SurvivalAnnotation[,idvitalstatus],ignore.case=TRUE),iddaystodeath])
   dead <- SurvivalAnnotation[grep("dead", SurvivalAnnotation[,idvitalstatus],ignore.case=TRUE),idvitalstatus]
@@ -134,7 +134,7 @@ AMARETTO_survivalshiny<- function(AMARETTOresults, SurvivalAnnotation, idpatient
     print(paste0("Survival data will be calculated on ",length(SurvivalAnnotation[,idpatients] %in% mean_expression_modules[,"idpatients"]), " patients."))
   }
   
-  SurvivalAnnotation <- suppressMessages(inner_join(SurvivalAnnotation, mean_expression_modules %>% dplyr::rename(!!idpatients :="idpatients")))
+  SurvivalAnnotation <- suppressMessages(dplyr::inner_join(SurvivalAnnotation, mean_expression_modules %>% dplyr::rename(!!idpatients :="idpatients")))
   
   daysdeath <- as.numeric(SurvivalAnnotation[grep("dead", SurvivalAnnotation[,idvitalstatus],ignore.case=TRUE),iddaystodeath])
   dead <- SurvivalAnnotation[grep("dead", SurvivalAnnotation[,idvitalstatus],ignore.case=TRUE),idvitalstatus]
