@@ -2,14 +2,13 @@ library(AMARETTO)
 context("AMARETTO output data objects testing")
 
 data("ProcessedDataLIHC")
-NrModules<-3
+NrModules<-5
 VarPercentage<-10
-AMARETTOinit <- AMARETTO_Initialize(list(MA_matrix = ProcessedDataLIHC$MA_matrix,
-                                     CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-                                     MET_matrix = ProcessedDataLIHC$MET_matrix),
-                                    NrModules=NrModules,VarPercentage=VarPercentage)
+AMARETTOinit <- AMARETTO_Initialize(ProcessedDataLIHC,
+                                    NrModules = NrModules,
+                                    VarPercentage = VarPercentage)
 
-AMARETTOresults <- AMARETTO_Run (AMARETTOinit)
+AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 
 testthat::test_that("Checking AMARETTO_init object if it is in decent shape",{
   expect_equal(length(AMARETTOinit),6)
