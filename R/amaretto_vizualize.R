@@ -34,7 +34,7 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,
     ID = NULL, order_samples = NULL, printHM = FALSE) {
     CNV_matrix <- ProcessedData[[2]]
     MET_matrix <- ProcessedData[[3]]
-    
+    CNVMet_Alterations <- DriversList_Alterations <- MET <- HGNC_symbol <- CNV <- NULL
     if (ModuleNr > AMARETTOresults$NrModules) {
         stop("\tCannot plot Module", ModuleNr, " since the total number of modules is", 
             AMARETTOresults$N, ".\n")

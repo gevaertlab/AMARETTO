@@ -4,8 +4,7 @@
 \alias{cacheResource}
 \title{cacheResource}
 \usage{
-cacheResource(cache = BiocFileCache::BiocFileCache(TargetDirectory),
-  resource)
+cacheResource(TargetDirectory = TargetDirectory, resource = resource)
 }
 \value{
 result

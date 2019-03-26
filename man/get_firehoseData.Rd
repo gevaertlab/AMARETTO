@@ -4,7 +4,7 @@
 \alias{get_firehoseData}
 \title{get_firehoseData}
 \usage{
-get_firehoseData(downloadData = TRUE, saveDir = "./",
+get_firehoseData(TargetDirectory = "./",
   TCGA_acronym_uppercase = "LUAD", dataType = "stddata",
   dataFileTag = "mRNAseq_Preprocess.Level_3", FFPE = FALSE,
   fileType = "tar.gz",

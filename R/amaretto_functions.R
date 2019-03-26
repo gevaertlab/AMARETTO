@@ -108,10 +108,10 @@ AMARETTO_Initialize <- function(ProcessedData = ProcessedData,
 #' @export
 AMARETTO_Run <- function(AMARETTOinit) {
     if (length(AMARETTOinit) == 0) {
-        cat("For cancer ", CancerSite, " no drivers were find during the initialization step of AMARETTO")
+        cat("For give cancer site no drivers were find during the initialization step of AMARETTO")
     } else {
         if (nrow(AMARETTOinit$RegulatorData) == 1) {
-            cat("For cancer ", CancerSite, " only one driver is detected. AMARETTO cannot be run with less than two drivers.\n")
+            cat("For give cancer site only one driver is detected. AMARETTO cannot be run with less than two drivers.\n")
         } else {
             cat("Running AMARETTO on", length(rownames(AMARETTOinit$MA_matrix_Var)), 
                 "genes and", length(colnames(AMARETTOinit$MA_matrix_Var)), 

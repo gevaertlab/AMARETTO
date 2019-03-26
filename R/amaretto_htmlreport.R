@@ -45,8 +45,9 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
     `%dopar%` <- foreach::`%dopar%`
     CNV_matrix <- ProcessedData[[2]]
     MET_matrix <- ProcessedData[[3]]
-    
-    
+    Description <- Overlapping_genes <- overlap_perc <- NULL
+    p_value <- value <- variable <- Genes <- Modules <- dt_gensesetsall <- NULL
+    dt_gensesetsall  
     NrModules <- AMARETTOresults$NrModules
     NrCores <- AMARETTOinit$NrCores
     if (!dir.exists(output_address)) {
@@ -277,7 +278,7 @@ HyperGTestGeneEnrichment <- function(gmtfile, testgmtfile,
     `%do%` <- foreach::`%do%`
     test.gmt <- readGMT(testgmtfile)  # our gmt_file_output_from Amaretto
     gmt.path <- readGMT(gmtfile)  # the hallmarks_and_co2...
-    
+    i <- j <- NULL
     ########################### Parallelizing :
 #    cluster <- parallel::makeCluster(c(rep("localhost", 
 #        NrCores)), type = "SOCK")
@@ -323,6 +324,7 @@ HyperGTestGeneEnrichment <- function(gmtfile, testgmtfile,
 GmtFromModules <- function(AMARETTOinit, AMARETTOresults) {
     ModuleMembership <- tibble::rownames_to_column(as.data.frame(AMARETTOresults$ModuleMembership), 
         "GeneNames")
+    GeneNames <- NULL
     NrModules <- AMARETTOresults$NrModules
     ModuleMembership <- ModuleMembership %>% dplyr::arrange(GeneNames)
     

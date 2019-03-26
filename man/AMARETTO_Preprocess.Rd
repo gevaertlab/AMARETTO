@@ -4,10 +4,13 @@
 \alias{AMARETTO_Preprocess}
 \title{AMARETTO_Preprocess}
 \usage{
-AMARETTO_Preprocess(DataSetDirectories = DataSetDirectories)
+AMARETTO_Preprocess(DataSetDirectories = DataSetDirectories,
+  BatchData = BatchData)
 }
 \arguments{
 \item{DataSetDirectories}{DataSetDirectories}
+
+\item{BatchData}{BatchData}
 }
 \value{
 result

@@ -45,7 +45,7 @@ AMARETTO_Download <- function(CancerSite = "CHOL",
     dataFileTag = "CopyNumber_Gistic2.Level_4"
     message("Searching CNV data for:", CancerSite, 
         "\n")
-    CNVdirectory = get_firehoseData(saveDir = TargetDirectory, 
+    CNVdirectory = get_firehoseData(TargetDirectory = TargetDirectory, 
         TCGA_acronym_uppercase = TCGA_acronym_uppercase, 
         dataType = dataType, dataFileTag = dataFileTag)
     
@@ -60,7 +60,7 @@ AMARETTO_Download <- function(CancerSite = "CHOL",
 #' Downloading TCGA dataset via firehose
 #' @return result
 #' @keywords internal
-get_firehoseData <- function(downloadData = TRUE, saveDir = "./", 
+get_firehoseData <- function(TargetDirectory = "./", 
     TCGA_acronym_uppercase = "LUAD", dataType = "stddata", 
     dataFileTag = "mRNAseq_Preprocess.Level_3", FFPE = FALSE, 
     fileType = "tar.gz", gdacURL = "http://gdac.broadinstitute.org/runs/", 
@@ -172,10 +172,10 @@ get_firehoseData <- function(downloadData = TRUE, saveDir = "./",
         gdacURL <- paste(gdacURL, fileName, sep = "")
         
         cancer_url <- computeGisticURL(url = gdacURL)
-        cache_target <- cacheResource(resource = cancer_url)
+        cache_target <- cacheResource(TargetDirectory=TargetDirectory,resource = cancer_url)
         utils::untar(cache_target$rpath, exdir = TargetDirectory)
         DownloadedFile <- list.dirs(TargetDirectory, 
-            full.names = TRUE)[grep(CancerSite, list.dirs(TargetDirectory, 
+            full.names = TRUE)[grep(TCGA_acronym_uppercase, list.dirs(TargetDirectory, 
             full.names = TRUE))]
         DownloadedFile <- paste0(DownloadedFile, "/")
         return(DownloadedFile)
@@ -274,6 +274,7 @@ AMARETTO_ExportResults <- function(AMARETTOinit, AMARETTOresults,
 #' @return result
 #' @keywords internal
 write_gct <- function(data_in, file_address) {
+    Name <- Description <- NULL
     header_gct <- paste0("#1.2\n", nrow(data_in), "\t", 
         ncol(data_in))
     data_in <- tibble::rownames_to_column(as.data.frame(data_in), 
@@ -301,8 +302,9 @@ computeGisticURL <- function(url = NULL, acronym = "CHOL") {
 #' 
 #' @return result
 #' @keywords internal
-cacheResource <- function(cache = BiocFileCache::BiocFileCache(TargetDirectory), 
-    resource) {
+cacheResource <- function(TargetDirectory=TargetDirectory, 
+    resource = resource) {
+    cache = BiocFileCache::BiocFileCache(TargetDirectory)
     chk = bfcquery(cache, resource)
     if (nrow(chk) == 0) {
         message("downloading ", resource)

@@ -2,6 +2,7 @@
 #'
 #' Wrapper code that analyzes process TCGA GISTIC (CNV) and gene expression (rna-seq or microarray) data  via one call
 #' @param DataSetDirectories DataSetDirectories
+#' @param BatchData BatchData
 #' @importFrom graphics lines par title
 #' @import grDevices
 #' @importFrom limma  strsplit2
@@ -19,7 +20,8 @@
 #' DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory)
 #' ProcessedData <- AMARETTO_Preprocess(DataSetDirectories)
 #'}
-AMARETTO_Preprocess <- function(DataSetDirectories = DataSetDirectories) {
+AMARETTO_Preprocess <- function(DataSetDirectories = DataSetDirectories,
+                                BatchData = BatchData) {
     CancerSite <- DataSetDirectories[1]
     MinPerBatch = 5
     MAEO <- readRDS(paste0(DataSetDirectories[2], "/", 
@@ -167,7 +169,7 @@ TCGA_Load_GISTICdata <- function(GisticDirectory) {
 #'
 #' @return result
 #' @keywords internal
-Preprocess_MAdata <- function(CancerSite, MAEO_ge) {
+Preprocess_MAdata <- function(CancerSite, MAEO_ge,BatchData) {
     MinPerBatch = 5
     cat("\tMissing value estimation.\n")
     MA_TCGA = TCGA_Load_MolecularData(MAEO_ge)

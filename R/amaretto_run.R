@@ -242,6 +242,7 @@ AMARETTO_ReassignGenesToClusters <- function(Data,
     ModuleVectors = Beta %*% X1
     GeneNames = rownames(Data)
     ptm1 <- proc.time()
+    i <- NULL
     nc <- foreach(i = 1:NrGenes, .combine = c) %dopar%
         {
             OldModule = Clusters[i]
