@@ -43,7 +43,7 @@ Imports:
     stats, 
     utils
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.1.1
+RoxygenNote: 6.1.1.9000
 LinkingTo: 
     Rcpp
 VignetteBuilder: knitr
