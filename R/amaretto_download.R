@@ -218,6 +218,7 @@ AMARETTO_ExportResults <- function(AMARETTOinit, AMARETTOresults,
     
     NrCores <- AMARETTOinit$NrCores
     NrModules <- AMARETTOresults$NrModules
+    ModuleNr <- NULL
     
     # parallelize the heatmap production
 #    cluster <- parallel::makeCluster(c(rep("localhost", 
