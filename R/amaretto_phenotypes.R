@@ -109,7 +109,7 @@ AMARETTO_PhenAssociation<- function(AMARETTOresults, annotation, idpatients, phe
           }
         }
         result_df[,colnames_result_df[2]]<-p.adjust(result_df[,colnames_result_df[1]],method = "BH")
-      } else if ((nlevels(annotation[,parameter])>2) || (test =="ANOVATEST"){
+      } else if ((nlevels(annotation[,parameter])>2) || (test =="ANOVATEST")){
         print(paste0("An ANOVA test is performed for ",parameter, ". The levels are: ",paste0(levels(annotation[,parameter]),collapse=", "),"."))
         colnames_result_df<-rep(paste0(parameter,c("_Anova_p","_Anova_padj")))
         result_df[,colnames_result_df]<-NA
@@ -158,7 +158,7 @@ AMARETTO_PhenAssociation<- function(AMARETTOresults, annotation, idpatients, phe
         }  
       }
       result_df[,colnames_result_df[2]]<-p.adjust(result_df[,colnames_result_df[1]],method = "BH")
-    } else if ( (test == "continuous" && sample_size>=30) || test == "PEARSONCORRTEST"){
+    } else if ((test == "continuous" && sample_size>=30) || (test == "PEARSONCORRTEST")){
       print(paste0("A Pearson Correlation is performed for ",parameter))
       colnames_result_df<-rep(paste0(parameter,c("_Pearson_p","_Pearson_padj","_Pearson95LI","_Pearson95HI")))
       result_df[,colnames_result_df]<-NA
