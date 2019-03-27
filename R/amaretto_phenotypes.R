@@ -39,9 +39,9 @@ AMARETTO_PhenAssociation <- function(AMARETTOresults, annotation, idpatients, ph
       stop("There are no tests that match the options.")
     }
     
-    if ((test == "cathegorical" && sample_size<30) || (test %in% c("WILCOXONRANKSUMTEST","KRUSKALWALLISTEST")){
+    if ((test == "cathegorical" && sample_size<30) || (test %in% c("WILCOXONRANKSUMTEST","KRUSKALWALLISTEST"))){
       annotation[,parameter]<-as.factor(annotation[,parameter])
-      if ((nlevels(annotation[,parameter])==2) || (test == "WILCOXONRANKSUMTEST")){
+      if ((nlevels(annotation[,parameter])==2) || test == "WILCOXONRANKSUMTEST"){
           print(paste0("A wilcox test is performed for ",parameter))
           colnames_result_df<-rep(paste0(parameter,c("_Wilcoxon_p","_Wilcoxon_padj","_Wilcoxon_95LI","_Wilcoxon_95HI")))
           result_df[,colnames_result_df]<-NA
@@ -62,7 +62,7 @@ AMARETTO_PhenAssociation <- function(AMARETTOresults, annotation, idpatients, ph
             }
           }
          result_df[,colnames_result_df[2]]<-p.adjust(result_df[,colnames_result_df[1]],method = "BH")
-      } else if ((nlevels(annotation[,parameter])>2) || (test == "KRUSKALWALLISTEST")){
+      } else if ((nlevels(annotation[,parameter])>2) || test == "KRUSKALWALLISTEST"){
           print(paste0("A Kruskal-Wallis Rank sum test is performed for ",parameter))
           colnames_result_df<-rep(paste0(parameter,c("_KrusW_p","_KrusW_padj","_KrusW_stat")))
           result_df[,colnames_result_df]<-NA
@@ -85,9 +85,9 @@ AMARETTO_PhenAssociation <- function(AMARETTOresults, annotation, idpatients, ph
       } else if (nlevels(annotation[,parameter])<2){
           stop(paste0(parameter, " has only one or no levels"))
         }
-    } else if ((test == "cathegorical" && sample_size>=30) || (test %in% c("TTEST","ANOVATEST")){
+    } else if ((test == "cathegorical" && sample_size>=30) || (test %in% c("TTEST","ANOVATEST"))){
       annotation[,parameter]<-as.factor(annotation[,parameter])
-      if ((nlevels(annotation[,parameter])==2) || (test == "TTEST")){
+      if ((nlevels(annotation[,parameter])==2) || test == "TTEST"){
         print(paste0("A t-test is performed for ",parameter))
         colnames_result_df<-rep(paste0(parameter,c("_Ttest_p","_Ttest_padj","_Ttest_95LI","_Ttest_95HI")))
         result_df[,colnames_result_df]<-NA
@@ -107,7 +107,7 @@ AMARETTO_PhenAssociation <- function(AMARETTOresults, annotation, idpatients, ph
           }
         }
         result_df[,colnames_result_df[2]]<-p.adjust(result_df[,colnames_result_df[1]],method = "BH")
-      } else if ((nlevels(annotation[,parameter])>2) || (test =="ANOVATEST")){
+      } else if ((nlevels(annotation[,parameter])>2) || test =="ANOVATEST"){
         print(paste0("An ANOVA test is performed for ",parameter, ". The levels are: ",paste0(levels(annotation[,parameter]),collapse=", "),"."))
         colnames_result_df<-rep(paste0(parameter,c("_Anova_p","_Anova_padj")))
         result_df[,colnames_result_df]<-NA
@@ -130,7 +130,7 @@ AMARETTO_PhenAssociation <- function(AMARETTOresults, annotation, idpatients, ph
       } else if (nlevels(annotation[,parameter])<2){
         stop(paste0(parameter, " has only one or no levels"))
       }
-    } else if ((test %in% c("ordinal","SPEARMANCORRTEST") || (test == "continuous" && sample_size<30)){
+    } else if ((test %in% c("ordinal","SPEARMANCORRTEST")) || (test == "continuous" && sample_size<30)){
       if (test == "continuous" || test =="SPEARMANCORRTEST"){
         annotation[,parameter] <- as.numeric(annotation[,parameter])
         print(paste0("A Spearman Correlation is performed for ",parameter))
@@ -156,7 +156,7 @@ AMARETTO_PhenAssociation <- function(AMARETTOresults, annotation, idpatients, ph
         }  
       }
       result_df[,colnames_result_df[2]]<-p.adjust(result_df[,colnames_result_df[1]],method = "BH")
-    } else if ((test == "continuous" && sample_size>=30) || (test == "PEARSONCORRTEST")){
+    } else if ((test == "continuous" && sample_size>=30) || test == "PEARSONCORRTEST"){
       print(paste0("A Pearson Correlation is performed for ",parameter))
       colnames_result_df<-rep(paste0(parameter,c("_Pearson_p","_Pearson_padj","_Pearson95LI","_Pearson95HI")))
       result_df[,colnames_result_df]<-NA
