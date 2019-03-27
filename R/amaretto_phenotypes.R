@@ -3,20 +3,22 @@
 #' @param AMARETTOresults
 #' @param annotation
 #' @param idpatients
-#' @param parameters
-#' @param typelist
 #' @param printplots
 #' @param pdfname
 #'
 #' @return 
 #' 
-#' @import tidyverse
+#' @importFrom dplyr arrange group_by inner_join mutate select summarise rename
+#' @importFrom tibble rownames_to_column
+#' @importFrom tidyr drop_na
+#' @import ggplot
+#' 
 #' @return
 #' @export
-AMARETTO_PhenAssociation <- function(AMARETTOresults, annotation, idpatients, phenotypes, printplots=FALSE, pdfname="phenotypes.pdf"){
+AMARETTO_PhenAssociation <- function(AMARETTOresults, annotation, idpatients, phenotypetests, printplots=FALSE, pdfname="phenotypes.pdf"){
   
   mean_expression_modules <- t(AMARETTOresults$ModuleData)
-  mean_expression_modules <- rownames_to_column(as.data.frame(mean_expression_modules),"idpatients")
+  mean_expression_modules <- tibble::rownames_to_column(as.data.frame(mean_expression_modules),"idpatients")
   ### test matching sample ids
   if (sum(annotation[,idpatients] %in% mean_expression_modules[,"idpatients"],na.rm=TRUE)==0){
     stop("No overlap between patients ids.")
@@ -24,27 +26,27 @@ AMARETTO_PhenAssociation <- function(AMARETTOresults, annotation, idpatients, ph
     print(paste0("Phenotypic association will be calculated on ",length(annotation[,idpatients] %in% mean_expression_modules[,"idpatients"]), " patients."))
   }
   annotation <- suppressMessages(dplyr::inner_join(annotation, mean_expression_modules %>% dplyr::rename(!!idpatients :="idpatients")))
-  
+  phenotypetests<-as.data.frame(phenotypetests)
   ### select phenotypes for which a ligid test is given
   result_df <- data.frame(ModuleNr=rep(paste0("Module_",1:AMARETTOresults$NrModules)))
   if (printplots==TRUE){pdf(pdfname)}
   
-  for(parameter in phenotypetests$Phenotypes){
-    sample_size<-nrow(annotation %>% dplyr::select(!!parameter) %>% drop_na())
+  for(parameter in phenotypetests[,"Phenotypes"]){
+    sample_size <- nrow(annotation %>% dplyr::select(!!parameter) %>% drop_na())
     
     print(paste0("Phenotypic association is calculated for ",parameter, " on ",sample_size," patients."))
-    test<-phenotypetests[phenotypetests$Phenotypes==parameter,"test"]
+    test <- phenotypetests[which(phenotypetests$Phenotypes==parameter),"test"]
     
     if (!test %in% c("WILCOXONRANKSUMTEST","KRUSKALWALLISTEST","TTEST","ANOVATEST","PEARSONCORRTEST","SPEARMANCORRTEST","cathegorical","ordinal","continous")){
       stop("There are no tests that match the options.")
     }
     
     if ((test == "cathegorical" && sample_size<30) || (test %in% c("WILCOXONRANKSUMTEST","KRUSKALWALLISTEST"))){
-      annotation[,parameter]<-as.factor(annotation[,parameter])
+      annotation[,parameter] <- as.factor(annotation[,parameter])
       if ((nlevels(annotation[,parameter])==2) || test == "WILCOXONRANKSUMTEST"){
           print(paste0("A wilcox test is performed for ",parameter))
-          colnames_result_df<-rep(paste0(parameter,c("_Wilcoxon_p","_Wilcoxon_padj","_Wilcoxon_95LI","_Wilcoxon_95HI")))
-          result_df[,colnames_result_df]<-NA
+          colnames_result_df <- rep(paste0(parameter,c("_Wilcoxon_p","_Wilcoxon_padj","_Wilcoxon_95LI","_Wilcoxon_95HI")))
+          result_df[,colnames_result_df] <- NA
           for(i in 1:AMARETTOresults$NrModules){
             moduleNr <- paste0("Module_",i)
             testresults <- wilcox.test(annotation[,moduleNr]~annotation[,parameter], conf.int = TRUE)
@@ -52,8 +54,9 @@ AMARETTO_PhenAssociation <- function(AMARETTOresults, annotation, idpatients, ph
             result_df[i,colnames_result_df[1]]<-testresults$p.value
             result_df[i,colnames_result_df[3]]<-testresults$conf.int[1]
             result_df[i,colnames_result_df[4]]<-testresults$conf.int[2]
+            
             if(printplots==TRUE){
-              print(ggplot(annotation %>% drop_na(!!parameter),aes(x=get(parameter), y=get(moduleNr), fill=get(parameter)))+
+              print(ggplot(annotation %>% tidyr::drop_na(!!parameter),aes(x=get(parameter), y=get(moduleNr), fill=get(parameter)))+
                 geom_boxplot()+
                 geom_jitter(color="lightgray")+
                 theme_classic()+
@@ -61,15 +64,14 @@ AMARETTO_PhenAssociation <- function(AMARETTOresults, annotation, idpatients, ph
                 labs(x=parameter,y=moduleNr,caption=paste0("p=",round(testresults$p.value,4))))
             }
           }
-         result_df[,colnames_result_df[2]]<-p.adjust(result_df[,colnames_result_df[1]],method = "BH")
+         result_df[,colnames_result_df[2]] <- p.adjust(result_df[,colnames_result_df[1]],method = "BH")
       } else if ((nlevels(annotation[,parameter])>2) || test == "KRUSKALWALLISTEST"){
           print(paste0("A Kruskal-Wallis Rank sum test is performed for ",parameter))
-          colnames_result_df<-rep(paste0(parameter,c("_KrusW_p","_KrusW_padj","_KrusW_stat")))
-          result_df[,colnames_result_df]<-NA
+          colnames_result_df <- rep(paste0(parameter,c("_KrusW_p","_KrusW_padj","_KrusW_stat")))
+          result_df[,colnames_result_df] <- NA
           for(i in 1:AMARETTOresults$NrModules){
             moduleNr <- paste0("Module_",i)
               testresults<-kruskal.test(annotation[,i]~annotation[,parameter])
-              #return results
               result_df[i,colnames_result_df[1]]<-testresults$p.value
               result_df[i,colnames_result_df[3]]<-testresults$statistic
               if(printplots==TRUE){
@@ -81,7 +83,7 @@ AMARETTO_PhenAssociation <- function(AMARETTOresults, annotation, idpatients, ph
                         labs(x=parameter,y=moduleNr,caption=paste0("p=",round(testresults$p.value,4))))
               }
             }
-          result_df[,colnames_result_df[2]]<-p.adjust(result_df[,colnames_result_df[1]],method = "BH")
+          result_df[,colnames_result_df[2]] <- p.adjust(result_df[,colnames_result_df[1]],method = "BH")
       } else if (nlevels(annotation[,parameter])<2){
           stop(paste0(parameter, " has only one or no levels"))
         }
