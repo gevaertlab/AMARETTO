@@ -16,19 +16,19 @@ install.packages("BiocManager")
 BiocManager::install("gevaertlab/AMARETTO")
 library(AMARETTO)
 
-resdir <- file.path(getwd(),"Results/");if(!file.exists(resdir))	dir.create(resdir) #Absolute path to data results directory
+resdir <- file.path("AMARETTO_Results");if(!file.exists(resdir))	dir.create(resdir) #Absolute path to data results directory
 setwd(resdir)
 #-----------------------------------------------------------------------------------------
 # 2. Dowloading TCGA input data for analysis
 #-----------------------------------------------------------------------------------------
 TargetDirectory <- file.path(getwd(),"Downloads/");if(!file.exists(TargetDirectory))	dir.create(TargetDirectory) #Absolute path to data download directory
-CancerSite <- "CHOL"
+CancerSite <- "LIHC"
 DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory = TargetDirectory)
 
 #-----------------------------------------------------------------------------------------
 # 3. Preprocessing the downloaded TCGA data
 #-----------------------------------------------------------------------------------------
-#ProcessedData <- AMARETTO_Preprocess(DataSetDirectories)
+#ProcessedData <- AMARETTO_Preprocess(DataSetDirectories,BatchData)
 
 #load(inst/extdata//MethylStates.rda) #MethylMix preprocessed data for CancerSite
 #ProcessedData[[3]] <- MethylStates[CancerSite] #MethylMix preprocessed data for CancerSite

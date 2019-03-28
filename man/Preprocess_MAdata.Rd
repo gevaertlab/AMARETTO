@@ -4,7 +4,8 @@
 \alias{Preprocess_MAdata}
 \title{Preprocess_MAdata}
 \usage{
-Preprocess_MAdata(CancerSite, MAEO_ge, BatchData)
+Preprocess_MAdata(CancerSite = CancerSite, MAEO_ge = MAEO_ge,
+  BatchData = BatchData)
 }
 \value{
 result

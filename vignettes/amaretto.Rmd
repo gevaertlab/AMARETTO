@@ -4,17 +4,17 @@ author:
   - name: Jayendra Shinde
     affiliation: Stanford Center for Biomedical Informatics Research (BMIR), Department of Medicine and Biomedical Data Science, 1265 Welch Rd, Stanford, CA, USA
   - name: Celine Everaert
-    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Boston & Cambridge, MA, USA
+    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Boston and Cambridge, MA, USA
   - name: Shaimaa Bakr
     affiliation: Stanford Center for Biomedical Informatics Research (BMIR), Department of Medicine and Biomedical Data Science, 1265 Welch Rd, Stanford, CA, USA
   - name: Mohsen Nabian
-    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Boston & Cambridge, MA, USA
+    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Boston and Cambridge, MA, USA
   - name: Jishu Xu
-    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Boston & Cambridge, MA, USA
+    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Boston and Cambridge, MA, USA
   - name: Vincent Carey
-    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Boston & Cambridge, MA, USA
+    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Boston and Cambridge, MA, USA
   - name: Nathalie Pochet
-    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Boston & Cambridge, MA, USA
+    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Boston and Cambridge, MA, USA
     email: npochet@broadinstitute.org
     footnote: Corresponding Author
   - name: Olivier Gevaert

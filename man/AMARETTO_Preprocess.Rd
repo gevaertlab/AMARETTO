@@ -20,10 +20,9 @@ Wrapper code that analyzes process TCGA GISTIC (CNV) and gene expression (rna-se
 }
 \examples{
 \dontrun{
-data('BatchData')
-TargetDirectory <-  tempdir()  # path to data download directory
+TargetDirectory <-  "Downloads"  # path to data download directory
 CancerSite <- 'CHOL'
 DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory)
-ProcessedData <- AMARETTO_Preprocess(DataSetDirectories)
+ProcessedData <- AMARETTO_Preprocess(DataSetDirectories,BatchData)
 }
 }
