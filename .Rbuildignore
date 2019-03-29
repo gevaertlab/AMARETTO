@@ -1,4 +1,5 @@
 ^AMARETTO_EXAMPLE$
+^inst/extdata/MethylStates\.rda$
 ^data/MethylStates_TCGA\.rda$
 ^RUNNING_AMARETTO_EXAMPLE$
 ^TCGA_MethylStates$
