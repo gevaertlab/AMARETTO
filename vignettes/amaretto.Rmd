@@ -90,7 +90,8 @@ to save the data locally in the TargetDirectory, e.g. the /Downloads/ folder on 
 library(AMARETTO)
 TargetDirectory <- tempfile()# data download directory
 CancerSite <- "LIHC"
-DataSetDirectories <- AMARETTO_Download(CancerSite, TargetDirectory)
+DataSetDirectories <- AMARETTO_Download(CancerSite = CancerSite,
+                                        TargetDirectory = TargetDirectory)
 
 #-------------------------------------------------------------------------------
 ```
@@ -99,16 +100,7 @@ DataSetDirectories <- AMARETTO_Download(CancerSite, TargetDirectory)
 We recommend to use one TargetDirectory for all cancer sites, as this will save all data in one hierarchy is convenient
 when revisting results later on. The directory structure that is created will also include the data version history, so it is
 easy to report what version of the data is used. AMARETTO_Download() downloads the data, extracts archives and provides
-the paths to the downloaded folder for preprocessing. AMARETTO_Download() can also be run without actually downloading
-the data as follows:
-
-```{r AMARETTO_Download2, message= FALSE,results='hide',eval=FALSE}
-#-------------------------------------------------------------------------------
-
-DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory, FALSE)
-
-#-------------------------------------------------------------------------------
-```
+the paths to the downloaded folder for preprocessing. 
 
 This is convenient when revisiting a data set because you want to redo-downstream analysis, but not the actual downloading. Running this way, will only set the data paths. The next step is preprocessing.
 
@@ -126,7 +118,8 @@ The data preprocessing step will take care of preprocessing the gene expression 
 ```{r AMARETTO_Preprocess, message= FALSE,results='hide',eval=FALSE}
 #-------------------------------------------------------------------------------
 
-ProcessedData <- AMARETTO_Preprocess(DataSetDirectories)
+ProcessedData <- AMARETTO_Preprocess(DataSetDirectories = DataSetDirectories,
+                                    BatchData = BatchData)
 
 #-------------------------------------------------------------------------------
 ```    
@@ -148,7 +141,8 @@ In the case that you run AMARETTO with your own data, three data matrices are ne
 ```{r AMARETTO_Initialize, message= FALSE,results='hide'}
 #-------------------------------------------------------------------------------
 
-AMARETTOinit <- AMARETTO_Initialize(ProcessedDataLIHC, NrModules = 2, VarPercentage = 50)
+AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
+                                    NrModules = 2, VarPercentage = 50)
 
 #-------------------------------------------------------------------------------
 ```    
@@ -159,7 +153,7 @@ Now we can run AMARETTO as follows:
 ```{r AMARETTO_Run, message= FALSE,warning=FALSE,results='hide'}
 #-------------------------------------------------------------------------------
 
-AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
+AMARETTOresults <- AMARETTO_Run(AMARETTOinit = AMARETTOinit)
 
 #-------------------------------------------------------------------------------
 ```    
@@ -186,8 +180,10 @@ Finally, modules can be visualized using the AMARETTO VisualizeModule function:
 #-------------------------------------------------------------------------------
 ModuleNr <- 1 #define the module number to visualize
 
-AMARETTO_VisualizeModule(AMARETTOinit = AMARETTOinit, AMARETTOresults = AMARETTOresults,
-                         ProcessedData = ProcessedDataLIHC, ModuleNr = ModuleNr)
+AMARETTO_VisualizeModule(AMARETTOinit = AMARETTOinit, 
+                         AMARETTOresults = AMARETTOresults,
+                         ProcessedData = ProcessedDataLIHC, 
+                         ModuleNr = ModuleNr)
 
 #-------------------------------------------------------------------------------
 
@@ -201,15 +197,15 @@ Additionaly, to a standard version of the heatmap, one can add sample annotation
 
 To retrieve heatmaps for all of the modules and additional tables with gene set enrichment data one can run a HTML report. 
 
-
-
 ```{r AMARETTO_HTMLreport, message= FALSE,results='hide', eval=FALSE,eval=FALSE}
 #-------------------------------------------------------------------------------
 
 gmt_file<-system.file("templates/H.C2CP.genesets.gmt",package="AMARETTO")
-AMARETTO_HTMLreport(AMARETTOinit,AMARETTOresults,
-                    ProcessedDataLIHC,
-                    hyper_geo_test_bool = TRUE,hyper_geo_reference = gmt_file, 
+AMARETTO_HTMLreport(AMARETTOinit = AMARETTOinit,,
+                    AMARETTOresults = AMARETTOresults,
+                    ProcessedData = ProcessedDataLIHC,
+                    hyper_geo_test_bool = TRUE,
+                    hyper_geo_reference = gmt_file, 
                     MSIGDB=TRUE)
 
 #-------------------------------------------------------------------------------
