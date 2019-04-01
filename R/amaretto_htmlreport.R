@@ -168,7 +168,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,CNV_matrix=NULL,MET
   }
   if (!is.null(phenotype_association_table)){
     print(phenotype_association_table$ModuleNr)
-    phenotype_association_datatable<-datatable(phenotype_association_table%>% mutate(ModuleNr=paste0('<a href="./modules/module',gsub("Module ","",GBM_phenotype_tests_all$ModuleNr),'.html">',ModuleNr,'</a>')),class='display',extensions = 'Buttons',rownames = FALSE,
+    phenotype_association_datatable<-datatable(phenotype_association_table%>% mutate(ModuleNr=paste0('<a href="./modules/module',gsub("Module ","",ModuleNr),'.html">',ModuleNr,'</a>')),class='display',extensions = 'Buttons',rownames = FALSE,
                                                options = list(pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf'),colnames=c("ModuleNr","Phenotypes","Statistical Test","p-value","FDR q-value","Descriptive Statistics")),escape = FALSE)%>%formatSignif(c('p.value','q.value'),2)
   }
   else{
