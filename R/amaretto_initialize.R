@@ -66,20 +66,18 @@ CreateRegulatorData <- function(MA_matrix=MA_matrix,CNV_matrix=NULL,MET_matrix=N
     }
     RegulatorData=t(scale(t(RegulatorData)))
     MET_aberrations <- matrix(0,ncol=3,nrow=length(MET_drivers))
-    colnames(MET_aberrations) <- c("Hypo-methylated","No_change","Hyper-methylated")
     rownames(MET_aberrations) <- MET_drivers
     if  (length(MET_drivers)>0){
-      MET_aberrations[,1] <- rowSums(MET_matrix[MET_drivers,]>0)/ncol(MET_matrix)
-      MET_aberrations[,2] <- rowSums(MET_matrix[MET_drivers,]<0)/ncol(MET_matrix)
-      MET_aberrations[,3] <- rowSums(MET_matrix[MET_drivers,]==0)/ncol(MET_matrix)
+      MET_aberrations[,"Hyper-methylated"] <- rowSums(MET_matrix[MET_drivers,]>0)/ncol(MET_matrix)
+      MET_aberrations[,"Hypo-methylated"] <- rowSums(MET_matrix[MET_drivers,]<0)/ncol(MET_matrix)
+      MET_aberrations[,"No_change"] <- rowSums(MET_matrix[MET_drivers,]==0)/ncol(MET_matrix)
     }
     CNV_alterations <- matrix(0,ncol=3,nrow=nrow(CNV_matrix))
-    colnames(CNV_alterations) <- c("Amplification","No_change","Deletion")
     rownames(CNV_alterations) <- rownames(CNV_matrix)
     if (nrow(CNV_alterations)>0){
-      CNV_alterations[,1] <- rowSums(CNV_matrix>0)/ncol(CNV_matrix)
-      CNV_alterations[,2] <- rowSums(CNV_matrix<0)/ncol(CNV_matrix)
-      CNV_alterations[,3] <- rowSums(CNV_matrix==0)/ncol(CNV_matrix)
+      CNV_alterations[,"Amplification"] <- rowSums(CNV_matrix>0)/ncol(CNV_matrix)
+      CNV_alterations[,"Deletion"] <- rowSums(CNV_matrix<0)/ncol(CNV_matrix)
+      CNV_alterations[,"No_change"] <- rowSums(CNV_matrix==0)/ncol(CNV_matrix)
     }
     driverList_alterations <- matrix(1,ncol=1,nrow=length(DriversList))
     rownames(driverList_alterations) <- DriversList
