@@ -3,23 +3,17 @@
 #' Determine potential regulator genes.
 #' @return result
 #' @keywords internal
-CreateRegulatorData <- function(MA_matrix = MA_matrix, 
-    CNV_matrix = NULL, MET_matrix = NULL, Driver_list = NULL, 
-    PvalueThreshold = 0.001, RsquareThreshold = 0.1, 
-    method = "union") {
+CreateRegulatorData <- function(MA_matrix = MA_matrix, CNV_matrix = NULL, MET_matrix = NULL, Driver_list = NULL, PvalueThreshold = 0.001, RsquareThreshold = 0.1, method = "union") {
     if (is.null(Driver_list)) 
         DriversList <- NULL
     if (is.null(CNV_matrix)) 
         CNV_matrix <- matrix(0, nrow = 0, ncol = 0)
     if (nrow(CNV_matrix) > 1) {
         GeneVariances = rowVars(CNV_matrix)
-        CNV_matrix = CNV_matrix[GeneVariances >= 1e-04, 
-            ]
+        CNV_matrix = CNV_matrix[GeneVariances >= 1e-04,]
     }
     if (nrow(CNV_matrix) > 0) {
-        CNV_matrix = FindTranscriptionallyPredictive_CNV(MA_matrix, 
-            CNV_matrix, PvalueThreshold = PvalueThreshold, 
-            RsquareThreshold = RsquareThreshold)
+        CNV_matrix = FindTranscriptionallyPredictive_CNV(MA_matrix, CNV_matrix, PvalueThreshold = PvalueThreshold, RsquareThreshold = RsquareThreshold)
     }
     cat("\tFound", length(rownames(CNV_matrix)), "CNV driver genes.\n")
     if (is.null(MET_matrix)) 
@@ -28,11 +22,9 @@ CreateRegulatorData <- function(MA_matrix = MA_matrix,
         METcounts = apply(MET_matrix, 1, function(x) length(unique(x)))
         MET_matrix = MET_matrix[METcounts == 2, ]
         GeneVariances = rowVars(MET_matrix)
-        MET_matrix = MET_matrix[GeneVariances >= 1e-04, 
-            ]
+        MET_matrix = MET_matrix[GeneVariances >= 1e-04,]
     }
-    MET_drivers <- intersect(rownames(MET_matrix), 
-        rownames(MA_matrix))
+    MET_drivers <- intersect(rownames(MET_matrix),rownames(MA_matrix))
     cat("\tFound", length(MET_drivers), "MethylMix driver genes.\n")
     if (!is.null(Driver_list)) {
         DriversList <- Driver_list
@@ -40,10 +32,8 @@ CreateRegulatorData <- function(MA_matrix = MA_matrix,
         cat("\tFound", length(DriversList), "driver genes from the input list.\n")
     }
     if (is.null(Driver_list)) 
-        Drivers <- unique(c(rownames(CNV_matrix), MET_drivers, 
-            DriversList))
-    dataset_drivers <- unique(c(rownames(CNV_matrix), 
-        MET_drivers))
+        Drivers <- unique(c(rownames(CNV_matrix), MET_drivers,DriversList))
+    dataset_drivers <- unique(c(rownames(CNV_matrix),MET_drivers))
     if (!is.null(Driver_list) & method == "union") 
         Drivers <- union(dataset_drivers, DriversList)
     if (!is.null(Driver_list) & method == "intersect") 
@@ -57,58 +47,39 @@ CreateRegulatorData <- function(MA_matrix = MA_matrix,
             RegulatorData_temp <- matrix(0, 1, ncol(MA_matrix))
             colnames(RegulatorData_temp) <- colnames(MA_matrix)
             rownames(RegulatorData_temp) <- Drivers
-            RegulatorData_temp[1, ] <- MA_matrix[Drivers, 
-                ]
+            RegulatorData_temp[1, ] <- MA_matrix[Drivers,]
             RegulatorData <- RegulatorData_temp
         } else {
             RegulatorData = MA_matrix[Drivers, ]
         }
         RegulatorData = t(scale(t(RegulatorData)))
         MET_aberrations <- matrix(0, ncol = 3, nrow = length(MET_drivers))
-        colnames(MET_aberrations) <- c("Hypo-methylated", 
-            "No_change", "Hyper-methylated")
         rownames(MET_aberrations) <- MET_drivers
         if (length(MET_drivers) > 0) {
-            MET_aberrations[, 1] <- rowSums(MET_matrix[MET_drivers, 
-                ] > 0)/ncol(MET_matrix)
-            MET_aberrations[, 2] <- rowSums(MET_matrix[MET_drivers, 
-                ] < 0)/ncol(MET_matrix)
-            MET_aberrations[, 3] <- rowSums(MET_matrix[MET_drivers, 
-                ] == 0)/ncol(MET_matrix)
+            MET_aberrations[, "Hyper-methylated"] <- rowSums(MET_matrix[MET_drivers,] > 0)/ncol(MET_matrix)
+            MET_aberrations[, "Hypo-methylated"] <- rowSums(MET_matrix[MET_drivers,] < 0)/ncol(MET_matrix)
+            MET_aberrations[, "No_change"] <- rowSums(MET_matrix[MET_drivers,] == 0)/ncol(MET_matrix)
         }
         CNV_alterations <- matrix(0, ncol = 3, nrow = nrow(CNV_matrix))
-        colnames(CNV_alterations) <- c("Amplification", 
-            "No_change", "Deletion")
         rownames(CNV_alterations) <- rownames(CNV_matrix)
         if (nrow(CNV_alterations) > 0) {
-            CNV_alterations[, 1] <- rowSums(CNV_matrix > 
-                0)/ncol(CNV_matrix)
-            CNV_alterations[, 2] <- rowSums(CNV_matrix < 
-                0)/ncol(CNV_matrix)
-            CNV_alterations[, 3] <- rowSums(CNV_matrix == 
-                0)/ncol(CNV_matrix)
+            CNV_alterations[, "Amplification"] <- rowSums(CNV_matrix > 0)/ncol(CNV_matrix)
+            CNV_alterations[, "Deletion"] <- rowSums(CNV_matrix < 0)/ncol(CNV_matrix)
+            CNV_alterations[, "No_change"] <- rowSums(CNV_matrix == 0)/ncol(CNV_matrix)
         }
-        driverList_alterations <- matrix(1, ncol = 1, 
-            nrow = length(DriversList))
+        driverList_alterations <- matrix(1, ncol = 1, nrow = length(DriversList))
         rownames(driverList_alterations) <- DriversList
-        Alterations <- matrix(0, nrow = length(Drivers), 
-            ncol = 3)
+        Alterations <- matrix(0, nrow = length(Drivers), ncol = 3)
         colnames(Alterations) <- c("CNV", "MET", "Driver List")
         rownames(Alterations) <- Drivers
-        Alterations[which(Drivers %in% rownames(CNV_matrix)), 
-            1] <- rep(1, length(which(Drivers %in% 
-            rownames(CNV_matrix))))
-        Alterations[which(Drivers %in% rownames(MET_matrix)), 
-            2] <- rep(1, length(which(Drivers %in% 
-            rownames(MET_matrix))))
-        Alterations[which(Drivers %in% rownames(driverList_alterations)), 
-            3] <- rep(1, length(which(Drivers %in% 
-            rownames(driverList_alterations))))
+        Alterations[which(Drivers %in% rownames(CNV_matrix)), 1] <- rep(1, length(which(Drivers %in% rownames(CNV_matrix))))
+        Alterations[which(Drivers %in% rownames(MET_matrix)), 2] <- rep(1, length(which(Drivers %in% rownames(MET_matrix))))
+        Alterations[which(Drivers %in% rownames(driverList_alterations)), 3] <- rep(1, length(which(Drivers %in% rownames(driverList_alterations))))
         Alterations <- list(MET = MET_aberrations, 
-            CNV = CNV_alterations, Driver_list = driverList_alterations, 
-            Summary = Alterations)
-        return(list(RegulatorData = RegulatorData, 
-            Alterations = Alterations))
+                            CNV = CNV_alterations,
+                            Driver_list = driverList_alterations, 
+                            Summary = Alterations)
+        return(list(RegulatorData = RegulatorData, Alterations = Alterations))
     }
 }
 
