@@ -55,6 +55,7 @@ CreateRegulatorData <- function(MA_matrix = MA_matrix, CNV_matrix = NULL, MET_ma
         RegulatorData = t(scale(t(RegulatorData)))
         MET_aberrations <- matrix(0, ncol = 3, nrow = length(MET_drivers))
         rownames(MET_aberrations) <- MET_drivers
+        colnames(MET_aberrations)<-c("Hyper-methylated","Hypo-methylated","No_change")
         if (length(MET_drivers) > 0) {
             MET_aberrations[, "Hyper-methylated"] <- rowSums(MET_matrix[MET_drivers,] > 0)/ncol(MET_matrix)
             MET_aberrations[, "Hypo-methylated"] <- rowSums(MET_matrix[MET_drivers,] < 0)/ncol(MET_matrix)
@@ -62,6 +63,7 @@ CreateRegulatorData <- function(MA_matrix = MA_matrix, CNV_matrix = NULL, MET_ma
         }
         CNV_alterations <- matrix(0, ncol = 3, nrow = nrow(CNV_matrix))
         rownames(CNV_alterations) <- rownames(CNV_matrix)
+        colnames(CNV_alterations)<-c("Amplification","Deletion","No_change")
         if (nrow(CNV_alterations) > 0) {
             CNV_alterations[, "Amplification"] <- rowSums(CNV_matrix > 0)/ncol(CNV_matrix)
             CNV_alterations[, "Deletion"] <- rowSums(CNV_matrix < 0)/ncol(CNV_matrix)
