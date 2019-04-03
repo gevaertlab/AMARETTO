@@ -73,6 +73,9 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
     
     full_path <- normalizePath(report_address)
     #ModuleOverviewTable <- foreach::foreach(ModuleNr = 1:NrModules, .packages = c("AMARETTO", "tidyverse", "DT", "rmarkdown")) %dopar% {
+    ModuleOverviewTable<-NULL
+    for (ModuleNr in 1:NrModules){
+        print(ModuleNr)
         heatmap_module <- invisible(AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, CNV_matrix, MET_matrix, SAMPLE_annotation = SAMPLE_annotation, ID = ID, ModuleNr = ModuleNr))
         ModuleRegulators <- AMARETTOresults$RegulatoryPrograms[ModuleNr, which(AMARETTOresults$RegulatoryPrograms[ModuleNr,] != 0)]
         dt_regulators <- DT::datatable(tibble::rownames_to_column(as.data.frame(ModuleRegulators), "RegulatorIDs") %>% dplyr::rename(Weights = "ModuleRegulators") %>% dplyr::mutate(RegulatorIDs = paste0("<a href=\"https://www.genecards.org/cgi-bin/carddisp.pl?gene=", RegulatorIDs, "\">", RegulatorIDs, "</a>")), class = "display", extensions = "Buttons", 
@@ -122,7 +125,8 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
             ModuleNr = ModuleNr, heatmap_module = heatmap_module, 
             dt_regulators = dt_regulators, dt_genesets = dt_genesets), quiet = TRUE)
         file.remove(modulemd)
-        return(c(ModuleNr, length(which(AMARETTOresults$ModuleMembership == ModuleNr)), length(ModuleRegulators), ngenesets))
+        #return(c(ModuleNr, length(which(AMARETTOresults$ModuleMembership == ModuleNr)), length(ModuleRegulators), ngenesets))
+        rbind(ModuleOverviewTable,c(ModuleNr, length(which(AMARETTOresults$ModuleMembership == ModuleNr)), length(ModuleRegulators), ngenesets))
     }
     
 #    parallel::stopCluster(cluster)
