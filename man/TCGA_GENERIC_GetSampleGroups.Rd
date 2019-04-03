@@ -9,9 +9,6 @@ TCGA_GENERIC_GetSampleGroups(SampleNames)
 \value{
 result
 }
-\value{
-result
-}
 \description{
 TCGA_GENERIC_GetSampleGroups
 }

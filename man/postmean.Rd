@@ -9,9 +9,6 @@ postmean(g.hat, g.bar, n, d.star, t2)
 \value{
 result
 }
-\value{
-result
-}
 \description{
 postmean
 }

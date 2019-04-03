@@ -10,9 +10,6 @@ Preprocess_MAdata(CancerSite = CancerSite, MAEO_ge = MAEO_ge,
 \value{
 result
 }
-\value{
-result
-}
 \description{
 Preprocess_MAdata
 }

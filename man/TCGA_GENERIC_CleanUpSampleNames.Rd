@@ -9,9 +9,6 @@ TCGA_GENERIC_CleanUpSampleNames(GEN_Data = GEN_Data, IDlength = 12)
 \value{
 result
 }
-\value{
-result
-}
 \description{
 TCGA_GENERIC_CleanUpSampleNames
 }

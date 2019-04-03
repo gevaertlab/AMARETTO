@@ -9,9 +9,6 @@
 \value{
 result
 }
-\value{
-result
-}
 \description{
 filters data based on presence/absence call
 }

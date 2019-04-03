@@ -9,9 +9,6 @@ TCGA_GENERIC_CheckBatchEffect(GEN_Data, BatchData)
 \value{
 result
 }
-\value{
-result
-}
 \description{
 TCGA_GENERIC_CheckBatchEffect
 }

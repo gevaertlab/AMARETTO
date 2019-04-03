@@ -54,7 +54,6 @@ AMARETTO_Initialize <- function(ProcessedData = ProcessedData,
             stop("AMARETTO cannot be run with less than two samples.\n")
         }
     }
-    
     if (!is.null(MA_matrix) & !is.null(CNV_matrix) & 
         !is.null(MET_matrix) & !is.null(Driver_list)) {
         if (ncol(MA_matrix) < 2 || ncol(CNV_matrix) == 
@@ -91,29 +90,6 @@ AMARETTO_Initialize <- function(ProcessedData = ProcessedData,
             ModuleMembership = Clusters, Parameters = Parameters, 
             NrCores = NrCores))
     }
-  }
-  MA_matrix_Var=geneFiltering('MAD',MA_matrix,VarPercentage)
-  drop_me <- as.numeric(which(apply(t(MA_matrix_Var), 2, var) == 0))
-  if(length(drop_me) >0)    MA_matrix_Var <- MA_matrix_Var[ -drop_me,]
-  if(length(drop_me) ==0)    MA_matrix_Var <- MA_matrix_Var
-  print(paste0("dropping ",length(drop_me), " gene(s) with std.deviation= 0"))
-  MA_matrix_Var=t(scale(t(MA_matrix_Var)))
-  if (NrModules>=nrow(MA_matrix_Var)){
-    stop(paste0("The number of modules is too large compared to the number of genes. Choose a number of modules smaller than ",nrow(MA_matrix_Var),".\n"))
-  }
-  KmeansResults=kmeans(MA_matrix_Var,NrModules,iter.max=100)
-  Clusters=as.numeric(KmeansResults$cluster)
-  names(Clusters) <- rownames(MA_matrix_Var)
-  AutoRegulation=2; Lambda2=0.0001; alpha=1-1e-06
-  Parameters <- list(AutoRegulation=AutoRegulation,OneRunStop=OneRunStop,Lambda2=Lambda2,Mode='larsen',pmax=pmax,alpha=alpha)
-  RegulatorInfo=CreateRegulatorData(MA_matrix=MA_matrix_Var,CNV_matrix=CNV_matrix,MET_matrix=MET_matrix,Driver_list=Driver_list,PvalueThreshold=PvalueThreshold,RsquareThreshold=RsquareThreshold,method=method)
-  if (length(RegulatorInfo)>1){
-    RegulatorData=RegulatorInfo$RegulatorData
-    Alterations = RegulatorInfo$Alterations
-
-
-    return(list(MA_matrix_Var=MA_matrix_Var,RegulatorData=RegulatorData,RegulatorAlterations=Alterations,ModuleMembership=Clusters,Parameters=Parameters,NrCores=NrCores))
-  }
 }
 
 

@@ -9,9 +9,6 @@ TCGA_Load_MolecularData(MAEO_ge)
 \value{
 result
 }
-\value{
-result
-}
 \description{
 TCGA_Load_MolecularData
 }

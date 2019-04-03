@@ -10,9 +10,6 @@ TCGA_BatchCorrection_MolecularData(GEN_Data = GEN_Data,
 \value{
 result
 }
-\value{
-result
-}
 \description{
 TCGA_BatchCorrection_MolecularData
 }

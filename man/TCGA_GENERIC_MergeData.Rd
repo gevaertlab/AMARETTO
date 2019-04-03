@@ -9,9 +9,6 @@ TCGA_GENERIC_MergeData(NewIDListUnique, DataMatrix, MergeMethod)
 \value{
 result
 }
-\value{
-result
-}
 \description{
 TCGA_GENERIC_MergeData
 }

@@ -367,7 +367,7 @@ GmtFromModules <- function(AMARETTOinit,AMARETTOresults,driverGSEA){
         function(x) paste(x, paste(ModuleMembers_list[[x]], 
             collapse = "\t"), sep = "\t")), gmt_file, 
         quote = FALSE, row.names = TRUE, col.names = FALSE, 
-        sep = "\t")}
+        sep = "\t")
 }
 
 #' GeneSetDescription

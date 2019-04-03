@@ -9,9 +9,6 @@ design.mat(saminfo)
 \value{
 result
 }
-\value{
-result
-}
 \description{
 design.mat
 }

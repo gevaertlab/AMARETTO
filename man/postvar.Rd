@@ -9,9 +9,6 @@ postvar(sum2, n, a, b)
 \value{
 result
 }
-\value{
-result
-}
 \description{
 postvar
 }

@@ -9,9 +9,6 @@ int.eprior(sdat, g.hat, d.hat)
 \value{
 result
 }
-\value{
-result
-}
 \description{
 Monte Carlo integration function to find the nonparametric adjustments
 }

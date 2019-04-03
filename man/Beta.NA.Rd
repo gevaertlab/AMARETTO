@@ -9,9 +9,6 @@ Beta.NA(y, X)
 \value{
 result
 }
-\value{
-result
-}
 \description{
 Beta.NA
 }

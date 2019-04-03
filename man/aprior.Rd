@@ -9,9 +9,6 @@ aprior(gamma.hat)
 \value{
 result
 }
-\value{
-result
-}
 \description{
 Following four find empirical hyper-prior values
 }

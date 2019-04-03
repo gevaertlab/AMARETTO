@@ -10,9 +10,6 @@ TCGA_GENERIC_BatchCorrection(GEN_Data = GEN_Data,
 \value{
 result
 }
-\value{
-result
-}
 \description{
 TCGA_GENERIC_BatchCorrection
 }

@@ -11,9 +11,6 @@ ComBat_NoFiles(dat, saminfo, type = "txt", write = FALSE,
 \value{
 result
 }
-\value{
-result
-}
 \description{
 ComBat_NoFiles
 }

@@ -9,9 +9,6 @@ TCGA_Load_GISTICdata(GisticDirectory)
 \value{
 result
 }
-\value{
-result
-}
 \description{
 TCGA_Load_GISTICdata
 }

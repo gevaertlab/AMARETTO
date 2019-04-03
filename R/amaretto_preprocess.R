@@ -349,9 +349,13 @@ TCGA_BatchCorrection_MolecularData <- function(GEN_Data =GEN_Data,
                                                  BatchData)
       return(GEN_Data_Corrected)
     } else {
-        cat("The nr of samples becomes to small, no batch correction possible.\n")
-        return(GEN_Data)
+      cat("Only one batch, no batch correction possible.\n")
+      return(GEN_Data)
     }
+  } else {
+    cat("The nr of samples becomes to small, no batch correction possible.\n")
+    return(GEN_Data)
+  }
 }
 
 #' TCGA_GENERIC_BatchCorrection

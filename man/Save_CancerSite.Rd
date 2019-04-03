@@ -10,9 +10,6 @@ Save_CancerSite(CancerSite, TargetDirectory, DataSetDirectories,
 \value{
 result
 }
-\value{
-result
-}
 \description{
 Save_CancerSite
 }

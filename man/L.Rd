@@ -9,9 +9,6 @@ L(x, g.hat, d.hat)
 \value{
 result
 }
-\value{
-result
-}
 \description{
 likelihood function
 }
