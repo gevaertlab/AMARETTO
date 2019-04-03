@@ -126,7 +126,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
             dt_regulators = dt_regulators, dt_genesets = dt_genesets), quiet = TRUE)
         file.remove(modulemd)
         #return(c(ModuleNr, length(which(AMARETTOresults$ModuleMembership == ModuleNr)), length(ModuleRegulators), ngenesets))
-        rbind(ModuleOverviewTable,c(ModuleNr, length(which(AMARETTOresults$ModuleMembership == ModuleNr)), length(ModuleRegulators), ngenesets))
+        ModuleOverviewTable<-rbind(ModuleOverviewTable,c(ModuleNr, length(which(AMARETTOresults$ModuleMembership == ModuleNr)), length(ModuleRegulators), ngenesets))
     }
     
 #    parallel::stopCluster(cluster)
