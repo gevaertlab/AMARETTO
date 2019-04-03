@@ -45,9 +45,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
     `%dopar%` <- foreach::`%dopar%`
     CNV_matrix <- ProcessedData[[2]]
     MET_matrix <- ProcessedData[[3]]
-    Description <- Overlapping_genes <- overlap_perc <- NULL
-    p_value <- value <- variable <- Genes <- Modules <- dt_gensesetsall <- NULL
-    dt_gensesetsall  
+    
     NrModules <- AMARETTOresults$NrModules
     NrCores <- AMARETTOinit$NrCores
     if (!dir.exists(output_address)) {
@@ -76,7 +74,6 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
 #    registerDoParallel(cluster, cores = NrCores)
     
     full_path <- normalizePath(report_address)
-    ModuleNr <- NULL
     ModuleOverviewTable <- foreach::foreach(ModuleNr = 1:NrModules, 
         .packages = c("AMARETTO", "tidyverse", "DT", 
             "rmarkdown")) %dopar% {
@@ -87,7 +84,6 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
         ModuleRegulators <- AMARETTOresults$RegulatoryPrograms[ModuleNr, 
             which(AMARETTOresults$RegulatoryPrograms[ModuleNr, 
                 ] != 0)]
-        RegulatorIDs<-NULL
         dt_regulators <- DT::datatable(tibble::rownames_to_column(as.data.frame(ModuleRegulators), 
             "RegulatorIDs") %>% dplyr::rename(Weights = "ModuleRegulators") %>% 
             dplyr::mutate(RegulatorIDs = paste0("<a href=\"https://www.genecards.org/cgi-bin/carddisp.pl?gene=", 
@@ -102,11 +98,6 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
                 "darkred")))
         
         if (hyper_geo_test_bool) {
-            Testset<-NULL
-            n_Overlapping<-NULL
-            NumberGenes<-NULL
-            padj<-NULL
-            Geneset<-NULL
             output_hgt_filter <- output_hgt %>% dplyr::filter(Testset == 
                 paste0("Module_", as.character(ModuleNr))) %>% 
                 dplyr::arrange(padj)
