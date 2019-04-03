@@ -76,7 +76,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
     ModuleOverviewTable<-NULL
     for (ModuleNr in 1:NrModules){
         print(ModuleNr)
-        heatmap_module <- invisible(AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, CNV_matrix, MET_matrix, SAMPLE_annotation = SAMPLE_annotation, ID = ID, ModuleNr = ModuleNr))
+        heatmap_module <- invisible(AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, ProcessedData, SAMPLE_annotation = SAMPLE_annotation, ID = ID, ModuleNr = ModuleNr))
         ModuleRegulators <- AMARETTOresults$RegulatoryPrograms[ModuleNr, which(AMARETTOresults$RegulatoryPrograms[ModuleNr,] != 0)]
         print(ModuleRegulators)
         print('hi1')
