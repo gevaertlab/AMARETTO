@@ -6,8 +6,8 @@
 \usage{
 postmean(g.hat, g.bar, n, d.star, t2)
 }
-\arguments{
-\item{t2}{}
+\value{
+result
 }
 \value{
 result

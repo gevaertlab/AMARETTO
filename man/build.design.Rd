@@ -6,8 +6,8 @@
 \usage{
 build.design(vec, des = NULL, start = 2)
 }
-\arguments{
-\item{start}{}
+\value{
+result
 }
 \value{
 result

@@ -7,14 +7,8 @@
 FindTranscriptionallyPredictive_CNV(MA_matrix, CNV_matrix,
   PvalueThreshold = 0.001, RsquareThreshold = 0.1)
 }
-\arguments{
-\item{MA_matrix}{Processed gene expression data matrix ($MA_matrix element from Preprocess_CancerSite() list output).}
-
-\item{CNV_matrix}{Processed CNV matrix ($CNV_matrix element from Preprocess_CancerSite() list output).}
-
-\item{PvalueThreshold}{Threshold used to find relevant driver genes with CNV alterations: maximal p-value.}
-
-\item{RsquareThreshold}{Threshold used to find relevant driver genes with CNV alterations: minimal R-square value between CNV and gene expression data.}
+\value{
+result
 }
 \description{
 Function to identify which genes CNV significantly predict expression of that gene.

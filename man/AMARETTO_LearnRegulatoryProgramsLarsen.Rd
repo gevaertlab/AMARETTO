@@ -7,8 +7,8 @@
 AMARETTO_LearnRegulatoryProgramsLarsen(Data, Clusters, RegulatorData,
   RegulatorSign, Lambda, AutoRegulation, alpha, pmax)
 }
-\arguments{
-\item{pmax}{}
+\value{
+result
 }
 \description{
 AMARETTO_LearnRegulatoryProgramsLarsen

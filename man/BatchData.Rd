@@ -4,7 +4,7 @@
 \name{BatchData}
 \alias{BatchData}
 \title{BatchData}
-\format{An object of class \code{data.frame} with 23263 rows and 3 columns.}
+\format{A data frame with 23263 observations and 3 variables:}
 \source{
 \url{AMARETTO}
 }

@@ -6,8 +6,8 @@
 \usage{
 list.batch(saminfo)
 }
-\arguments{
-\item{saminfo}{}
+\value{
+result
 }
 \value{
 result

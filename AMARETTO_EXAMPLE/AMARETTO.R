@@ -12,26 +12,26 @@
 #-----------------------------------------------------------------------------------------
 # 1. Installing AMARETTO and loading the package:
 #-----------------------------------------------------------------------------------------
-#install.packages("devtools")
-library(devtools)
-#devtools::install_github("gevaertlab/AMARETTO",ref="master")
+install.packages("BiocManager")
+BiocManager::install("gevaertlab/AMARETTO")
 library(AMARETTO)
 
-#setwd("AMARETTO")
+resdir <- file.path("AMARETTO_Results");if(!file.exists(resdir))	dir.create(resdir) #Absolute path to data results directory
+setwd(resdir)
 #-----------------------------------------------------------------------------------------
 # 2. Dowloading TCGA input data for analysis
 #-----------------------------------------------------------------------------------------
-TargetDirectory <- file.path(getwd(),"Downloads/") #Absolute path to data download directory
+TargetDirectory <- file.path(getwd(),"Downloads/");if(!file.exists(TargetDirectory))	dir.create(TargetDirectory) #Absolute path to data download directory
 CancerSite <- "LIHC"
-DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory)
+DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory = TargetDirectory)
 
 #-----------------------------------------------------------------------------------------
 # 3. Preprocessing the downloaded TCGA data
 #-----------------------------------------------------------------------------------------
-ProcessedData <- AMARETTO_Preprocess(CancerSite,DataSetDirectories)
+#ProcessedData <- AMARETTO_Preprocess(DataSetDirectories,BatchData)
 
-#data(MethylStates) #MethylMix preprocessed data for CancerSite
-#met <- MethylStates[CancerSite] #MethylMix preprocessed data for CancerSite
+#load(inst/extdata//MethylStates.rda) #MethylMix preprocessed data for CancerSite
+#ProcessedData[[3]] <- MethylStates[CancerSite] #MethylMix preprocessed data for CancerSite
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 # Loading preprocessed TCGA-LAML example dataset:
@@ -41,10 +41,7 @@ ProcessedData <- AMARETTO_Preprocess(CancerSite,DataSetDirectories)
 #-----------------------------------------------------------------------------------------
 # 4. Running AMARETTO
 #-----------------------------------------------------------------------------------------
-AMARETTOinit <- AMARETTO_Initialize(MA_matrix = assay(ProcessedData[[1]]),
-                                    CNV_matrix = assay(ProcessedData[[2]]),
-                                    MET_matrix = assay(ProcessedData[[3]]),
-                                    NrModules = 20, VarPercentage = 50)
+AMARETTOinit <- AMARETTO_Initialize(ProcessedDataLIHC,NrModules = 2, VarPercentage = 60)
 
 
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
@@ -59,11 +56,10 @@ AMARETTOtestReport <- AMARETTO_EvaluateTestSet(AMARETTOresults = AMARETTOresults
 ModuleNr <- 1 #define the module number to visualize
 
 AMARETTO_VisualizeModule(AMARETTOinit = AMARETTOinit,AMARETTOresults = AMARETTOresults,
-                         CNV_matrix = assay(ProcessedData[[2]]),MET_matrix = assay(ProcessedData[[3]]),
-                         ModuleNr = ModuleNr)
+                         ProcessedData = ProcessedDataLIHC,ModuleNr = ModuleNr)
 
 #-----------------------------------------------------------------------------------------
 # 5. Get HTML report for AMARETTO modules
 #-----------------------------------------------------------------------------------------
 
-AMARETTO_HTMLreport(AMARETTOinit,AMARETTOresults,CNV_matrix=assay(ProcessedData[[2]]),MET_matrix = assay(ProcessedData[[3]]),VarPercentage=10,hyper_geo_test_bool=FALSE,output_address='./')
+AMARETTO_HTMLreport(AMARETTOinit,AMARETTOresults,ProcessedDataLIHC,VarPercentage=10,hyper_geo_test_bool=FALSE,output_address=resdir)

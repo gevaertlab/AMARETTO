@@ -4,17 +4,13 @@
 \alias{AMARETTO_Initialize}
 \title{AMARETTO_Initialize (version: reorder and filter MA_Matrix)}
 \usage{
-AMARETTO_Initialize(MA_matrix = MA_matrix, CNV_matrix = NULL,
-  MET_matrix = NULL, Driver_list = NULL, NrModules, VarPercentage,
-  PvalueThreshold = 0.001, RsquareThreshold = 0.1, pmax = 10,
-  NrCores = 1, OneRunStop = 0, method = "union")
+AMARETTO_Initialize(ProcessedData = ProcessedData, Driver_list = NULL,
+  NrModules, VarPercentage, PvalueThreshold = 0.001,
+  RsquareThreshold = 0.1, pmax = 10, NrCores = 1, OneRunStop = 0,
+  method = "union")
 }
 \arguments{
-\item{MA_matrix}{Expression matrix, with genes in rows and samples in columns.}
-
-\item{CNV_matrix}{CNV matrix, with genes in rows and samples in columns.}
-
-\item{MET_matrix}{Methylation matrix, with genes in rows and samples in columns.}
+\item{ProcessedData}{List of Expression, CNV and MethylMix data matrices, with genes in rows and samples in columns.}
 
 \item{Driver_list}{Custom list of driver genes to be considered in analysis}
 
@@ -26,11 +22,16 @@ AMARETTO_Initialize(MA_matrix = MA_matrix, CNV_matrix = NULL,
 
 \item{RsquareThreshold}{Threshold used to find relevant driver genes with CNV alterations: minimal R-square value between CNV and gene expression data.}
 
-\item{pmax}{"pmax" variable for glmnet function from glmnet package; the maximum number of variables aver to be nonzero. Should not be changed by user unless she/he fully understands the AMARETTO algorithm and how its parameters choices affect model output.}
+\item{pmax}{'pmax' variable for glmnet function from glmnet package; the maximum number of variables aver to be nonzero. Should not be changed by user unless she/he fully understands the AMARETTO algorithm and how its parameters choices affect model output.}
 
 \item{NrCores}{A numeric variable indicating the number of computer/server cores to use for paralellelization. Default is 1, i.e. no parallelization. Please check your computer or server's computing capacities before increasing this number.  Parallelization is done via the RParallel package. Mac vs. Windows environments may behave differently when using parallelization.}
 
+\item{OneRunStop}{OneRunStop}
+
 \item{method}{Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.}
+}
+\value{
+result
 }
 \description{
 Code used to initialize the seed clusters for an AMARETTO run.
@@ -38,17 +39,13 @@ Requires processed gene expressiosn (rna-seq or microarray), CNV (usually from a
 Uses the function CreateRegulatorData() and results are fed into the function AMARETTO_Run().
 }
 \examples{
-data("ProcessedDataLIHC")
-data("Driver_Genes")
-AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
-                                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
-                                    NrModules = 20, VarPercentage = 50)
-
-AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
-                                    CNV_matrix = NULL,
-                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
-                                    Driver_list = Driver_Genes[["MSigDB"]],
-                                    NrModules = 20, VarPercentage = 50)
-
+data('ProcessedDataLIHC')
+data('Driver_Genes')
+AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
+                                    NrModules = 2, VarPercentage = 50)
+\dontrun{
+AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
+                                    Driver_list = Driver_Genes[['MSigDB']],
+                                    NrModules = 2, VarPercentage = 50)
+}
 }

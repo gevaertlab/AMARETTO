@@ -16,18 +16,23 @@ AMARETTO_ExportResults(AMARETTOinit, AMARETTOresults, data_address,
 \item{data_address}{Directory to save data folder}
 
 \item{Heatmaps}{Output heatmaps as pdf}
+
+\item{CNV_matrix}{CNV_matrix}
+
+\item{MET_matrix}{MET_matrix}
+}
+\value{
+result
 }
 \description{
 Retrieve a download of all the data linked with the run (including heatmaps)
 }
 \examples{
-data("ProcessedDataLIHC")
-AMARETTOinit <- AMARETTO_Initialize(MA_matrix = ProcessedDataLIHC$MA_matrix,
-                                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-                                    MET_matrix = ProcessedDataLIHC$MET_matrix,
-                                    NrModules = 20, VarPercentage = 50)
+data('ProcessedDataLIHC')
+TargetDirectory <- file.path(getwd(),"Downloads/");dir.create(TargetDirectory)
+AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
+                                    NrModules = 2, VarPercentage = 50)
 
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
-
-AMARETTO_ExportResults(AMARETTOinit,AMARETTOresults,"./")
+AMARETTO_ExportResults(AMARETTOinit,AMARETTOresults,TargetDirectory,Heatmaps = FALSE)
 }

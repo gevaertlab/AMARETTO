@@ -6,8 +6,8 @@
 \usage{
 TCGA_GENERIC_CheckBatchEffect(GEN_Data, BatchData)
 }
-\arguments{
-\item{BatchData}{}
+\value{
+result
 }
 \value{
 result

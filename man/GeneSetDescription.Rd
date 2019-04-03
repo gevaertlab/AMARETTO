@@ -6,10 +6,8 @@
 \usage{
 GeneSetDescription(filename, MSIGDB)
 }
-\arguments{
-\item{filename}{The name of the gmt file.}
-
-\item{MSIGDB}{}
+\value{
+result
 }
 \description{
 GeneSetDescription

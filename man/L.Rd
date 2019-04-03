@@ -6,8 +6,8 @@
 \usage{
 L(x, g.hat, d.hat)
 }
-\arguments{
-\item{d.hat}{}
+\value{
+result
 }
 \value{
 result

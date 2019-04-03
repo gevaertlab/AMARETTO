@@ -6,8 +6,8 @@
 \usage{
 design.mat(saminfo)
 }
-\arguments{
-\item{saminfo}{}
+\value{
+result
 }
 \value{
 result

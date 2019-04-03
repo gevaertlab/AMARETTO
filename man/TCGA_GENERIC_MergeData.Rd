@@ -6,8 +6,8 @@
 \usage{
 TCGA_GENERIC_MergeData(NewIDListUnique, DataMatrix, MergeMethod)
 }
-\arguments{
-\item{MergeMethod}{}
+\value{
+result
 }
 \value{
 result

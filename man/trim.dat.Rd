@@ -4,10 +4,10 @@
 \alias{trim.dat}
 \title{trim.dat}
 \usage{
-\method{trim}{dat}(dat)
+trim.dat(dat)
 }
-\arguments{
-\item{dat}{}
+\value{
+result
 }
 \value{
 result

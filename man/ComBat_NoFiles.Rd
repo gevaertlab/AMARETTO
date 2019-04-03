@@ -8,8 +8,8 @@ ComBat_NoFiles(dat, saminfo, type = "txt", write = FALSE,
   covariates = "all", par.prior = TRUE, filter = FALSE, skip = 0,
   prior.plots = FALSE)
 }
-\arguments{
-\item{prior.plots}{}
+\value{
+result
 }
 \value{
 result

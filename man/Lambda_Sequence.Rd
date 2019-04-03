@@ -6,10 +6,8 @@
 \usage{
 Lambda_Sequence(sx, sy)
 }
-\arguments{
-\item{sx}{}
-
-\item{sy}{}
+\value{
+result
 }
 \description{
 Lambda_Sequence

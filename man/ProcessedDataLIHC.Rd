@@ -4,7 +4,7 @@
 \name{ProcessedDataLIHC}
 \alias{ProcessedDataLIHC}
 \title{ProcessedDataLIHC}
-\format{An object of class \code{list} of length 3.}
+\format{List}
 \source{
 \url{AMARETTO}
 }

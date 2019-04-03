@@ -7,9 +7,20 @@
 AMARETTO_CreateModuleData(AMARETTOinit, AMARETTOresults)
 }
 \arguments{
-\item{AMARETTOresults}{}
+\item{AMARETTOinit}{List output from AMARETTO_Initialize().}
+
+\item{AMARETTOresults}{List output from AMARETTO_Run()}
+}
+\value{
+result
 }
 \description{
 AMARETTO_CreateModuleData
 }
-\keyword{internal}
+\examples{
+data('ProcessedDataLIHC')
+AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
+                                    NrModules = 2, VarPercentage = 50)
+AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
+AMARETTO_MD <- AMARETTO_CreateModuleData(AMARETTOinit, AMARETTOresults)
+}

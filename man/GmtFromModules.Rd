@@ -6,12 +6,8 @@
 \usage{
 GmtFromModules(AMARETTOinit, AMARETTOresults, driverGSEA)
 }
-\arguments{
-\item{AMARETTOinit}{List output from AMARETTO_Initialize().}
-
-\item{AMARETTOresults}{List output from AMARETTO_Run().}
-
-\item{driverGSEA}{if TRUE , module driver genes will also be added to module target genes for GSEA.}
+\value{
+result
 }
 \description{
 GmtFromModules

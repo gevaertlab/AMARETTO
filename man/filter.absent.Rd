@@ -6,8 +6,8 @@
 \usage{
 \method{filter}{absent}(x, pct)
 }
-\arguments{
-\item{pct}{}
+\value{
+result
 }
 \value{
 result

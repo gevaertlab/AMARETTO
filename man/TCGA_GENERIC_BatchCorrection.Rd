@@ -4,10 +4,11 @@
 \alias{TCGA_GENERIC_BatchCorrection}
 \title{TCGA_GENERIC_BatchCorrection}
 \usage{
-TCGA_GENERIC_BatchCorrection(GEN_Data, BatchData)
+TCGA_GENERIC_BatchCorrection(GEN_Data = GEN_Data,
+  BatchData = BatchData)
 }
-\arguments{
-\item{BatchData}{}
+\value{
+result
 }
 \value{
 result

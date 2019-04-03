@@ -6,8 +6,8 @@
 \usage{
 TCGA_Load_MolecularData(MAEO_ge)
 }
-\arguments{
-\item{MAEO_ge}{}
+\value{
+result
 }
 \value{
 result
