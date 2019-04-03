@@ -78,10 +78,14 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
         print(ModuleNr)
         heatmap_module <- invisible(AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, CNV_matrix, MET_matrix, SAMPLE_annotation = SAMPLE_annotation, ID = ID, ModuleNr = ModuleNr))
         ModuleRegulators <- AMARETTOresults$RegulatoryPrograms[ModuleNr, which(AMARETTOresults$RegulatoryPrograms[ModuleNr,] != 0)]
+        print(ModuleRegulators)
         print('hi1')
-        dt_regulators <- DT::datatable(tibble::rownames_to_column(as.data.frame(ModuleRegulators), "RegulatorIDs") %>% dplyr::rename(Weights = "ModuleRegulators") %>% dplyr::mutate(RegulatorIDs = paste0("<a href=\"https://www.genecards.org/cgi-bin/carddisp.pl?gene=", RegulatorIDs, "\">", RegulatorIDs, "</a>")), class = "display", extensions = "Buttons", 
-            rownames = FALSE, options = list(columnDefs = list(list(width = "200px", targets = "_all")), pageLength = 10, dom = "Bfrtip", buttons = c("csv", "excel", "pdf")), escape = "Weights") %>% 
-            DT::formatRound("Weights", 3) %>% DT::formatStyle("Weights", color = DT::styleInterval(0, c("darkblue", "darkred")))
+        dt_regulators <- DT::datatable(tibble::rownames_to_column(as.data.frame(ModuleRegulators), "RegulatorIDs") %>% dplyr::rename(Weights = "ModuleRegulators") %>% dplyr::mutate(RegulatorIDs = paste0("<a href=\"https://www.genecards.org/cgi-bin/carddisp.pl?gene=", RegulatorIDs, "\">", RegulatorIDs, "</a>")),
+                                       class = "display",
+                                       extensions = "Buttons", 
+                                       rownames = FALSE,
+                                       options = list(columnDefs = list(list(width = "200px", targets = "_all")), pageLength = 10, dom = "Bfrtip", buttons = c("csv", "excel", "pdf")), escape = "Weights") %>% 
+                                       DT::formatRound("Weights", 3) %>% DT::formatStyle("Weights", color = DT::styleInterval(0, c("darkblue", "darkred")))
         print('hi2')
         if (hyper_geo_test_bool) {
             output_hgt_filter <- output_hgt %>% dplyr::filter(Testset == paste0("Module_", as.character(ModuleNr))) %>% dplyr::arrange(padj)
@@ -126,9 +130,15 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
         print('Hi5')
         file.copy(system.file("templates/TemplateReportModule.Rmd", package = "AMARETTO"), modulemd)
         print('Hi6')
-        rmarkdown::render(modulemd, output_file = paste0("module", ModuleNr, ".html"), params = list(report_address = report_address, 
-            ModuleNr = ModuleNr, heatmap_module = heatmap_module, 
-            dt_regulators = dt_regulators, dt_genesets = dt_genesets), quiet = TRUE)
+        rmarkdown::render(modulemd, 
+                          output_file = paste0("module", ModuleNr, ".html"),
+                          params = list(report_address = report_address, 
+                                        ModuleNr = ModuleNr, 
+                                        heatmap_module = heatmap_module, 
+                                        dt_regulators = dt_regulators, 
+                                        dt_genesets = dt_genesets),
+                          quiet = TRUE)
+        
         file.remove(modulemd)
         #return(c(ModuleNr, length(which(AMARETTOresults$ModuleMembership == ModuleNr)), length(ModuleRegulators), ngenesets))
         print('Hi7')
