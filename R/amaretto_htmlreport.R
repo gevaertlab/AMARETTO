@@ -78,14 +78,16 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
         print(ModuleNr)
         heatmap_module <- invisible(AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, CNV_matrix, MET_matrix, SAMPLE_annotation = SAMPLE_annotation, ID = ID, ModuleNr = ModuleNr))
         ModuleRegulators <- AMARETTOresults$RegulatoryPrograms[ModuleNr, which(AMARETTOresults$RegulatoryPrograms[ModuleNr,] != 0)]
+        print('hi1')
         dt_regulators <- DT::datatable(tibble::rownames_to_column(as.data.frame(ModuleRegulators), "RegulatorIDs") %>% dplyr::rename(Weights = "ModuleRegulators") %>% dplyr::mutate(RegulatorIDs = paste0("<a href=\"https://www.genecards.org/cgi-bin/carddisp.pl?gene=", RegulatorIDs, "\">", RegulatorIDs, "</a>")), class = "display", extensions = "Buttons", 
             rownames = FALSE, options = list(columnDefs = list(list(width = "200px", targets = "_all")), pageLength = 10, dom = "Bfrtip", buttons = c("csv", "excel", "pdf")), escape = "Weights") %>% 
             DT::formatRound("Weights", 3) %>% DT::formatStyle("Weights", color = DT::styleInterval(0, c("darkblue", "darkred")))
-        
+        print('hi2')
         if (hyper_geo_test_bool) {
             output_hgt_filter <- output_hgt %>% dplyr::filter(Testset == paste0("Module_", as.character(ModuleNr))) %>% dplyr::arrange(padj)
             output_hgt_filter <- dplyr::left_join(output_hgt_filter, GeneSetDescriptions, by = c(Geneset = "GeneSet")) %>% 
                 dplyr::mutate(overlap_perc = n_Overlapping/NumberGenes) %>% dplyr::select(Geneset, Description, n_Overlapping, Overlapping_genes, overlap_perc, p_value, padj)
+            print('hi3')
             if (MSIGDB == TRUE & GMTURL == FALSE) {
                 dt_genesets <- DT::datatable(output_hgt_filter %>% dplyr::mutate(Geneset = paste0("<a href=\"http://software.broadinstitute.org/gsea/msigdb/cards/", 
                     Geneset, "\">", gsub("_", " ", Geneset), "</a>")), class = "display", extensions = "Buttons", rownames = FALSE, 
@@ -119,13 +121,17 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
             dt_genesets <- "Genesets were not analysed as they were not provided."
             ngenesets <- "NA"
         }
+        print('Hi4')
         modulemd <- paste0(full_path, "/htmls/modules/module", ModuleNr, ".rmd")
+        print('Hi5')
         file.copy(system.file("templates/TemplateReportModule.Rmd", package = "AMARETTO"), modulemd)
+        print('Hi6')
         rmarkdown::render(modulemd, output_file = paste0("module", ModuleNr, ".html"), params = list(report_address = report_address, 
             ModuleNr = ModuleNr, heatmap_module = heatmap_module, 
             dt_regulators = dt_regulators, dt_genesets = dt_genesets), quiet = TRUE)
         file.remove(modulemd)
         #return(c(ModuleNr, length(which(AMARETTOresults$ModuleMembership == ModuleNr)), length(ModuleRegulators), ngenesets))
+        print('Hi7')
         ModuleOverviewTable<-rbind(ModuleOverviewTable,c(ModuleNr, length(which(AMARETTOresults$ModuleMembership == ModuleNr)), length(ModuleRegulators), ngenesets))
     }
     
