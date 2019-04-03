@@ -5,8 +5,7 @@
 \title{AMARETTO_PhenoAssociation}
 \usage{
 AMARETTO_PhenAssociation(AMARETTOresults, annotation, idpatients,
-  parameters = NULL, typelist = NULL, printplots = FALSE,
-  pdfname = "phenotypes.pdf")
+  phenotypetests, printplots = FALSE, pdfname = "phenotypes.pdf")
 }
 \arguments{
 \item{pdfname}{}
