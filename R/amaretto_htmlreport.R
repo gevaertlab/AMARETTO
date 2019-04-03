@@ -57,14 +57,12 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
         }
     }
     report_address = file.path(output_address, "report_html/")
-    dir.create(paste0(report_address, "htmls/modules"), 
-        recursive = TRUE, showWarnings = FALSE)
+    dir.create(paste0(report_address, "htmls/modules"), recursive = TRUE, showWarnings = FALSE)
     cat("The output folder structure is created.\n")
     
     if (hyper_geo_test_bool) {
         GmtFromModules(AMARETTOinit, AMARETTOresults)
-        output_hgt <- HyperGTestGeneEnrichment(hyper_geo_reference, 
-            "./Modules_targets_only.gmt", NrCores)
+        output_hgt <- HyperGTestGeneEnrichment(hyper_geo_reference, "./Modules_targets_only.gmt", NrCores)
         GeneSetDescriptions <- GeneSetDescription(hyper_geo_reference)
     }
     cat("The hyper geometric test results are calculated.\n")
@@ -74,124 +72,63 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
 #    registerDoParallel(cluster, cores = NrCores)
     
     full_path <- normalizePath(report_address)
-    ModuleOverviewTable <- foreach::foreach(ModuleNr = 1:NrModules, 
-        .packages = c("AMARETTO", "tidyverse", "DT", 
-            "rmarkdown")) %dopar% {
-        heatmap_module <- invisible(AMARETTO_VisualizeModule(AMARETTOinit, 
-            AMARETTOresults, CNV_matrix, MET_matrix, 
-            SAMPLE_annotation = SAMPLE_annotation, 
-            ID = ID, ModuleNr = ModuleNr))
-        ModuleRegulators <- AMARETTOresults$RegulatoryPrograms[ModuleNr, 
-            which(AMARETTOresults$RegulatoryPrograms[ModuleNr, 
-                ] != 0)]
-        dt_regulators <- DT::datatable(tibble::rownames_to_column(as.data.frame(ModuleRegulators), 
-            "RegulatorIDs") %>% dplyr::rename(Weights = "ModuleRegulators") %>% 
-            dplyr::mutate(RegulatorIDs = paste0("<a href=\"https://www.genecards.org/cgi-bin/carddisp.pl?gene=", 
-                RegulatorIDs, "\">", RegulatorIDs, 
-                "</a>")), class = "display", extensions = "Buttons", 
-            rownames = FALSE, options = list(columnDefs = list(list(width = "200px", 
-                targets = "_all")), pageLength = 10, 
-                dom = "Bfrtip", buttons = c("csv", 
-                  "excel", "pdf")), escape = "Weights") %>% 
-            DT::formatRound("Weights", 3) %>% DT::formatStyle("Weights", 
-            color = DT::styleInterval(0, c("darkblue", 
-                "darkred")))
+    #ModuleOverviewTable <- foreach::foreach(ModuleNr = 1:NrModules, .packages = c("AMARETTO", "tidyverse", "DT", "rmarkdown")) %dopar% {
+        heatmap_module <- invisible(AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, CNV_matrix, MET_matrix, SAMPLE_annotation = SAMPLE_annotation, ID = ID, ModuleNr = ModuleNr))
+        ModuleRegulators <- AMARETTOresults$RegulatoryPrograms[ModuleNr, which(AMARETTOresults$RegulatoryPrograms[ModuleNr,] != 0)]
+        dt_regulators <- DT::datatable(tibble::rownames_to_column(as.data.frame(ModuleRegulators), "RegulatorIDs") %>% dplyr::rename(Weights = "ModuleRegulators") %>% dplyr::mutate(RegulatorIDs = paste0("<a href=\"https://www.genecards.org/cgi-bin/carddisp.pl?gene=", RegulatorIDs, "\">", RegulatorIDs, "</a>")), class = "display", extensions = "Buttons", 
+            rownames = FALSE, options = list(columnDefs = list(list(width = "200px", targets = "_all")), pageLength = 10, dom = "Bfrtip", buttons = c("csv", "excel", "pdf")), escape = "Weights") %>% 
+            DT::formatRound("Weights", 3) %>% DT::formatStyle("Weights", color = DT::styleInterval(0, c("darkblue", "darkred")))
         
         if (hyper_geo_test_bool) {
-            output_hgt_filter <- output_hgt %>% dplyr::filter(Testset == 
-                paste0("Module_", as.character(ModuleNr))) %>% 
-                dplyr::arrange(padj)
-            output_hgt_filter <- dplyr::left_join(output_hgt_filter, 
-                GeneSetDescriptions, by = c(Geneset = "GeneSet")) %>% 
-                dplyr::mutate(overlap_perc = n_Overlapping/NumberGenes) %>% 
-                dplyr::select(Geneset, Description, 
-                  n_Overlapping, Overlapping_genes, 
-                  overlap_perc, p_value, padj)
+            output_hgt_filter <- output_hgt %>% dplyr::filter(Testset == paste0("Module_", as.character(ModuleNr))) %>% dplyr::arrange(padj)
+            output_hgt_filter <- dplyr::left_join(output_hgt_filter, GeneSetDescriptions, by = c(Geneset = "GeneSet")) %>% 
+                dplyr::mutate(overlap_perc = n_Overlapping/NumberGenes) %>% dplyr::select(Geneset, Description, n_Overlapping, Overlapping_genes, overlap_perc, p_value, padj)
             if (MSIGDB == TRUE & GMTURL == FALSE) {
-                dt_genesets <- DT::datatable(output_hgt_filter %>% 
-                  dplyr::mutate(Geneset = paste0("<a href=\"http://software.broadinstitute.org/gsea/msigdb/cards/", 
-                    Geneset, "\">", gsub("_", " ", 
-                      Geneset), "</a>")), class = "display", 
-                  extensions = "Buttons", rownames = FALSE, 
-                  options = list(pageLength = 10, dom = "Bfrtip", 
-                    buttons = c("csv", "excel", "pdf")), 
-                  colnames = c("Gene Set Name", "Description", 
-                    "# Genes in Overlap", "Overlapping Genes", 
-                    "Percent of GeneSet overlapping", 
-                    "p-value", "FDR q-value"), escape = FALSE) %>% 
-                  DT::formatSignif(c("p_value", "padj", 
-                    "overlap_perc"), 2) %>% DT::formatStyle("overlap_perc", 
-                  background = DT::styleColorBar(c(0, 
-                    1), "lightblue"), backgroundSize = "98% 88%", 
-                  backgroundRepeat = "no-repeat", backgroundPosition = "center")
+                dt_genesets <- DT::datatable(output_hgt_filter %>% dplyr::mutate(Geneset = paste0("<a href=\"http://software.broadinstitute.org/gsea/msigdb/cards/", 
+                    Geneset, "\">", gsub("_", " ", Geneset), "</a>")), class = "display", extensions = "Buttons", rownames = FALSE, 
+                  options = list(pageLength = 10, dom = "Bfrtip", buttons = c("csv", "excel", "pdf")), 
+                  colnames = c("Gene Set Name", "Description", "# Genes in Overlap", "Overlapping Genes", "Percent of GeneSet overlapping", "p-value", "FDR q-value"), escape = FALSE) %>% 
+                  DT::formatSignif(c("p_value", "padj", "overlap_perc"), 2) %>% DT::formatStyle("overlap_perc", background = DT::styleColorBar(c(0, 1), "lightblue"), backgroundSize = "98% 88%", backgroundRepeat = "no-repeat", backgroundPosition = "center")
             } else if (MSIGDB == TRUE & GMTURL == TRUE) {
-                dt_genesets <- DT::datatable(output_hgt_filter %>% 
-                  dplyr::select(-Description) %>% dplyr::mutate(Geneset = paste0("<a href=\"http://software.broadinstitute.org/gsea/msigdb/cards/", 
-                  Geneset, "\">", gsub("_", " ", Geneset), 
-                  "</a>")), class = "display", extensions = "Buttons", 
-                  rownames = FALSE, options = list(pageLength = 10, 
-                    dom = "Bfrtip", buttons = c("csv", 
-                      "excel", "pdf")), colnames = c("Gene Set Name", 
-                    "# Genes in Overlap", "Overlapping Genes", 
-                    "Percent of GeneSet overlapping", 
-                    "p-value", "FDR q-value"), escape = FALSE) %>% 
-                  DT::formatSignif(c("p_value", "padj", 
-                    "overlap_perc"), 2) %>% DT::formatStyle("overlap_perc", 
-                  background = DT::styleColorBar(c(0, 
-                    1), "lightblue"), backgroundSize = "98% 88%", 
+                dt_genesets <- DT::datatable(output_hgt_filter %>% dplyr::select(-Description) %>% dplyr::mutate(Geneset = paste0("<a href=\"http://software.broadinstitute.org/gsea/msigdb/cards/", 
+                Geneset, "\">", gsub("_", " ", Geneset), "</a>")), class = "display", extensions = "Buttons", rownames = FALSE, options = list(pageLength = 10, dom = "Bfrtip", buttons = c("csv", "excel", "pdf")), colnames = c("Gene Set Name", 
+                    "# Genes in Overlap", "Overlapping Genes", "Percent of GeneSet overlapping", "p-value", "FDR q-value"), escape = FALSE) %>% 
+                  DT::formatSignif(c("p_value", "padj", "overlap_perc"), 2) %>% DT::formatStyle("overlap_perc", 
+                  background = DT::styleColorBar(c(0, 1), "lightblue"), backgroundSize = "98% 88%", 
                   backgroundRepeat = "no-repeat", backgroundPosition = "center")
             } else if (MSIGDB == FALSE & GMTURL == TRUE) {
-                dt_genesets <- DT::datatable(output_hgt_filter %>% 
-                  dplyr::mutate(Geneset = paste0("<a href=\"", 
-                    Description, "\">", gsub("_", " ", 
-                      Geneset), "</a>")) %>% dplyr::select(-Description), 
-                  class = "display", extensions = "Buttons", 
-                  rownames = FALSE, options = list(pageLength = 10, 
-                    dom = "Bfrtip", buttons = c("csv", 
-                      "excel", "pdf")), colnames = c("Gene Set Name", 
-                    "Description", "# Genes in Overlap", 
-                    "Overlapping Genes", "Percent of GeneSet overlapping", 
-                    "p-value", "FDR q-value"), escape = FALSE) %>% 
-                  DT::formatSignif(c("p_value", "padj", 
-                    "overlap_perc"), 2) %>% DT::formatStyle("overlap_perc", 
-                  background = DT::styleColorBar(c(0, 
-                    1), "lightblue"), backgroundSize = "98% 88%", 
+                dt_genesets <- DT::datatable(output_hgt_filter %>% dplyr::mutate(Geneset = paste0("<a href=\"", Description, "\">", gsub("_", " ", Geneset), "</a>")) %>% dplyr::select(-Description), 
+                  class = "display", extensions = "Buttons", rownames = FALSE, options = list(pageLength = 10, 
+                    dom = "Bfrtip", buttons = c("csv", "excel", "pdf")), colnames = c("Gene Set Name", "Description", "# Genes in Overlap", "Overlapping Genes", "Percent of GeneSet overlapping", 
+                    "p-value", "FDR q-value"), escape = FALSE) %>% DT::formatSignif(c("p_value", "padj", "overlap_perc"), 2) %>% DT::formatStyle("overlap_perc", 
+                  background = DT::styleColorBar(c(0, 1), "lightblue"), backgroundSize = "98% 88%", 
                   backgroundRepeat = "no-repeat", backgroundPosition = "center")
             } else {
                 dt_genesets <- DT::datatable(output_hgt_filter, 
-                  class = "display", extensions = "Buttons", 
-                  rownames = FALSE, options = list(autoWidth = TRUE, 
-                    pageLength = 10, dom = "Bfrtip", 
-                    buttons = c("csv", "excel", "pdf"))) %>% 
-                  DT::formatSignif(c("p_value", "padj", 
-                    "overlap_perc"), 2)
+                  class = "display",
+                  extensions = "Buttons", 
+                  rownames = FALSE,
+                  options = list(autoWidth = TRUE, pageLength = 10, dom = "Bfrtip", buttons = c("csv", "excel", "pdf"))) %>% 
+                  DT::formatSignif(c("p_value", "padj", "overlap_perc"), 2)
             }
-            ngenesets <- nrow(output_hgt_filter %>% 
-                dplyr::filter(padj < 0.05))
+            ngenesets <- nrow(output_hgt_filter %>% dplyr::filter(padj < 0.05))
         } else {
             dt_genesets <- "Genesets were not analysed as they were not provided."
             ngenesets <- "NA"
         }
-        modulemd <- paste0(full_path, "/htmls/modules/module", 
-            ModuleNr, ".rmd")
-        file.copy(system.file("templates/TemplateReportModule.Rmd", 
-            package = "AMARETTO"), modulemd)
-        rmarkdown::render(modulemd, output_file = paste0("module", 
-            ModuleNr, ".html"), params = list(report_address = report_address, 
+        modulemd <- paste0(full_path, "/htmls/modules/module", ModuleNr, ".rmd")
+        file.copy(system.file("templates/TemplateReportModule.Rmd", package = "AMARETTO"), modulemd)
+        rmarkdown::render(modulemd, output_file = paste0("module", ModuleNr, ".html"), params = list(report_address = report_address, 
             ModuleNr = ModuleNr, heatmap_module = heatmap_module, 
-            dt_regulators = dt_regulators, dt_genesets = dt_genesets), 
-            quiet = TRUE)
+            dt_regulators = dt_regulators, dt_genesets = dt_genesets), quiet = TRUE)
         file.remove(modulemd)
-        return(c(ModuleNr, length(which(AMARETTOresults$ModuleMembership == 
-            ModuleNr)), length(ModuleRegulators), ngenesets))
+        return(c(ModuleNr, length(which(AMARETTOresults$ModuleMembership == ModuleNr)), length(ModuleRegulators), ngenesets))
     }
     
 #    parallel::stopCluster(cluster)
     cat("The module htmls are finished.\n")
-    ModuleOverviewTable <- data.frame(matrix(unlist(ModuleOverviewTable), 
-        byrow = TRUE, ncol = 4), stringsAsFactors = FALSE)
-    colnames(ModuleOverviewTable) <- c("ModuleNr", 
-        "NrTarGenes", "NrRegGenes", "SignGS")
+    ModuleOverviewTable <- data.frame(matrix(unlist(ModuleOverviewTable), byrow = TRUE, ncol = 4), stringsAsFactors = FALSE)
+    colnames(ModuleOverviewTable) <- c("ModuleNr", "NrTarGenes", "NrRegGenes", "SignGS")
     if (!is.null(CNV_matrix)) {
         nCNV = ncol(CNV_matrix)
     } else {
@@ -206,54 +143,34 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
     nGenes = length(AMARETTOresults$AllGenes)
     nMod = AMARETTOresults$NrModules
     
-    dt_overview <- DT::datatable(ModuleOverviewTable %>% 
-        dplyr::mutate(ModuleNr = paste0("<a href=\"./modules/module", 
-            ModuleNr, ".html\">Module ", ModuleNr, 
-            "</a>")), class = "display", extensions = "Buttons", 
-        rownames = FALSE, options = list(pageLength = 10, 
-            dom = "Bfrtip", buttons = c("csv", "excel", 
-                "pdf")), escape = FALSE)
+    dt_overview <- DT::datatable(ModuleOverviewTable %>% dplyr::mutate(ModuleNr = paste0("<a href=\"./modules/module", ModuleNr, ".html\">Module ", ModuleNr, "</a>")), class = "display", extensions = "Buttons", 
+        rownames = FALSE, options = list(pageLength = 10, dom = "Bfrtip", buttons = c("csv", "excel", "pdf")), escape = FALSE)
     
-    all_targets <- tibble::rownames_to_column(data.frame(AMARETTOinit$ModuleMembership), 
-        "Genes") %>% dplyr::rename(Module = "AMARETTOinit.ModuleMembership") %>% 
-        dplyr::mutate(Type = "Target")
-    all_regulators <- reshape2::melt(tibble::rownames_to_column(as.data.frame(AMARETTOresults$RegulatoryPrograms), 
-        "Module"), id.vars = "Module") %>% dplyr::filter(value > 
-        0) %>% dplyr::select(variable, Module) %>% 
-        dplyr::mutate(Module = sub("Module_", "", Module), 
-            Type = "Regulator") %>% dplyr::rename(Genes = "variable")
-    all_genes <- rbind(all_targets, all_regulators) %>% 
-        dplyr::arrange(Genes) %>% dplyr::mutate(Module = paste0("<a href=\"./modules/module", 
-        Module, ".html\">Module ", Module, "</a>"))
-    dt_genes <- DT::datatable(all_genes, class = "display", 
-        extensions = "Buttons", rownames = FALSE, options = list(pageLength = 10, 
-            dom = "Bfrtip", buttons = c("csv", "excel", 
-                "pdf")), escape = FALSE)
+    all_targets <- tibble::rownames_to_column(data.frame(AMARETTOinit$ModuleMembership),"Genes") %>% dplyr::rename(Module = "AMARETTOinit.ModuleMembership") %>% dplyr::mutate(Type = "Target")
+    all_regulators <- reshape2::melt(tibble::rownames_to_column(as.data.frame(AMARETTOresults$RegulatoryPrograms), "Module"), id.vars = "Module") %>% dplyr::filter(value > 0) %>% dplyr::select(variable, Module) %>% 
+        dplyr::mutate(Module = sub("Module_", "", Module), Type = "Regulator") %>% dplyr::rename(Genes = "variable")
+    all_genes <- rbind(all_targets, all_regulators) %>% dplyr::arrange(Genes) %>% dplyr::mutate(Module = paste0("<a href=\"./modules/module", Module, ".html\">Module ", Module, "</a>"))
+    dt_genes <- DT::datatable(all_genes, class = "display", extensions = "Buttons", rownames = FALSE, options = list(pageLength = 10, dom = "Bfrtip", buttons = c("csv", "excel", "pdf")), escape = FALSE)
     if (hyper_geo_test_bool) {
-        dt_genesetsall <- DT::datatable(dplyr::left_join(output_hgt %>% 
-            dplyr::filter(padj < 0.05 & n_Overlapping > 
-                1) %>% dplyr::group_by(Geneset) %>% 
-            dplyr::mutate(Testset = paste0("<a href=\"./modules/module", 
-                sub("Module_", "", Testset), ".html\">", 
-                Testset, "</a>")) %>% dplyr::summarise(Modules = paste(Testset, 
-            collapse = ", ")), GeneSetDescriptions, 
-            by = c(Geneset = "GeneSet")) %>% dplyr::mutate(Geneset = gsub("_", 
-            " ", Geneset), Modules = gsub("_", " ", 
-            Modules)), class = "display", extensions = "Buttons", 
-            rownames = FALSE, options = list(pageLength = 10, 
-                dom = "Bfrtip", buttons = c("csv", 
-                  "excel", "pdf")), escape = FALSE)
+        dt_genesetsall <- DT::datatable(dplyr::left_join(output_hgt %>% dplyr::filter(padj < 0.05 & n_Overlapping > 1) %>% dplyr::group_by(Geneset) %>% 
+            dplyr::mutate(Testset = paste0("<a href=\"./modules/module", sub("Module_", "", Testset), ".html\">", Testset, "</a>")) %>% dplyr::summarise(Modules = paste(Testset, collapse = ", ")), GeneSetDescriptions, 
+            by = c(Geneset = "GeneSet")) %>% dplyr::mutate(Geneset = gsub("_", " ", Geneset), Modules = gsub("_", " ", Modules)), class = "display", extensions = "Buttons", rownames = FALSE, options = list(pageLength = 10, dom = "Bfrtip", buttons = c("csv", "excel", "pdf")), escape = FALSE)
     } else {
         dt_genesetsall <- "Genesets were not analysed as they were not provided."
     }
     
-    rmarkdown::render(system.file("templates/TemplateIndexPage.Rmd", 
-        package = "AMARETTO"), output_dir = paste0(full_path, 
-        "/htmls/"), output_file = "index.html", params = list(nExp = nExp, 
-        nCNV = nCNV, nMET = nMET, nGenes = nGenes, 
-        VarPercentage = VarPercentage, nMod = nMod, 
-        dt_overview = dt_overview, dt_genes = dt_genes, 
-        dt_genesetsall = dt_gensesetsall), quiet = TRUE)
+    rmarkdown::render(system.file("templates/TemplateIndexPage.Rmd", package = "AMARETTO"),
+                      output_dir = paste0(full_path, "/htmls/"),
+                      output_file = "index.html",
+                      params = list(nExp = nExp, 
+                      nCNV = nCNV,
+                      nMET = nMET,
+                      nGenes = nGenes, 
+                      VarPercentage = VarPercentage,
+                      nMod = nMod, 
+                      dt_overview = dt_overview,
+                      dt_genes = dt_genes, 
+                      dt_genesetsall = dt_gensesetsall), quiet = TRUE)
     cat("The report is ready to use\n")
 }
 
