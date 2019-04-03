@@ -1,4 +1,5 @@
-inst/doc
-.Rproj.user
-._*
 .DS_Store
+data/.DS_Store
+inst/.DS_Store
+R/.DS_Store
+vignettes/amaretto.log

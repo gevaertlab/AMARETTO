@@ -4,10 +4,7 @@
 \alias{TCGA_GENERIC_CleanUpSampleNames}
 \title{TCGA_GENERIC_CleanUpSampleNames}
 \usage{
-TCGA_GENERIC_CleanUpSampleNames(GEN_Data, IDlength = 12)
-}
-\arguments{
-\item{IDlength}{}
+TCGA_GENERIC_CleanUpSampleNames(GEN_Data = GEN_Data, IDlength = 12)
 }
 \value{
 result

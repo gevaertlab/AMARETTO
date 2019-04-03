@@ -6,6 +6,9 @@
 \usage{
 printf(...)
 }
+\value{
+result
+}
 \description{
 Wrapper function for C-style formatted output.
 }

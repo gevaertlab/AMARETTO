@@ -37,7 +37,7 @@ AMARETTO_PhenAssociation <- function(AMARETTOresults, annotation, idpatients, ph
     print(paste0("Phenotypic association is calculated for ",parameter, " on ",sample_size," patients."))
     test <- phenotypetests[which(phenotypetests$Phenotypes==parameter),"test"]
     
-    if (!test %in% c("WILCOXONRANKSUMTEST","KRUSKALWALLISTEST","TTEST","ANOVATEST","PEARSONCORRTEST","SPEARMANCORRTEST","cathegorical","ordinal","continous")){
+    if (!test %in% c("WILCOXONRANKSUMTEST","KRUSKALWALLISTEST","TTEST","ANOVATEST","PEARSONCORRTEST","SPEARMANCORRTEST","cathegorical","ordinal","continuous")){
       stop("There are no tests that match the options.")
     }
     

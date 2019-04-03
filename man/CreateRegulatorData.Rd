@@ -8,31 +8,10 @@ CreateRegulatorData(MA_matrix = MA_matrix, CNV_matrix = NULL,
   MET_matrix = NULL, Driver_list = NULL, PvalueThreshold = 0.001,
   RsquareThreshold = 0.1, method = "union")
 }
-\arguments{
-\item{MA_matrix}{Processed gene expression data matrix ($MA_matrix element from Preprocess_CancerSite() list output).}
-
-\item{CNV_matrix}{Processed CNV matrix ($CNV_matrix element from Preprocess_CancerSite() list output).}
-
-\item{MET_matrix}{Processed methylation matrix ($MET_matrix element from Preprocess_CancerSite() list output).}
-
-\item{Driver_list}{Custom list of driver genes.}
-
-\item{PvalueThreshold}{Threshold used to find relevant driver genes with CNV alterations: maximal p-value.}
-
-\item{RsquareThreshold}{Threshold used to find relevant driver genes with CNV alterations: minimal R-square value between CNV and gene expression data.}
-
-\item{method}{Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.}
+\value{
+result
 }
 \description{
 Determine potential regulator genes.
-Function to identify which genes' CNV and/or methylation statuses significantly predict expression of that gene. Input is output from Preprocess_CancerSite(). This function is used by AMARETTO_Initialize().
-}
-\examples{
-data("ProcessedDataLIHC")
-CreateRegulatorData(MA_matrix = ProcessedDataLIHC$MA_matrix,
-                    CNV_matrix = ProcessedDataLIHC$CNV_matrix,
-                     MET_matrix= ProcessedDataLIHC$MET_matrix,
-                     PvalueThreshold = 0.001, RsquareThreshold = 0.1)
-
 }
 \keyword{internal}

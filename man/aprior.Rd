@@ -6,9 +6,6 @@
 \usage{
 aprior(gamma.hat)
 }
-\arguments{
-\item{gamma.hat}{}
-}
 \value{
 result
 }

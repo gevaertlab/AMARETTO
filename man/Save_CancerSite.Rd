@@ -7,9 +7,6 @@
 Save_CancerSite(CancerSite, TargetDirectory, DataSetDirectories,
   ProcessedData)
 }
-\arguments{
-\item{ProcessedData}{}
-}
 \value{
 result
 }

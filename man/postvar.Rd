@@ -6,9 +6,6 @@
 \usage{
 postvar(sum2, n, a, b)
 }
-\arguments{
-\item{b}{}
-}
 \value{
 result
 }
