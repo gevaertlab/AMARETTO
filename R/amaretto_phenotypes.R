@@ -11,7 +11,7 @@
 #' @importFrom dplyr arrange group_by inner_join mutate select summarise rename
 #' @importFrom tibble rownames_to_column
 #' @importFrom tidyr drop_na
-#' @import ggplot
+#' @import ggplot2
 #' 
 #' @return
 #' @export
