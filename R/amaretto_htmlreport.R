@@ -15,6 +15,7 @@
 #' @importFrom doParallel registerDoParallel
 #' @importFrom DT datatable formatRound formatSignif  formatStyle styleColorBar styleInterval
 #' @importFrom reshape2 melt
+#' @importFrom knitr knit_meta
 #' @importFrom dplyr arrange  group_by  left_join mutate  select  summarise
 #' @importFrom foreach foreach
 #' @importFrom parallel makeCluster stopCluster
@@ -120,6 +121,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
         }
         modulemd <- paste0(full_path, "/htmls/modules/module", ModuleNr, ".rmd")
         file.copy(system.file("templates/TemplateReportModule.Rmd", package = "AMARETTO"), modulemd)
+        knitr::knit_meta(class=NULL, clean = TRUE)
         rmarkdown::render(modulemd, 
                           output_file = paste0("module", ModuleNr, ".html"),
                           params = list(report_address = report_address, 
