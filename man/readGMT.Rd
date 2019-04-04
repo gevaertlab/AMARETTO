@@ -6,8 +6,8 @@
 \usage{
 readGMT(filename)
 }
-\value{
-result
+\arguments{
+\item{filename}{}
 }
 \description{
 readGMT

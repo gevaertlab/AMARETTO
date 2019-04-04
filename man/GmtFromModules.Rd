@@ -4,10 +4,14 @@
 \alias{GmtFromModules}
 \title{GmtFromModules}
 \usage{
-GmtFromModules(AMARETTOinit, AMARETTOresults)
+GmtFromModules(AMARETTOinit, AMARETTOresults, driverGSEA)
 }
-\value{
-result
+\arguments{
+\item{AMARETTOinit}{List output from AMARETTO_Initialize().}
+
+\item{AMARETTOresults}{List output from AMARETTO_Run().}
+
+\item{driverGSEA}{if TRUE , module driver genes will also be added to module target genes for GSEA.}
 }
 \description{
 GmtFromModules

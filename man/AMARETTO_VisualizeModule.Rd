@@ -5,8 +5,8 @@
 \title{AMARETTO_VisualizeModule}
 \usage{
 AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, ProcessedData,
-  ModuleNr, SAMPLE_annotation = NULL, ID = NULL,
-  order_samples = NULL, printHM = FALSE)
+  ModuleNr, show_row_names = FALSE, SAMPLE_annotation = NULL,
+  ID = NULL, order_samples = NULL)
 }
 \arguments{
 \item{AMARETTOinit}{List output from AMARETTO_Initialize().}
