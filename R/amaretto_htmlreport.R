@@ -73,7 +73,6 @@ AMARETTO_HTMLreport <- function(AMARETTOinit, AMARETTOresults,
     
     full_path <- normalizePath(report_address)
     ModuleOverviewTable <- foreach::foreach(ModuleNr = 1:NrModules, .packages = c("AMARETTO", "tidyverse", "DT", "rmarkdown")) %dopar% {
-    for (ModuleNr in 1:NrModules){
         heatmap_module <- invisible(AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, ProcessedData, SAMPLE_annotation = SAMPLE_annotation, ID = ID, ModuleNr = ModuleNr))
         ModuleRegulators <- AMARETTOresults$RegulatoryPrograms[ModuleNr, which(AMARETTOresults$RegulatoryPrograms[ModuleNr,] != 0)]
         dt_regulators <- DT::datatable(tibble::rownames_to_column(as.data.frame(ModuleRegulators), "RegulatorIDs") %>% dplyr::rename(Weights = "ModuleRegulators") %>% dplyr::mutate(RegulatorIDs = paste0("<a href=\"https://www.genecards.org/cgi-bin/carddisp.pl?gene=", RegulatorIDs, "\">", RegulatorIDs, "</a>")),
