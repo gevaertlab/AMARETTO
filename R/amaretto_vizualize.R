@@ -144,7 +144,7 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
       #define colors
       col<-c()
       for (sample_column in colnames(SAMPLE_annotation_fil)[colnames(SAMPLE_annotation_fil) != ID]){
-        newcol<-randomColor(length(unique(SAMPLE_annotation_fil[,sample_column])),luminosity = "bright")
+        newcol<-circlize::rand_color(n=length(unique(SAMPLE_annotation_fil[,sample_column])),luminosity = "bright")
         names(newcol)<-unique(SAMPLE_annotation_fil[,sample_column])
         col<-c(col,newcol)
       }
