@@ -59,6 +59,8 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
   if (!is.null(CNV_matrix)){
     non_CNV_sample_names<- overlapping_samples[!overlapping_samples%in%colnames(CNV_matrix)]
     print(non_CNV_sample_names)
+    print(nrow(CNV_matrix))
+    print(length(non_CNV_sample_names))
     CNV_extension_mat<- matrix(data=NA,nrow=nrow(CNV_matrix),ncol=length(non_CNV_sample_names))
     colnames(CNV_extension_mat)<-non_CNV_sample_names
     CNV_matrix<-cbind(CNV_matrix,CNV_extension_mat)
