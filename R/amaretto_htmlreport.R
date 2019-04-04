@@ -70,7 +70,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,ProcessedData,show_
   for(ModuleNr in 1:NrModules){
 
     print(paste0("ModuleNr = ",ModuleNr))
-    heatmap_module<-AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, CNV_matrix, MET_matrix, show_row_names = show_row_names, SAMPLE_annotation=SAMPLE_annotation, ID=ID, ModuleNr=ModuleNr)
+    heatmap_module<-AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, ProcessedData, show_row_names = show_row_names, SAMPLE_annotation=SAMPLE_annotation, ID=ID, ModuleNr=ModuleNr)
     print("visualization is done")
     ModuleRegulators <- AMARETTOresults$RegulatoryPrograms[ModuleNr,which(AMARETTOresults$RegulatoryPrograms[ModuleNr,] != 0)]
     print("ModuleRegulators is done")
