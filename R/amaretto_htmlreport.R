@@ -65,8 +65,11 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,ProcessedData,show_
   registerDoParallel(cluster,cores=NrCores)
 
   full_path<-normalizePath(report_address)
-  
-  ModuleOverviewTable<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT','rmarkdown')) %dopar% {
+  ModuleOverviewTable<-NULL
+  #ModuleOverviewTable<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT','rmarkdown')) %dopar% {
+  for(ModuleNr = 1:NrModules){
+    
+    
   # ModuleOverviewTable<-c()
   # for (ModuleNr in 1:NrModules){
     # tryCatch({
@@ -131,8 +134,8 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,ProcessedData,show_
     print("rmarkdown is done and module html is created :)")
     file.remove(modulemd)
     print("file removed successfully :) Done!")
-    # ModuleOverviewTable<-rbind(ModuleOverviewTable,c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),ngenesets))
-    return(c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),ngenesets))
+    ModuleOverviewTable<-rbind(ModuleOverviewTable,c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),ngenesets))
+    #return(c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),ngenesets))
     dev.off()
     # },error=function(e){message(paste("an error occured for Module", ModuleNr))})
   }
