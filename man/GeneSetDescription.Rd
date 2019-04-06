@@ -11,9 +11,6 @@ GeneSetDescription(filename, MSIGDB)
 
 \item{MSIGDB}{}
 }
-\value{
-result
-}
 \description{
 GeneSetDescription
 }

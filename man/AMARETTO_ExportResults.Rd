@@ -5,8 +5,7 @@
 \title{AMARETTO_ExportResults}
 \usage{
 AMARETTO_ExportResults(AMARETTOinit, AMARETTOresults, data_address,
-  Heatmaps = TRUE, CNV_matrix = NULL, MET_matrix = NULL,
-  OutputFilenamePrefix = "")
+  Heatmaps = TRUE, CNV_matrix = NULL, MET_matrix = NULL)
 }
 \arguments{
 \item{AMARETTOinit}{AMARETTO initialize output}

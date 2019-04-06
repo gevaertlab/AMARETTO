@@ -36,7 +36,7 @@ DataSetDirectories <- AMARETTO_Download(CancerSite,TargetDirectory = TargetDirec
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 # Loading preprocessed TCGA-LAML example dataset:
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
-#data("ProcessedDataLIHC")
+data("ProcessedDataLIHC")
 
 #-----------------------------------------------------------------------------------------
 # 4. Running AMARETTO

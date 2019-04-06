@@ -5,20 +5,11 @@
 \title{Lambda_Sequence}
 \usage{
 Lambda_Sequence(sx, sy)
-
-Lambda_Sequence(sx, sy)
-}
-\arguments{
-\item{sx}{}
-
-\item{sy}{}
 }
 \value{
 result
 }
 \description{
-Lambda_Sequence
-
 Lambda_Sequence
 }
 \keyword{internal}
