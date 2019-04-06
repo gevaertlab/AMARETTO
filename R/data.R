@@ -21,3 +21,11 @@
 #' @format List
 #' @source \url{AMARETTO}
 "ProcessedDataLIHC"
+
+#' MsigdbMapping
+#'
+#' A dataset containing all MSIGDB pathways and their descriptions. .
+#'
+#' @format List
+#' @source \url{AMARETTO}
+"MsigdbMapping"
