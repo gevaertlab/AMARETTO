@@ -9,7 +9,9 @@ read_gct(file_address)
 \arguments{
 \item{file_address}{}
 }
-\description{
-Function to turn a .gct files into a matrix
+\value{
+result
 }
-\keyword{internal}
+\description{
+Function to turn a .gct data files into a matrix format
+}
