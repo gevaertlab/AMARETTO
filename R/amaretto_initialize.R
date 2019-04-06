@@ -165,6 +165,17 @@ geneFiltering <- function(Type, MAdata, Percentage) {
     return(MAdata_Filtered)
 }
 
+#' read_gct
+#' 
+#' Function to turn a .gct files into a matrix 
+#' @param file_address 
+#' @return
+#' @keywords internal
+read_gct <- function(file_address){
+  data_fr = read.delim(file_address, skip=2, sep="\t", header=TRUE, row.names=1)
+  data_fr <- as.matrix(subset(data_fr, select=-c(Description)))
+}
+
 #' printf
 #'
 #' Wrapper function for C-style formatted output.
