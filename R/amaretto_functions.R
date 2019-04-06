@@ -54,6 +54,7 @@ AMARETTO_Initialize <- function(ProcessedData = ProcessedData,
             stop("AMARETTO cannot be run with less than two samples.\n")
         }
     }
+    
     if (!is.null(MA_matrix) & !is.null(CNV_matrix) & 
         !is.null(MET_matrix) & !is.null(Driver_list)) {
         if (ncol(MA_matrix) < 2 || ncol(CNV_matrix) == 

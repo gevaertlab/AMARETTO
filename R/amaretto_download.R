@@ -205,14 +205,14 @@ get_firehoseData <- function(TargetDirectory = "./",
 #' @export
 AMARETTO_ExportResults <- function(AMARETTOinit, AMARETTOresults, 
     data_address, Heatmaps = TRUE, CNV_matrix = NULL, 
-    MET_matrix = NULL, OutputFilenamePrefix = "") {
+    MET_matrix = NULL) {
   `%dopar%` <- foreach::`%dopar%`
     if (!dir.exists(data_address)) {
         stop("Output directory is not existing.")
     }
     
     # add a date stamp to the output directory
-    output_dir <- paste0(OutputFilenamePrefix,"AMARETTOresults_", gsub("-|:", 
+    output_dir <- paste0("AMARETTOresults_", gsub("-|:", 
         "", gsub(" ", "_", Sys.time())))
     dir.create(file.path(data_address, output_dir))
     

@@ -370,21 +370,3 @@ Lambda_Sequence <- function(sx, sy) {
         epsilon), length.out = K)), digits = 10)
     return(lambdaseq)
 }
-
-
-#' Lambda_Sequence
-#'
-#' @param sx 
-#' @param sy 
-#' @return
-#' @keywords internal
-#' @examples
-Lambda_Sequence <-function(sx,sy){
-  n<-nrow (sx)
-  lambda_max <- max(abs(colSums(sx*sy)))/n
-  epsilon <- .0001
-  K <- 100
-  lambdaseq <- round(exp(seq(log(lambda_max), log(lambda_max*epsilon),length.out = K)), digits = 10)
-  return(lambdaseq)
-}
-
