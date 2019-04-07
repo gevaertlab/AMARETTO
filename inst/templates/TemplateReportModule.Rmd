@@ -39,7 +39,7 @@ dt_genesets
 ```
 
 <br><br><br>
-
+<!--
 ## Associations of Phenotypes with Regulatory Module
 
 <br><br><br>
@@ -49,5 +49,5 @@ module_phenotype_association_datatable
 ```
 
 <br><br><br>
-
+--> 
 </center>
