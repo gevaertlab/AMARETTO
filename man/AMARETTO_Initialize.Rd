@@ -7,7 +7,7 @@
 AMARETTO_Initialize(ProcessedData = ProcessedData, Driver_list = NULL,
   NrModules, VarPercentage, PvalueThreshold = 0.001,
   RsquareThreshold = 0.1, pmax = 10, NrCores = 1, OneRunStop = 0,
-  method = "union")
+  method = "union", random_seeds = NULL)
 }
 \arguments{
 \item{ProcessedData}{List of Expression, CNV and MethylMix data matrices, with genes in rows and samples in columns.}
@@ -29,6 +29,8 @@ AMARETTO_Initialize(ProcessedData = ProcessedData, Driver_list = NULL,
 \item{OneRunStop}{OneRunStop}
 
 \item{method}{Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.}
+
+\item{random_seeds}{A numerical vector of length 2, containing two seed numbers for randomization : 1st for kmeans and 2nd for glmnet}
 }
 \value{
 result

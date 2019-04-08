@@ -4,7 +4,21 @@
 \alias{AMARETTO_LarsenBased}
 \title{AMARETTO_LarsenBased}
 \usage{
-AMARETTO_LarsenBased(Data, Clusters, RegulatorData, Parameters, NrCores)
+AMARETTO_LarsenBased(Data, Clusters, RegulatorData, Parameters, NrCores,
+  random_seeds)
+}
+\arguments{
+\item{Data}{}
+
+\item{Clusters}{}
+
+\item{RegulatorData}{}
+
+\item{Parameters}{}
+
+\item{NrCores}{}
+
+\item{random_seeds}{}
 }
 \value{
 result

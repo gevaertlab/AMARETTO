@@ -1,10 +1,17 @@
 #' AMARETTO_LarsenBased
 #' 
+#' @param Data 
+#' @param Clusters 
+#' @param RegulatorData 
+#' @param Parameters 
+#' @param NrCores 
+#' @param random_seeds 
+#'
 #' @import MultiAssayExperiment
 #' @import graphics
 #' @return result
 #' @keywords internal
-AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData, Parameters, NrCores) {
+AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData, Parameters, NrCores, random_seeds) {
     registerDoParallel(cores = NrCores)
     ptm1 <- proc.time()
     RegulatorData_rownames = rownames(RegulatorData)
@@ -27,7 +34,7 @@ AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData, Parameters, NrCo
     while (NrReassignGenes > 0.01 * length(Data_rownames)) {
         ptm <- proc.time()
         switch(Parameters$Mode, larsen = {
-            regulatoryPrograms <- AMARETTO_LearnRegulatoryProgramsLarsen(Data, Clusters, RegulatorData, RegulatorSign, Lambda, AutoRegulation, alpha = Parameters$alpha, pmax = Parameters$pmax)
+            regulatoryPrograms <- AMARETTO_LearnRegulatoryProgramsLarsen(Data, Clusters, RegulatorData, RegulatorSign, Lambda, AutoRegulation, alpha = Parameters$alpha, pmax = Parameters$pmax, random_seeds)
         })
         error_history[[index]]<-(rowMeans(regulatoryPrograms$error * regulatoryPrograms$error))^0.5
         index<-index+1
@@ -68,7 +75,7 @@ AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData, Parameters, NrCo
 #'
 #' @return result
 #' @keywords internal
-AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data, Clusters, RegulatorData, RegulatorSign, Lambda, AutoRegulation, alpha, pmax) {
+AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data, Clusters, RegulatorData, RegulatorSign, Lambda, AutoRegulation, alpha, pmax, random_seeds) {
     `%dopar%` <- foreach::`%dopar%`
     RegulatorData_rownames = rownames(RegulatorData)
     Data_rownames = rownames(Data)
@@ -102,6 +109,11 @@ AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data, Clusters, RegulatorData
                 X = RegulatorData[setdiff(RegulatorData_rownames, Data_rownames[CurrentClusterPositions]),]
             }
             suppressWM = function(...) suppressWarnings(suppressMessages(...))
+            
+            if(!is.null(random_seeds)){
+              seed<-ifelse (length(random_seeds)==2,random_seeds[2],random_seeds[1])
+              set.seed(seed)
+            }
             fit = suppressWM(cv.glmnet(t(X), y, alpha = alpha, pmax = pmax, lambda = Lambda_Sequence(t(X), y)))
             nonZeroLambdas <- fit$lambda[which(fit$nzero > 0)]
             nonZeroCVMs <- fit$cvm[which(fit$nzero > 0)]
@@ -125,6 +137,10 @@ AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data, Clusters, RegulatorData
                       y = apply((Data[names, ]), 2, mean)
                     } else {
                       y = Data[names, ]
+                    }
+                    if(!is.null(random_seeds)){
+                      seed<-ifelse (length(random_seeds)==2,random_seeds[2],random_seeds[1])
+                      set.seed(seed)
                     }
                     fit = suppressWM(cv.glmnet(t(X), y, alpha = alpha, pmax = pmax, lambda = Lambda_Sequence(t(X), y)))
                     nonZeroLambdas <- fit$lambda[which(fit$nzero > 0)]
