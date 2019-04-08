@@ -17,6 +17,8 @@ AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
 
 \item{ProcessedData}{List of processed input data}
 
+\item{show_row_names}{}
+
 \item{SAMPLE_annotation}{SAMPLE annotation will be added to heatmap}
 
 \item{ID}{ID column of the SAMPLE annotation data frame}
@@ -31,7 +33,7 @@ AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
 
 \item{MSIGDB}{TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.}
 
-\item{GMTURL}{TRUE if second column of gmt contains URLs to gene set, FALSE if it contains a description}
+\item{driverGSEA}{}
 }
 \value{
 result

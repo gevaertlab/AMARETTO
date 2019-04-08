@@ -1,6 +1,7 @@
 #' AMARETTO_HTMLreport
 #'
 #' Retrieve an interactive html report, including gene set enrichment analysis if asked for.
+#'
 #' @param AMARETTOinit AMARETTO initialize output
 #' @param AMARETTOresults AMARETTO results output
 #' @param ProcessedData List of processed input data
@@ -10,8 +11,10 @@
 #' @param hyper_geo_test_bool Boolean if a hyper geometric test needs to be performed. If TRUE provide a GMT file in the hyper_geo_reference parameter.
 #' @param hyper_geo_reference GMT file with gene sets to compare with.
 #' @param output_address Output directory for the html files.
+#' @param show_row_names 
+#' @param driverGSEA 
 #' @param MSIGDB TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.
-#' @param GMTURL TRUE if second column of gmt contains URLs to gene set, FALSE if it contains a description
+#'
 #' @importFrom doParallel registerDoParallel
 #' @importFrom DT datatable formatRound formatSignif  formatStyle styleColorBar styleInterval
 #' @importFrom reshape2 melt
@@ -268,9 +271,8 @@ GmtFromModules <- function(AMARETTOinit,AMARETTOresults,driverGSEA){
 #' @param filename The name of the gmt file.
 #' @param MSIGDB 
 #'
-#' @return
+#' @return result
 #' @keywords internal
-#' @examples
 GeneSetDescription<-function(filename,MSIGDB){
   data(MsigdbMapping)
   gmtLines<-strsplit(readLines(filename),"\t")
@@ -292,10 +294,9 @@ GeneSetDescription<-function(filename,MSIGDB){
 #' readGMT
 #' @param filename
 #'
-#' @return
+#' @return result
 #' @keywords internal
-#'
-#' @examples
+
 readGMT<-function(filename){
   gmtLines<-strsplit(readLines(filename),"\t")
   gmtLines_genes <- lapply(gmtLines, tail, -2)

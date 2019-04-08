@@ -9,6 +9,9 @@ readGMT(filename)
 \arguments{
 \item{filename}{}
 }
+\value{
+result
+}
 \description{
 readGMT
 }
