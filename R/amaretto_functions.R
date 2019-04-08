@@ -3,6 +3,7 @@
 #' Code used to initialize the seed clusters for an AMARETTO run.
 #' Requires processed gene expressiosn (rna-seq or microarray), CNV (usually from a GISTIC run), and methylation (from MethylMix, provided in this package) data.
 #' Uses the function CreateRegulatorData() and results are fed into the function AMARETTO_Run().
+#'
 #' @param ProcessedData List of Expression, CNV and MethylMix data matrices, with genes in rows and samples in columns.
 #' @param Driver_list Custom list of driver genes to be considered in analysis
 #' @param NrModules How many gene co-expression modules should AMARETTO search for? Usually around 100 is acceptable, given the large number of possible driver-passenger gene combinations.
@@ -12,7 +13,9 @@
 #' @param pmax 'pmax' variable for glmnet function from glmnet package; the maximum number of variables aver to be nonzero. Should not be changed by user unless she/he fully understands the AMARETTO algorithm and how its parameters choices affect model output.
 #' @param OneRunStop OneRunStop
 #' @param NrCores A numeric variable indicating the number of computer/server cores to use for paralellelization. Default is 1, i.e. no parallelization. Please check your computer or server's computing capacities before increasing this number.  Parallelization is done via the RParallel package. Mac vs. Windows environments may behave differently when using parallelization.
+#' @param random_seeds A numerical vector of length 2, containing two seed numbers for randomization : 1st for kmeans and 2nd for glmnet
 #' @param method Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.
+#'
 #' @return result
 #' @rawNamespace import(callr, except = run)
 #' @import Rcpp
@@ -30,7 +33,7 @@
 #'}
 #' @export
 AMARETTO_Initialize <- function(ProcessedData = ProcessedData, Driver_list = NULL, NrModules, VarPercentage, PvalueThreshold = 0.001, 
-                                RsquareThreshold = 0.1, pmax = 10, NrCores = 1, OneRunStop = 0, method = "union") {
+                                RsquareThreshold = 0.1, pmax = 10, NrCores = 1, OneRunStop = 0, method = "union",random_seeds=NULL) {
     
     MA_matrix <- ProcessedData[[1]]
     CNV_matrix <- ProcessedData[[2]]
@@ -60,6 +63,9 @@ AMARETTO_Initialize <- function(ProcessedData = ProcessedData, Driver_list = NUL
     if (NrModules >= nrow(MA_matrix_Var)) {
         stop(paste0("The number of modules is too large compared to the number of genes. Choose a number of modules smaller than ", nrow(MA_matrix_Var), ".\n"))
     }
+    if(!is.null(random_seeds)){
+      set.seed(random_seeds[1])
+    }
     KmeansResults = kmeans(MA_matrix_Var, NrModules, iter.max = 100)
     Clusters = as.numeric(KmeansResults$cluster)
     names(Clusters) <- rownames(MA_matrix_Var)
@@ -73,7 +79,7 @@ AMARETTO_Initialize <- function(ProcessedData = ProcessedData, Driver_list = NUL
         RegulatorData = RegulatorInfo$RegulatorData
         Alterations = RegulatorInfo$Alterations
         return(list(MA_matrix_Var = MA_matrix_Var, RegulatorData = RegulatorData, RegulatorAlterations = Alterations,
-                    ModuleMembership = Clusters, Parameters = Parameters, NrCores = NrCores))
+                    ModuleMembership = Clusters, Parameters = Parameters, NrCores = NrCores, random_seeds = random_seeds))
     }
 }
 
@@ -99,7 +105,8 @@ AMARETTO_Run <- function(AMARETTOinit) {
         } else {
             cat("Running AMARETTO on", length(rownames(AMARETTOinit$MA_matrix_Var)), "genes and", length(colnames(AMARETTOinit$MA_matrix_Var)), "samples.\n")
             cat("\tStopping if less then", 0.01 * length(rownames(AMARETTOinit$MA_matrix_Var)), "genes reassigned.\n")
-            result = AMARETTO_LarsenBased(AMARETTOinit$MA_matrix_Var, AMARETTOinit$ModuleMembership, AMARETTOinit$RegulatorData, AMARETTOinit$Parameters, AMARETTOinit$NrCores)
+            result = AMARETTO_LarsenBased(AMARETTOinit$MA_matrix_Var, AMARETTOinit$ModuleMembership, AMARETTOinit$RegulatorData,
+                                          AMARETTOinit$Parameters, AMARETTOinit$NrCores,AMARETTOinit$random_seeds)
             result$ModuleData = AMARETTO_CreateModuleData(AMARETTOinit, result)
             result$RegulatoryProgramData = AMARETTO_CreateRegulatorPrograms(AMARETTOinit, result)
             return(result)
