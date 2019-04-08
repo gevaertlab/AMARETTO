@@ -29,7 +29,7 @@ AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData, Parameters, NrCo
         switch(Parameters$Mode, larsen = {
             regulatoryPrograms <- AMARETTO_LearnRegulatoryProgramsLarsen(Data, Clusters, RegulatorData, RegulatorSign, Lambda, AutoRegulation, alpha = Parameters$alpha, pmax = Parameters$pmax)
         })
-        error_history[[index]]<-regulatoryPrograms$error
+        error_history[[index]]<-(rowMeans(regulatoryPrograms$error * regulatoryPrograms$error))^0.5
         index<-index+1
         ptm <- proc.time() - ptm
         printf("Elapsed time is %f seconds\n", ptm[3])
