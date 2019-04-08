@@ -69,8 +69,8 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,ProcessedData,show_
 
   full_path<-normalizePath(report_address)
   ModuleOverviewTable<-NULL
-  ModuleOverviewTable<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT','rmarkdown')) %dopar% {
-  #for(ModuleNr in 1:NrModules){
+  #ModuleOverviewTable<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT','rmarkdown')) %dopar% {
+  for(ModuleNr in 1:NrModules){
 
     print(paste0("ModuleNr = ",ModuleNr))
     heatmap_module<-AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, ProcessedData, show_row_names = show_row_names, SAMPLE_annotation=SAMPLE_annotation, ID=ID, ModuleNr=ModuleNr)
