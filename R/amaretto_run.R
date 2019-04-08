@@ -21,12 +21,16 @@ AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData, Parameters, NrCo
         cat("\tAutoregulation is turned OFF.\n")
     }
     NrReassignGenes = length(Data_rownames)
-    run_history <- NrReassignGenes
+    NrReassignGenes_history <- NrReassignGenes
+    error_history<-list()
+    index=1
     while (NrReassignGenes > 0.01 * length(Data_rownames)) {
         ptm <- proc.time()
         switch(Parameters$Mode, larsen = {
             regulatoryPrograms <- AMARETTO_LearnRegulatoryProgramsLarsen(Data, Clusters, RegulatorData, RegulatorSign, Lambda, AutoRegulation, alpha = Parameters$alpha, pmax = Parameters$pmax)
         })
+        error_history[[index]]<-regulatoryPrograms$error
+        index<-index+1
         ptm <- proc.time() - ptm
         printf("Elapsed time is %f seconds\n", ptm[3])
         NrClusters = length(unique(Clusters))
@@ -47,7 +51,7 @@ AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData, Parameters, NrCo
         NrReassignGenes = ReassignGenesToClusters$NrReassignGenes
         Clusters = ReassignGenesToClusters$Clusters
         printf("Nr of reassignments is: %i \n", NrReassignGenes)
-        run_history <- c(run_history, NrReassignGenes)
+        NrReassignGenes_history <- c(NrReassignGenes_history, NrReassignGenes)
     }
     ptm1 <- proc.time() - ptm1
     printf("Elapsed time is %f seconds\n", ptm1[3])
@@ -55,7 +59,8 @@ AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData, Parameters, NrCo
     rownames(ModuleMembership) = rownames(Data)
     colnames(ModuleMembership) = c("ModuleNr")
     result <- list(NrModules = length(unique(Clusters)), RegulatoryPrograms = regulatoryPrograms$Beta, AllRegulators = rownames(RegulatorData),
-                   AllGenes = rownames(Data), ModuleMembership = ModuleMembership, AutoRegulationReport = regulatoryPrograms$AutoRegulationReport, run_history = run_history)
+                   AllGenes = rownames(Data), ModuleMembership = ModuleMembership, AutoRegulationReport = regulatoryPrograms$AutoRegulationReport,
+                   run_history = list(NrReassignGenes_history = NrReassignGenes_history, error_history = error_history))
     return(result)
 }
 
