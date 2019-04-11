@@ -33,7 +33,7 @@
 #'}
 #' @export
 AMARETTO_Initialize <- function(ProcessedData = ProcessedData, Driver_list = NULL, NrModules, VarPercentage, PvalueThreshold = 0.001, 
-                                RsquareThreshold = 0.1, pmax = 10, NrCores = 1, OneRunStop = 0, method = "union",random_seeds=NULL) {
+                                RsquareThreshold = 0.1, pmax = 10, NrCores = 1, OneRunStop = 0, method = "union", random_seeds = NULL) {
     
     MA_matrix <- ProcessedData[[1]]
     CNV_matrix <- ProcessedData[[2]]
