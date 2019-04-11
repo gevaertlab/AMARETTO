@@ -200,7 +200,10 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,ProcessedData,show_
 #' @param NrCores Number of cores used for parallelization.
 #' @param ref.numb.genes The total number of genes teste, standard equal to 45 956 (MSIGDB standard).
 #'
+#' @importFrom foreach foreach
 #' @importFrom parallel makeCluster stopCluster
+#' @importFrom doParallel registerDoParallel
+#' 
 #' @keywords internal
 HyperGTestGeneEnrichment<-function(gmtfile,testgmtfile,NrCores,ref.numb.genes=45956){
 
@@ -247,7 +250,11 @@ HyperGTestGeneEnrichment<-function(gmtfile,testgmtfile,NrCores,ref.numb.genes=45
 #' @param AMARETTOinit List output from AMARETTO_Initialize().
 #' @param driverGSEA if TRUE , module driver genes will also be added to module target genes for GSEA.
 #' @param AMARETTOresults List output from AMARETTO_Run().
-#'
+#' 
+#' @importFrom tibble rownames_to_column
+#' @importFrom reshape2 melt
+#' @importFrom dplyr arrange mutate select rename  filter 
+#' 
 #' @keywords internal
 GmtFromModules <- function(AMARETTOinit,AMARETTOresults,driverGSEA){
   ModuleMembership<-tibble::rownames_to_column(as.data.frame(AMARETTOresults$ModuleMembership),"GeneNames")
