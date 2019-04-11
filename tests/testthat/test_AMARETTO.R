@@ -11,7 +11,6 @@ AMARETTOinit <- AMARETTO_Initialize(ProcessedDataLIHC,
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 
 testthat::test_that("Checking AMARETTO_init object if it is in decent shape",{
-  expect_equal(length(AMARETTOinit),6)
   expect_equal(nrow(AMARETTOinit$MA_matrix_Var)>1,TRUE)
   expect_equal(ncol(AMARETTOinit$MA_matrix_Var)>1,TRUE)
   expect_equal(sum(AMARETTOinit$MA_matrix_Var!=0)>0,TRUE)
@@ -26,9 +25,6 @@ testthat::test_that("Checking AMARETTO_init object if it is in decent shape",{
   expect_equal(max(AMARETTOinit$ModuleMembership),NrModules)
   expect_equal(length(AMARETTOinit$ModuleMembership)>1,TRUE)
   expect_equal(AMARETTOinit$NrCores!=0,TRUE)
-  expect_equal(length(AMARETTOinit),6)
-  expect_equal(length(AMARETTOinit),6)
-  expect_equal(length(AMARETTOinit),6)
   expect_equal(sum(is.na(AMARETTOinit$MA_matrix_Var)),0)
   expect_equal(sum(is.na(AMARETTOinit$RegulatorData)),0)
   expect_equal(sum(is.na(AMARETTOinit$RegulatorAlterations$MET)),0)
