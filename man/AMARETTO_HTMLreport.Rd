@@ -8,7 +8,7 @@ AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
   show_row_names = FALSE, SAMPLE_annotation = NULL, ID = NULL,
   VarPercentage, hyper_geo_test_bool = FALSE,
   hyper_geo_reference = NULL, output_address = "./", MSIGDB = TRUE,
-  driverGSEA = TRUE)
+  driverGSEA = TRUE, phenotype_association_table = NULL)
 }
 \arguments{
 \item{AMARETTOinit}{AMARETTO initialize output}
