@@ -26,7 +26,6 @@
 #' @importFrom tibble rownames_to_column
 #' @importFrom stats  p.adjust  phyper
 #' @importFrom rmarkdown render
-#' @importFrom AMARETTO AMARETTO_VisualizeModule
 #' @return result
 #' @export
 #' @examples
