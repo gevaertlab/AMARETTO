@@ -17,13 +17,13 @@ AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, ProcessedData,
 
 \item{ModuleNr}{Module number to visualize}
 
+\item{show_row_names}{}
+
 \item{SAMPLE_annotation}{Matrix or Dataframe with sample annotation}
 
 \item{ID}{Column used as sample name}
 
 \item{order_samples}{Order samples in heatmap by mean or by clustering}
-
-\item{printHM}{Boolean print heatmap directly}
 }
 \value{
 result
