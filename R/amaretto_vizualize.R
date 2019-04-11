@@ -1,21 +1,23 @@
 #' AMARETTO_VisualizeModule
 #'
 #' Function to visualize the gene modules
+#'
 #' @param AMARETTOinit List output from AMARETTO_Initialize().
 #' @param AMARETTOresults List output from AMARETTO_Run().
 #' @param ProcessedData List of processed input data
 #' @param ModuleNr Module number to visualize
 #' @param SAMPLE_annotation Matrix or Dataframe with sample annotation
 #' @param ID Column used as sample name
+#' @param show_row_names 
 #' @param order_samples Order samples in heatmap by mean or by clustering
-#' @param printHM Boolean print heatmap directly
+#'
 #' @importFrom circlize colorRamp2  rand_color
 #' @importFrom grid gpar unit
 #' @importFrom stats dist hclust
-#' @import dplyr
+#' @importFrom dplyr  left_join mutate  select  summarise  rename  filter 
 #' @import grDevices
 #' @import methods
-#' @import ComplexHeatmap
+#' @importFrom ComplexHeatmap  HeatmapAnnotation
 #' @importFrom tibble column_to_rownames  rownames_to_column
 #' @return result
 #' @export
@@ -49,8 +51,8 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
                                               DriversList_Alterations=case_when(DriverList==0~"Driver not predefined",
                                                                                 DriverList==1~"Driver predefined"))
 
-  ha_drivers <- HeatmapAnnotation(df = tibble::column_to_rownames(Alterations,"HGNC_symbol") %>% dplyr::select(CNVMet_Alterations,DriversList_Alterations), col = list(CNVMet_Alterations= c("Copy number alterations"="#eca400","Methylation aberrations"="#006992","Methylation and copy number alterations"="#d95d39","Not Altered"="lightgray"),DriversList_Alterations=c("Driver not predefined"="lightgray","Driver predefined"="#588B5B")),which = "column", height = unit(0.3, "cm"),name="",
-                                  annotation_legend_param = list(title_gp = gpar(fontsize = 8),labels_gp = gpar(fontsize = 6)))
+  ha_drivers <- ComplexHeatmap::HeatmapAnnotation(df = tibble::column_to_rownames(Alterations,"HGNC_symbol") %>% dplyr::select(CNVMet_Alterations,DriversList_Alterations), col = list(CNVMet_Alterations= c("Copy number alterations"="#eca400","Methylation aberrations"="#006992","Methylation and copy number alterations"="#d95d39","Not Altered"="lightgray"),DriversList_Alterations=c("Driver not predefined"="lightgray","Driver predefined"="#588B5B")),which = "column", height = grid::unit(0.3, "cm"),name="",
+                                  annotation_legend_param = list(title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
 
   overlapping_samples <- colnames(ModuleData)
   
@@ -75,7 +77,7 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
   if(is.null(order_samples)){
     overlapping_samples_clust<-overlapping_samples[order(colMeans(ModuleData[,overlapping_samples]))]
   }else if(order_samples=="clust"){
-    SampleClustering<-hclust(dist(t(ModuleData[,overlapping_samples])), method = "complete", members = NULL)
+    SampleClustering<-stats::hclust(stats::dist(t(ModuleData[,overlapping_samples])), method = "complete", members = NULL)
     overlapping_samples_clust<-overlapping_samples[SampleClustering$order]
   }else {
     print("ordering type not recognized, samples will be orderd based on mean expression of the module genes")
@@ -85,8 +87,8 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
   ClustRegulatorData <- t(RegulatorData[,overlapping_samples_clust])
   ClustModuleData <- t(ModuleData[,overlapping_samples_clust])
   Regwidth <- ncol(ClustRegulatorData)*0.5
-  ha_Reg <- Heatmap(ClustRegulatorData, name = "Gene Expression", column_title = "Regulator Genes\nExpression",cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = gpar(fontsize = 6),top_annotation = ha_drivers,
-                    column_title_gp = gpar(fontsize = 6, fontface = "bold"), col=colorRamp2(c(-max(abs(ClustRegulatorData)), 0, max(abs(ClustRegulatorData))), c("darkblue", "white", "darkred")),heatmap_legend_param = list(color_bar = "continuous",legend_direction = "horizontal",title_gp = gpar(fontsize = 8),labels_gp = gpar(fontsize = 6)), width = unit(Regwidth, "cm"))
+  ha_Reg <- Heatmap(ClustRegulatorData, name = "Gene Expression", column_title = "Regulator Genes\nExpression",cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = grid::gpar(fontsize = 6),top_annotation = ha_drivers,
+                    column_title_gp = grid::gpar(fontsize = 6, fontface = "bold"), col=circlize::colorRamp2(c(-max(abs(ClustRegulatorData)), 0, max(abs(ClustRegulatorData))), c("darkblue", "white", "darkred")),heatmap_legend_param = list(color_bar = "continuous",legend_direction = "horizontal",title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)), width = grid::unit(Regwidth, "cm"))
 
   if(length(ClustModuleData)<50){
     fontsizeMo=6
@@ -94,8 +96,8 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
     fontsizeMo=4
   } else {fontsizeMo=2}
 
-  ha_Module <- Heatmap(ClustModuleData, name = "", column_title = "Target Genes\nExpression",cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=show_row_names,column_names_gp = gpar(fontsize = fontsizeMo),show_heatmap_legend = FALSE,
-                       column_title_gp = gpar(fontsize = 6, fontface = "bold"), col=colorRamp2(c(-max(abs(ClustModuleData)), 0, max(abs(ClustModuleData))), c("darkblue", "white", "darkred")),heatmap_legend_param = list(color_bar = "continuous",legend_direction = "horizontal",title_gp = gpar(fontsize = 8),labels_gp = gpar(fontsize = 6)))
+  ha_Module <- Heatmap(ClustModuleData, name = "", column_title = "Target Genes\nExpression",cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=show_row_names,column_names_gp = grid::gpar(fontsize = fontsizeMo),show_heatmap_legend = FALSE,
+                       column_title_gp = grid::gpar(fontsize = 6, fontface = "bold"), col=circlize::colorRamp2(c(-max(abs(ClustModuleData)), 0, max(abs(ClustModuleData))), c("darkblue", "white", "darkred")),heatmap_legend_param = list(color_bar = "continuous",legend_direction = "horizontal",title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
 
   ha_list<- ha_Reg + ha_Module
   if (!is.null(MET_matrix)){
@@ -110,8 +112,8 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
       METData2<-t(METData2)
       Metwidth=ncol(METData2)*0.5
       Met_col=structure(c("#006992","#d95d39","white"),names=c("Hyper-methylated","Hypo-methylated","Not altered"))
-      ha_Met <- Heatmap(METData2, name = "Methylation State", column_title = "Methylation State", cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = gpar(fontsize = 6),show_heatmap_legend = TRUE,
-                        column_title_gp = gpar(fontsize = 6, fontface = "bold"), col = Met_col, width = unit(Metwidth, "cm"),heatmap_legend_param = list(title_gp = gpar(fontsize = 8),labels_gp = gpar(fontsize = 6)))
+      ha_Met <- Heatmap(METData2, name = "Methylation State", column_title = "Methylation State", cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = grid::gpar(fontsize = 6),show_heatmap_legend = TRUE,
+                        column_title_gp = gpar(fontsize = 6, fontface = "bold"), col = Met_col, width = grid::unit(Metwidth, "cm"),heatmap_legend_param = list(title_gp = gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
       ha_list<- ha_Met + ha_list
     }
   }
@@ -128,8 +130,8 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
       CNVData2<-t(CNVData2)
       CNVwidth=ncol(CNVData2)*0.5
       CNV_col=structure(c("#006992","#d95d39","white"),names=c("Deleted","Amplified","Not altered"))
-      ha_CNV <- Heatmap(CNVData2, name = "CNV State", column_title = "CNV State", cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = gpar(fontsize = 6),show_heatmap_legend = TRUE,
-                        column_title_gp = gpar(fontsize = 6, fontface = "bold"),col = CNV_col,width = unit(CNVwidth, "cm"),heatmap_legend_param = list(title_gp = gpar(fontsize = 8),labels_gp = gpar(fontsize = 6)))
+      ha_CNV <- Heatmap(CNVData2, name = "CNV State", column_title = "CNV State", cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = grid::gpar(fontsize = 6),show_heatmap_legend = TRUE,
+                        column_title_gp = grid::gpar(fontsize = 6, fontface = "bold"),col = CNV_col,width = grid::unit(CNVwidth, "cm"),heatmap_legend_param = list(title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
       ha_list<-ha_CNV + ha_list
     }
   }
@@ -148,8 +150,8 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
         names(newcol)<-unique(SAMPLE_annotation_fil[,sample_column])
         col<-c(col,newcol)
       }
-      ha_anot<-Heatmap(SAMPLE_annotation_fil, name="Sample Annotation", column_title = "Sample\nAnnotation", column_title_gp = gpar(fontsize = 6, fontface = "bold"), col=col, show_row_names=FALSE,width = unit(ncol(SAMPLE_annotation_fil) * 2, "mm"),
-                       column_names_gp = gpar(fontsize = 6),heatmap_legend_param = list(title_gp = gpar(fontsize = 8),labels_gp = gpar(fontsize = 6)))
+      ha_anot<-Heatmap(SAMPLE_annotation_fil, name="Sample Annotation", column_title = "Sample\nAnnotation", column_title_gp = grid::gpar(fontsize = 6, fontface = "bold"), col=col, show_row_names=FALSE,width = unit(ncol(SAMPLE_annotation_fil) * 2, "mm"),
+                       column_names_gp = gpar(fontsize = 6),heatmap_legend_param = list(title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
       ha_list<-ha_list + ha_anot
     } else {print("The ID is not identified as a column name in the annotation")}
   }
