@@ -15,6 +15,8 @@
 #' @param driverGSEA 
 #' @param MSIGDB TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.
 #'
+#' @import dplyr
+#' @import DT
 #' @importFrom doParallel registerDoParallel
 #' @importFrom DT datatable formatRound formatSignif  formatStyle styleColorBar styleInterval
 #' @importFrom reshape2 melt
@@ -203,6 +205,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,ProcessedData,show_
 #' @importFrom foreach foreach
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom doParallel registerDoParallel
+#' 
 #' 
 #' @keywords internal
 HyperGTestGeneEnrichment<-function(gmtfile,testgmtfile,NrCores,ref.numb.genes=45956){
