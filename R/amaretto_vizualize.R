@@ -14,10 +14,10 @@
 #' @importFrom circlize colorRamp2  rand_color
 #' @importFrom grid gpar unit
 #' @importFrom stats dist hclust
-#' @importFrom dplyr  left_join mutate  select  summarise  rename  filter 
+#' @importFrom dplyr  left_join mutate  select  summarise  rename  filter case_when
 #' @import grDevices
 #' @import methods
-#' @importFrom ComplexHeatmap  HeatmapAnnotation
+#' @importFrom ComplexHeatmap  HeatmapAnnotation Heatmap draw
 #' @importFrom tibble column_to_rownames  rownames_to_column
 #' @return result
 #' @export

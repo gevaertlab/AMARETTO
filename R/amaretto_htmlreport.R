@@ -18,7 +18,7 @@
 #' @importFrom doParallel registerDoParallel
 #' @importFrom DT datatable formatRound formatSignif  formatStyle styleColorBar styleInterval
 #' @importFrom reshape2 melt
-#' @importFrom dplyr arrange  group_by  left_join mutate  select  summarise  rename  filter 
+#' @importFrom dplyr arrange group_by left_join mutate select summarise  rename  filter 
 #' @importFrom foreach foreach
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom knitr knit_meta
@@ -26,6 +26,7 @@
 #' @importFrom tibble rownames_to_column
 #' @importFrom stats  p.adjust  phyper
 #' @importFrom rmarkdown render
+#' @importFrom AMARETTO AMARETTO_VisualizeModule
 #' @return result
 #' @export
 #' @examples
@@ -209,7 +210,7 @@ HyperGTestGeneEnrichment<-function(gmtfile,testgmtfile,NrCores,ref.numb.genes=45
 
   ###########################  Parallelizing :
   cluster <- parallel::makeCluster(c(rep("localhost", NrCores)), type = "SOCK")
-  registerDoParallel(cluster,cores=NrCores)
+  doParallel::registerDoParallel(cluster,cores=NrCores)
   
   #resultloop<-c()
   resultloop<-foreach(j=1:length(test.gmt), .combine='rbind') %do% {
