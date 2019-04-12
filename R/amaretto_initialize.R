@@ -169,7 +169,12 @@ geneFiltering <- function(Type, MAdata, Percentage) {
 #' 
 #' Function to turn a .gct data files into a matrix format
 #' @param file_address 
+#' @importFrom utils read.delim
 #' @return result
+#' #' @examples
+#'\dontrun{
+#' data_matrix<-read_gct(my_gctFile.gct)
+#'}
 #' @export
 read_gct <- function(file_address){
   data_fr = read.delim(file_address, skip=2, sep="\t", header=TRUE, row.names=1)
