@@ -9,6 +9,9 @@
 #'
 #' @import MultiAssayExperiment
 #' @import graphics
+#' @importFrom Matrix nnzero
+#' @importFrom doParallel registerDoParallel
+#' 
 #' @return result
 #' @keywords internal
 AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData, Parameters, NrCores, random_seeds) {
@@ -72,7 +75,9 @@ AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData, Parameters, NrCo
 }
 
 #' AMARETTO_LearnRegulatoryProgramsLarsen
-#'
+#' @importFrom foreach foreach
+#' @importFrom glmnet cv.glmnet
+#' @importFrom stats coef
 #' @return result
 #' @keywords internal
 AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data, Clusters, RegulatorData, RegulatorSign, Lambda, AutoRegulation, alpha, pmax, random_seeds) {
@@ -200,6 +205,7 @@ AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data, Clusters, RegulatorData
 #'
 #' @return result
 #' @importFrom Matrix nnzero
+#' @importFrom stats cor
 #' @keywords internal
 AMARETTO_ReassignGenesToClusters <- function(Data, RegulatorData, Beta, Clusters, AutoRegulation) {
     `%dopar%` <- foreach::`%dopar%`
