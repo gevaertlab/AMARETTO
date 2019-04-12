@@ -45,6 +45,7 @@
 #'}
 AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,ProcessedData,show_row_names=FALSE,SAMPLE_annotation=NULL,ID=NULL,VarPercentage,hyper_geo_test_bool=FALSE,hyper_geo_reference=NULL,output_address='./',MSIGDB=TRUE,driverGSEA=TRUE){
   `%dopar%` <- foreach::`%dopar%`
+  `%do%` <- foreach::`%do%`
   CNV_matrix <- ProcessedData[[2]]
   MET_matrix <- ProcessedData[[3]]
   NrModules<-AMARETTOresults$NrModules
@@ -209,7 +210,9 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,ProcessedData,show_
 #' 
 #' @keywords internal
 HyperGTestGeneEnrichment<-function(gmtfile,testgmtfile,NrCores,ref.numb.genes=45956){
-
+  
+  `%dopar%` <- foreach::`%dopar%`
+  `%do%` <- foreach::`%do%`
   test.gmt<-readGMT(testgmtfile) # our gmt_file_output_from Amaretto
   gmt.path<-readGMT(gmtfile)  # the hallmarks_and_co2...
 
