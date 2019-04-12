@@ -292,7 +292,7 @@ GeneSetDescription<-function(filename,MSIGDB){
   gmtLines_description <- lapply(gmtLines, function(x) {
     c(x[[1]],x[[2]],length(x)-2)
   })
-  gmtLines_description<-data.frame(matrix(unlist(gmtLines_description),byrow=T,ncol=3),stringsAsFactors=FALSE)
+  gmtLines_description<-data.frame(matrix(unlist(gmtLines_description),byrow=TRUE,ncol=3),stringsAsFactors=FALSE)
   rownames(gmtLines_description)<-NULL
   colnames(gmtLines_description)<-c("GeneSet","Description","NumberGenes")
   gmtLines_description$NumberGenes<-as.numeric(gmtLines_description$NumberGenes)

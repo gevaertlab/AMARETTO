@@ -11,6 +11,10 @@ read_gct(file_address)
 }
 \value{
 result
+#' @examples
+\dontrun{
+data_matrix<-read_gct(my_gctFile.gct)
+}
 }
 \description{
 Function to turn a .gct data files into a matrix format
