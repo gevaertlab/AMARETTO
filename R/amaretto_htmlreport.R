@@ -16,12 +16,13 @@
 #' @param MSIGDB TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.
 #'
 #' @import dplyr
-#' @import DT
+#' @rawNamespace import(utils, except = prompt)
+#' @rawNamespace import(utils, except = .DollarNames)
 #' @importFrom doParallel registerDoParallel
 #' @importFrom DT datatable formatRound formatSignif  formatStyle styleColorBar styleInterval
 #' @importFrom reshape2 melt
 #' @importFrom dplyr arrange group_by left_join mutate select summarise  rename  filter 
-#' @importFrom foreach foreach
+#' @importFrom foreach foreach %dopar% %do%
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom knitr knit_meta
 #' @importFrom utils  write.table
@@ -144,7 +145,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,ProcessedData,show_
 
   parallel::stopCluster(cluster)
   cat("The module htmls are finished.\n")
-  ModuleOverviewTable<-data.frame(matrix(unlist(ModuleOverviewTable),byrow=T,ncol=4),stringsAsFactors=FALSE)
+  ModuleOverviewTable<-data.frame(matrix(unlist(ModuleOverviewTable),byrow=TRUE,ncol=4),stringsAsFactors=FALSE)
   colnames(ModuleOverviewTable)<-c("ModuleNr","NrTarGenes","NrRegGenes","SignGS")
   if (!is.null(CNV_matrix)){
     nCNV = ncol(CNV_matrix)
@@ -197,17 +198,14 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,ProcessedData,show_
 #' Hyper Geometric Geneset Enrichement Test
 #'
 #' Calculates the p-values for unranked gene set enrichment based on two gmt files as input and the hyper geometric test.
-#'
+#' @return result
 #' @param gmtfile The gmt file with reference gene set.
 #' @param testgmtfile The gmt file with gene sets to test. In our case, the gmt file of the modules.
 #' @param NrCores Number of cores used for parallelization.
 #' @param ref.numb.genes The total number of genes teste, standard equal to 45 956 (MSIGDB standard).
-#'
 #' @importFrom foreach foreach
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom doParallel registerDoParallel
-#' 
-#' 
 #' @keywords internal
 HyperGTestGeneEnrichment<-function(gmtfile,testgmtfile,NrCores,ref.numb.genes=45956){
   
@@ -252,15 +250,14 @@ HyperGTestGeneEnrichment<-function(gmtfile,testgmtfile,NrCores,ref.numb.genes=45
 }
 
 #' GmtFromModules
-#'
+#' @return result
 #' @param AMARETTOinit List output from AMARETTO_Initialize().
 #' @param driverGSEA if TRUE , module driver genes will also be added to module target genes for GSEA.
 #' @param AMARETTOresults List output from AMARETTO_Run().
-#' 
 #' @importFrom tibble rownames_to_column
 #' @importFrom reshape2 melt
 #' @importFrom dplyr arrange mutate select rename  filter 
-#' 
+#' @importFrom utils write.table
 #' @keywords internal
 GmtFromModules <- function(AMARETTOinit,AMARETTOresults,driverGSEA){
   ModuleMembership<-tibble::rownames_to_column(as.data.frame(AMARETTOresults$ModuleMembership),"GeneNames")
@@ -284,10 +281,11 @@ GmtFromModules <- function(AMARETTOinit,AMARETTOresults,driverGSEA){
 #' @param filename The name of the gmt file.
 #' @param MSIGDB 
 #'
+#' @importFrom utils data
 #' @return result
 #' @keywords internal
 GeneSetDescription<-function(filename,MSIGDB){
-  data(MsigdbMapping)
+  utils::data(MsigdbMapping)
   gmtLines<-strsplit(readLines(filename),"\t")
   gmtLines_description <- lapply(gmtLines, function(x) {
     c(x[[1]],x[[2]],length(x)-2)
