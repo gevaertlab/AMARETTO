@@ -18,7 +18,8 @@
 #'
 #' @return result
 #' @rawNamespace import(callr, except = run)
-#' @import Rcpp
+#' @rawNamespace import(Rcpp, except = .DollarNames)
+#' @rawNamespace import(utils, except = prompt)
 #' @importFrom matrixStats rowVars rowMads
 #' @importFrom stats aov coef cor density dist dnorm hclust kmeans lm na.omit p.adjust phyper prcomp qqline qqnorm qqplot rgamma var
 #' @examples

@@ -16,8 +16,6 @@
 #' @param MSIGDB TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.
 #'
 #' @import dplyr
-#' @rawNamespace import(utils, except = prompt)
-#' @rawNamespace import(utils, except = .DollarNames)
 #' @importFrom doParallel registerDoParallel
 #' @importFrom DT datatable formatRound formatSignif  formatStyle styleColorBar styleInterval
 #' @importFrom reshape2 melt
