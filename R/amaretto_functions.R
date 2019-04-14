@@ -13,9 +13,9 @@
 #' @param pmax 'pmax' variable for glmnet function from glmnet package; the maximum number of variables aver to be nonzero. Should not be changed by user unless she/he fully understands the AMARETTO algorithm and how its parameters choices affect model output.
 #' @param OneRunStop OneRunStop
 #' @param NrCores A numeric variable indicating the number of computer/server cores to use for paralellelization. Default is 1, i.e. no parallelization. Please check your computer or server's computing capacities before increasing this number.  Parallelization is done via the RParallel package. Mac vs. Windows environments may behave differently when using parallelization.
-#' @param random_seeds A numerical vector of length 2, containing two seed numbers for randomization : 1st for kmeans and 2nd for glmnet
+#' @param random_seeds A numeric vector of length 2, containing two seed numbers for randomization : 1st for kmeans and 2nd for glmnet
 #' @param method Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.
-#' @param convergence_cutoff Number of Genes replacements ratio convergence value (E.g.0.01) 
+#' @param convergence_cutoff A numeric value (E.g. 0.01) representing the fraction of the total number of genes, in which, The algorithm is considered reaching convergence and will stop, if Nr of Gene-replacements in an iteration falls below this threshold * total number of genes.  
 #'
 #' @return result
 #' @rawNamespace import(callr, except = run)
