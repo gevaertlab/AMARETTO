@@ -5,7 +5,7 @@
 \title{AMARETTO_LarsenBased}
 \usage{
 AMARETTO_LarsenBased(Data, Clusters, RegulatorData, Parameters, NrCores,
-  random_seeds)
+  random_seeds, convergence_cutoff)
 }
 \arguments{
 \item{Data}{}
@@ -19,6 +19,8 @@ AMARETTO_LarsenBased(Data, Clusters, RegulatorData, Parameters, NrCores,
 \item{NrCores}{}
 
 \item{random_seeds}{}
+
+\item{convergence_cutoff}{}
 }
 \value{
 result
