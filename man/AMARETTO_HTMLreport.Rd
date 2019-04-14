@@ -51,7 +51,7 @@ AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 
 AMARETTO_HTMLreport(AMARETTOinit= AMARETTOinit,AMARETTOresults= AMARETTOresults,
                     ProcessedData = ProcessedDataLIHC,
-                    VarPercentage=10,hyper_geo_test_bool=FALSE,
+                    hyper_geo_test_bool=FALSE,
                     output_address='./')
 }
 }
