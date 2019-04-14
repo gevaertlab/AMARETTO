@@ -6,6 +6,7 @@
 #' @param Parameters 
 #' @param NrCores 
 #' @param random_seeds 
+#' @param convergence_cutoff 
 #'
 #' @import MultiAssayExperiment
 #' @import graphics
@@ -14,7 +15,7 @@
 #' 
 #' @return result
 #' @keywords internal
-AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData, Parameters, NrCores, random_seeds) {
+AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData, Parameters, NrCores, random_seeds, convergence_cutoff) {
     registerDoParallel(cores = NrCores)
     ptm1 <- proc.time()
     RegulatorData_rownames = rownames(RegulatorData)
@@ -23,6 +24,8 @@ AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData, Parameters, NrCo
     RegulatorSign = array(0, length(RegulatorData_rownames))
     Lambda = Parameters$Lambda2
     OneRunStop = Parameters$OneRunStop
+    random_seeds = Parameters$random_seeds
+    convergence_cutoff = Parameters$convergence_cutoff
     if (AutoRegulation == 1) {
         cat("\tAutoregulation is turned ON.\n")
     } else if (AutoRegulation == 2) {
@@ -34,7 +37,7 @@ AMARETTO_LarsenBased <- function(Data, Clusters, RegulatorData, Parameters, NrCo
     NrReassignGenes_history <- NrReassignGenes
     error_history<-list()
     index=1
-    while (NrReassignGenes > 0.01 * length(Data_rownames)) {
+    while (NrReassignGenes > convergence_cutoff * length(Data_rownames)) {
         ptm <- proc.time()
         switch(Parameters$Mode, larsen = {
             regulatoryPrograms <- AMARETTO_LearnRegulatoryProgramsLarsen(Data, Clusters, RegulatorData, RegulatorSign, Lambda, AutoRegulation, alpha = Parameters$alpha, pmax = Parameters$pmax, random_seeds)

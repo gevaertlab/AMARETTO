@@ -60,7 +60,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   CNV_matrix <- ProcessedData[[2]]
   MET_matrix <- ProcessedData[[3]]
   NrModules<-AMARETTOresults$NrModules
-  VarPercentage<-AMARETTOinit$VarPercentage
+  VarPercentage<-AMARETTOinit$Parameters$VarPercentage
   NrCores<-AMARETTOinit$NrCores
   if (!dir.exists(output_address)){
     stop("Output directory is not existing.")
