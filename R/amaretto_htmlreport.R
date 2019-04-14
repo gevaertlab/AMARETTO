@@ -39,7 +39,7 @@
 #'
 #' AMARETTO_HTMLreport(AMARETTOinit= AMARETTOinit,AMARETTOresults= AMARETTOresults,
 #'                     ProcessedData = ProcessedDataLIHC,
-#'                     VarPercentage=10,hyper_geo_test_bool=FALSE,
+#'                     hyper_geo_test_bool=FALSE,
 #'                     output_address='./')
 #'}
 AMARETTO_HTMLreport <- function(AMARETTOinit,
@@ -77,7 +77,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     GmtFromModules(AMARETTOinit,AMARETTOresults,driverGSEA)
     output_hgt<-HyperGTestGeneEnrichment(hyper_geo_reference, "./Modules_genes.gmt",NrCores)
     if(!is.null(hyper_geo_filters)){
-      output_hgt<-output_hgt%>%filter(Geneset_length < hyper_geo_filters$maxGeneLength)%>%filter(p_value < hyper_geo_filters$minPval)%>%filter(padj < hyper_geo_filters$minQval)
+      output_hgt<-output_hgt%>%filter(as.numeric(Geneset_length) < hyper_geo_filters$maxGeneLength)%>%filter(as.numeric(p_value) < hyper_geo_filters$minPval)%>%filter(as.numeric(padj) < hyper_geo_filters$minQval)
     }
     GeneSetDescriptions<-GeneSetDescription(hyper_geo_reference,MSIGDB)
   }

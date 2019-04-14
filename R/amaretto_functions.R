@@ -80,7 +80,8 @@ AMARETTO_Initialize <- function(ProcessedData = ProcessedData, Driver_list = NUL
         RegulatorData = RegulatorInfo$RegulatorData
         Alterations = RegulatorInfo$Alterations
         return(list(MA_matrix_Var = MA_matrix_Var, RegulatorData = RegulatorData, RegulatorAlterations = Alterations,
-                    ModuleMembership = Clusters, Parameters = Parameters, NrModules = NrModules, VarPercentage = VarPercentage,
+                    ModuleMembership = Clusters, Parameters = Parameters,
+                    NrModules = NrModules, VarPercentage = VarPercentage,
                     NrCores = NrCores, random_seeds = random_seeds))
     }
 }
