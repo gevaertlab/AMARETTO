@@ -50,7 +50,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
                                 ID = NULL,
                                 hyper_geo_test_bool = FALSE,
                                 hyper_geo_reference = NULL,
-                                hyper_geo_filters = list(maxGeneLength = 1000, minPval= 0.05, minQval= 0.1),
+                                hyper_geo_filters = list(maxGeneLength = 1000, minPval= 1, minQval= 1),
                                 output_address = './',
                                 MSIGDB = TRUE,
                                 driverGSEA = TRUE){
@@ -112,12 +112,12 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
         dt_genesets<-DT::datatable(output_hgt_filter %>% dplyr::mutate(Geneset=paste0('<a href="http://software.broadinstitute.org/gsea/msigdb/cards/',Geneset,'">',gsub("_"," ",Geneset),'</a>')),class = 'display', filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE,
                                    options = list(pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = c('csv', 'excel', 'pdf', 'colvis')),
           colnames=c("Gene Set Name","Description","# Genes in Overlap","Overlapping Genes","Percent of GeneSet overlapping","p-value","FDR q-value"),escape = FALSE) %>%
-          DT::formatSignif(c('p_value','padj','overlap_perc'),2) %>% DT::formatStyle('overlap_perc',background = DT::styleColorBar(c(0,1), 'lightblue'),backgroundSize = '98% 88%',backgroundRepeat = 'no-repeat', backgroundPosition = 'center')
+          DT::formatSignif(c('p_value','padj','overlap_perc'),2) %>% DT::formatStyle('overlap_perc',background = DT::styleColorBar(c(0,1), 'lightblue'),backgroundSize = '98% 88%',backgroundRepeat = 'no-repeat', backgroundPosition = 'center')%>%DT::formatStyle(columns = c(4), fontSize = '60%')
       } 
       else{
         dt_genesets<-DT::datatable(output_hgt_filter,class = 'display', filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE,options = list(
           pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',
-          buttons = c('csv', 'excel', 'pdf', 'colvis'))) %>% DT::formatSignif(c('p_value','padj','overlap_perc'),2)
+          buttons = c('csv', 'excel', 'pdf', 'colvis'))) %>% DT::formatSignif(c('p_value','padj','overlap_perc'),2)%>%DT::formatStyle(columns = c(4), fontSize = '60%')
       }
       ngenesets<-nrow(output_hgt_filter %>% dplyr::filter(padj<0.05))
     } else {
