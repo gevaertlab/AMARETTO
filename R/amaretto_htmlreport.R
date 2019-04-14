@@ -7,13 +7,13 @@
 #' @param ProcessedData List of processed input data
 #' @param SAMPLE_annotation SAMPLE annotation will be added to heatmap
 #' @param ID ID column of the SAMPLE annotation data frame
-#' @param VarPercentage Original Var Percentage used
 #' @param hyper_geo_test_bool Boolean if a hyper geometric test needs to be performed. If TRUE provide a GMT file in the hyper_geo_reference parameter.
 #' @param hyper_geo_reference GMT file with gene sets to compare with.
 #' @param output_address Output directory for the html files.
-#' @param show_row_names 
-#' @param driverGSEA 
+#' @param show_row_names if True, sample names will appear in the heatmap
+#' @param driverGSEA if TRUE, module drivers will also be included in the hypergeometric test.
 #' @param MSIGDB TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.
+#' @param hyper_geo_filters filter values for hyper-geometric test, including the max number of reference geneset,max p-value, max q-value.
 #'
 #' @import dplyr
 #' @importFrom doParallel registerDoParallel
@@ -42,12 +42,25 @@
 #'                     VarPercentage=10,hyper_geo_test_bool=FALSE,
 #'                     output_address='./')
 #'}
-AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,ProcessedData,show_row_names=FALSE,SAMPLE_annotation=NULL,ID=NULL,VarPercentage,hyper_geo_test_bool=FALSE,hyper_geo_reference=NULL,output_address='./',MSIGDB=TRUE,driverGSEA=TRUE){
+AMARETTO_HTMLreport <- function(AMARETTOinit,
+                                AMARETTOresults,
+                                ProcessedData,
+                                show_row_names = FALSE,
+                                SAMPLE_annotation = NULL,
+                                ID = NULL,
+                                hyper_geo_test_bool = FALSE,
+                                hyper_geo_reference = NULL,
+                                hyper_geo_filters = list(maxGeneLength = 1000, minPval= 0.05, minQval= 0.1),
+                                output_address = './',
+                                MSIGDB = TRUE,
+                                driverGSEA = TRUE){
+  
   `%dopar%` <- foreach::`%dopar%`
   `%do%` <- foreach::`%do%`
   CNV_matrix <- ProcessedData[[2]]
   MET_matrix <- ProcessedData[[3]]
   NrModules<-AMARETTOresults$NrModules
+  VarPercentage<-AMARETTOinit$VarPercentage
   NrCores<-AMARETTOinit$NrCores
   if (!dir.exists(output_address)){
     stop("Output directory is not existing.")
@@ -63,6 +76,9 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,AMARETTOresults,ProcessedData,show_
   if (hyper_geo_test_bool){
     GmtFromModules(AMARETTOinit,AMARETTOresults,driverGSEA)
     output_hgt<-HyperGTestGeneEnrichment(hyper_geo_reference, "./Modules_genes.gmt",NrCores)
+    if(!is.null(hyper_geo_filters)){
+      output_hgt<-output_hgt%>%filter(Geneset_length < hyper_geo_filters$maxGeneLength)%>%filter(p_value < hyper_geo_filters$minPval)%>%filter(padj < hyper_geo_filters$minQval)
+    }
     GeneSetDescriptions<-GeneSetDescription(hyper_geo_reference,MSIGDB)
   }
   cat("The hyper geometric test results are calculated.\n")
@@ -234,7 +250,7 @@ HyperGTestGeneEnrichment<-function(gmtfile,testgmtfile,NrCores,ref.numb.genes=45
         overlapping.genes<-gmt.path[[i]][gmt.path[[i]] %in% test.gmt[[j]]]
         overlapping.genes<-paste(overlapping.genes,collapse = ', ')
         # resultloop<-rbind(resultloop,c(Geneset=names(gmt.path[i]),Testset=names(test.gmt[j]),p_value=p1,n_Overlapping=k,Overlapping_genes=overlapping.genes))
-        c(Geneset=names(gmt.path[i]),Testset=names(test.gmt[j]),p_value=p1,n_Overlapping=k,Overlapping_genes=overlapping.genes)
+        c(Geneset=names(gmt.path[i]),Testset=names(test.gmt[j]),Geneset_length=l,p_value=p1,n_Overlapping=k,Overlapping_genes=overlapping.genes)
       }
     }
   }
@@ -249,9 +265,11 @@ HyperGTestGeneEnrichment<-function(gmtfile,testgmtfile,NrCores,ref.numb.genes=45
 
 #' GmtFromModules
 #' @return result
+#'
 #' @param AMARETTOinit List output from AMARETTO_Initialize().
 #' @param driverGSEA if TRUE , module driver genes will also be added to module target genes for GSEA.
 #' @param AMARETTOresults List output from AMARETTO_Run().
+#'
 #' @importFrom tibble rownames_to_column
 #' @importFrom reshape2 melt
 #' @importFrom dplyr arrange mutate select rename  filter 
