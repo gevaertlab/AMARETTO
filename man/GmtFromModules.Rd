@@ -13,6 +13,9 @@ GmtFromModules(AMARETTOinit, AMARETTOresults, driverGSEA)
 
 \item{driverGSEA}{if TRUE , module driver genes will also be added to module target genes for GSEA.}
 }
+\value{
+result
+}
 \description{
 GmtFromModules
 }

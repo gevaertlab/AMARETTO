@@ -53,7 +53,8 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
                                 hyper_geo_filters = list(maxGeneLength = 1000, minPval= 1, minQval= 1),
                                 output_address = './',
                                 MSIGDB = TRUE,
-                                driverGSEA = TRUE){
+                                driverGSEA = TRUE,
+                                phenotype_association_table=NULL){
   
   `%dopar%` <- foreach::`%dopar%`
   `%do%` <- foreach::`%do%`
@@ -125,17 +126,17 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
       ngenesets<-"NA"
     }
     print("hypergeotest is done")
-    # if (!is.null(phenotype_association_table)){
-    #   module_number<-ModuleNr
-    #   module_phenotype_association_datatable<-datatable(phenotype_association_table%>%filter(ModuleNr==paste0("Module ",module_number))%>%
-    #                                                       select(-ModuleNr),class='display',extensions = 'Buttons',rownames = FALSE,options = list(
-    #                                                         pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf'),colnames=c("Phenotypes","Statistical Test","p-value","FDR q-value","Descriptive Statistics"),escape = FALSE))%>%
-    #                                                         formatSignif(c('p.value','q.value'),2)
-    # }
-    # else{
-    #   module_phenotype_association_datatable<-"Phenotype association resuls were not provided."
-    # }
-    # print("phenotype is done!")
+    if (!is.null(phenotype_association_table)){
+      module_number<-ModuleNr
+      module_phenotype_association_datatable<-datatable(phenotype_association_table%>%filter(ModuleNr==paste0("Module ",module_number))%>%
+                                                          select(-ModuleNr),class='display',extensions = 'Buttons',rownames = FALSE,options = list(
+                                                            pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf'),colnames=c("Phenotypes","Statistical Test","p-value","FDR q-value","Descriptive Statistics"),escape = FALSE))%>%
+                                                            formatSignif(c('p.value','q.value'),2)
+    }
+    else{
+      module_phenotype_association_datatable<-"Phenotype association resuls were not provided."
+    }
+    print("phenotype is done!")
     modulemd<-paste0(full_path,"/AMARETTOhtmls/modules/module",ModuleNr,".rmd")
     file.copy(system.file("templates/TemplateReportModule.Rmd",package="AMARETTO"),modulemd)
     print("file.copy is done!")
@@ -146,7 +147,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
       heatmap_module = heatmap_module,
       dt_regulators = dt_regulators,
       dt_targets = dt_targets,
-      #module_phenotype_association_datatable=module_phenotype_association_datatable,
+      module_phenotype_association_datatable=module_phenotype_association_datatable,
       dt_genesets = dt_genesets),quiet = TRUE)
     print("rmarkdown is done and module html is created :)")
     file.remove(modulemd)
@@ -191,13 +192,13 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   }else{
     dt_genesetsall<-"Genesets were not analysed as they were not provided."
   }
-  # if (!is.null(phenotype_association_table)){
-  #   phenotype_association_datatable<-datatable(phenotype_association_table%>% mutate(ModuleNr=paste0('<a href="./modules/module',gsub("Module ","",ModuleNr),'.html">',ModuleNr,'</a>')),class='display',extensions = 'Buttons',rownames = FALSE,
-  #                                              options = list(pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf'),colnames=c("ModuleNr","Phenotypes","Statistical Test","p-value","FDR q-value","Descriptive Statistics")),escape = FALSE)%>%formatSignif(c('p.value','q.value'),2)
-  # }
-  # else{
-  #   phenotype_association_datatable<-"Phenotype association resuls were not provided."
-  # }
+  if (!is.null(phenotype_association_table)){
+    phenotype_association_datatable<-datatable(phenotype_association_table%>% mutate(ModuleNr=paste0('<a href="./modules/module',gsub("Module ","",ModuleNr),'.html">',ModuleNr,'</a>')),class='display',extensions = 'Buttons',rownames = FALSE,
+                                               options = list(pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf'),colnames=c("ModuleNr","Phenotypes","Statistical Test","p-value","FDR q-value","Descriptive Statistics")),escape = FALSE)%>%formatSignif(c('p.value','q.value'),2)
+  }
+  else{
+    phenotype_association_datatable<-"Phenotype association resuls were not provided."
+  }
   rmarkdown::render(system.file("templates/TemplateIndexPage.Rmd",package="AMARETTO"), output_dir=paste0(full_path,"/AMARETTOhtmls/"),output_file= "index.html", params = list(
     nExp = nExp,
     nCNV = nCNV,
@@ -207,7 +208,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     nMod = nMod,
     dt_overview = dt_overview,
     dt_genes=dt_genes,
-    #phenotype_association_datatable=phenotype_association_datatable,
+    phenotype_association_datatable=phenotype_association_datatable,
     dt_genesetsall = dt_gensesetsall),quiet = TRUE)
   cat("The report is ready to use\n")
 }

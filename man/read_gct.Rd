@@ -15,3 +15,6 @@ result
 \description{
 Function to turn a .gct data files into a matrix format
 }
+\examples{
+data_matrix<-read_gct(my_gctFile.gct)
+}

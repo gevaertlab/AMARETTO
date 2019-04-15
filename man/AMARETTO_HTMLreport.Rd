@@ -6,9 +6,10 @@
 \usage{
 AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
   show_row_names = FALSE, SAMPLE_annotation = NULL, ID = NULL,
-  VarPercentage, hyper_geo_test_bool = FALSE,
-  hyper_geo_reference = NULL, output_address = "./", MSIGDB = TRUE,
-  driverGSEA = TRUE, phenotype_association_table = NULL)
+  hyper_geo_test_bool = FALSE, hyper_geo_reference = NULL,
+  hyper_geo_filters = list(maxGeneLength = 1000, minPval = 1, minQval =
+  1), output_address = "./", MSIGDB = TRUE, driverGSEA = TRUE,
+  phenotype_association_table = NULL)
 }
 \arguments{
 \item{AMARETTOinit}{AMARETTO initialize output}
@@ -17,23 +18,23 @@ AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
 
 \item{ProcessedData}{List of processed input data}
 
-\item{show_row_names}{}
+\item{show_row_names}{if True, sample names will appear in the heatmap}
 
 \item{SAMPLE_annotation}{SAMPLE annotation will be added to heatmap}
 
 \item{ID}{ID column of the SAMPLE annotation data frame}
 
-\item{VarPercentage}{Original Var Percentage used}
-
 \item{hyper_geo_test_bool}{Boolean if a hyper geometric test needs to be performed. If TRUE provide a GMT file in the hyper_geo_reference parameter.}
 
 \item{hyper_geo_reference}{GMT file with gene sets to compare with.}
+
+\item{hyper_geo_filters}{filter values for hyper-geometric test, including the max number of reference geneset,max p-value, max q-value.}
 
 \item{output_address}{Output directory for the html files.}
 
 \item{MSIGDB}{TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.}
 
-\item{driverGSEA}{}
+\item{driverGSEA}{if TRUE, module drivers will also be included in the hypergeometric test.}
 }
 \value{
 result
@@ -51,7 +52,7 @@ AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 
 AMARETTO_HTMLreport(AMARETTOinit= AMARETTOinit,AMARETTOresults= AMARETTOresults,
                     ProcessedData = ProcessedDataLIHC,
-                    VarPercentage=10,hyper_geo_test_bool=FALSE,
+                    hyper_geo_test_bool=FALSE,
                     output_address='./')
 }
 }

@@ -7,7 +7,7 @@
 AMARETTO_Initialize(ProcessedData = ProcessedData, Driver_list = NULL,
   NrModules, VarPercentage, PvalueThreshold = 0.001,
   RsquareThreshold = 0.1, pmax = 10, NrCores = 1, OneRunStop = 0,
-  method = "union", random_seeds = NULL)
+  method = "union", random_seeds = NULL, convergence_cutoff = 0.01)
 }
 \arguments{
 \item{ProcessedData}{List of Expression, CNV and MethylMix data matrices, with genes in rows and samples in columns.}
@@ -30,7 +30,9 @@ AMARETTO_Initialize(ProcessedData = ProcessedData, Driver_list = NULL,
 
 \item{method}{Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.}
 
-\item{random_seeds}{A numerical vector of length 2, containing two seed numbers for randomization : 1st for kmeans and 2nd for glmnet}
+\item{random_seeds}{A numeric vector of length 2, containing two seed numbers for randomization : 1st for kmeans and 2nd for glmnet}
+
+\item{convergence_cutoff}{A numeric value (E.g. 0.01) representing the fraction of the total number of genes, in which, The algorithm is considered reaching convergence and will stop, if Nr of Gene-replacements in an iteration falls below this threshold * total number of genes.}
 }
 \value{
 result
