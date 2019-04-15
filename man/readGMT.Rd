@@ -6,6 +6,9 @@
 \usage{
 readGMT(filename)
 }
+\arguments{
+\item{filename}{}
+}
 \value{
 result
 }

@@ -5,7 +5,7 @@
 \title{AMARETTO_LearnRegulatoryProgramsLarsen}
 \usage{
 AMARETTO_LearnRegulatoryProgramsLarsen(Data, Clusters, RegulatorData,
-  RegulatorSign, Lambda, AutoRegulation, alpha, pmax)
+  RegulatorSign, Lambda, AutoRegulation, alpha, pmax, random_seeds)
 }
 \value{
 result

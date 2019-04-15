@@ -23,7 +23,7 @@ author:
     footnote: Corresponding Author
 
 
-date: "`r doc_date()`"
+date: "`r BiocStyle::doc_date()`"
 output:
   BiocStyle::pdf_document:
       toc_newpage: true
@@ -40,6 +40,7 @@ vignette: |
   %\VignetteIndexEntry{amaretto.Rmd}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  \usepackage[utf8]{BiocStyle}
   
   
 ---

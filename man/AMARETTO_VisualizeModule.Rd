@@ -5,8 +5,8 @@
 \title{AMARETTO_VisualizeModule}
 \usage{
 AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, ProcessedData,
-  ModuleNr, SAMPLE_annotation = NULL, ID = NULL,
-  order_samples = NULL, printHM = FALSE)
+  ModuleNr, show_row_names = FALSE, SAMPLE_annotation = NULL,
+  ID = NULL, order_samples = NULL)
 }
 \arguments{
 \item{AMARETTOinit}{List output from AMARETTO_Initialize().}
@@ -17,13 +17,13 @@ AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, ProcessedData,
 
 \item{ModuleNr}{Module number to visualize}
 
+\item{show_row_names}{}
+
 \item{SAMPLE_annotation}{Matrix or Dataframe with sample annotation}
 
 \item{ID}{Column used as sample name}
 
 \item{order_samples}{Order samples in heatmap by mean or by clustering}
-
-\item{printHM}{Boolean print heatmap directly}
 }
 \value{
 result
