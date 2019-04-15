@@ -50,7 +50,6 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
                                 ID = NULL,
                                 hyper_geo_test_bool = FALSE,
                                 hyper_geo_reference = NULL,
-                                hyper_geo_filters = list(maxGeneLength = 1000, minPval= 1, minQval= 1),
                                 output_address = './',
                                 MSIGDB = TRUE,
                                 driverGSEA = TRUE,
@@ -108,17 +107,17 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     print("dt_targets is done")
     if (hyper_geo_test_bool){
       output_hgt_filter<-output_hgt %>% dplyr::filter(Testset==paste0("Module_",as.character(ModuleNr))) %>% dplyr::arrange(padj)
-      output_hgt_filter<-dplyr::left_join(output_hgt_filter,GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% dplyr::mutate(overlap_perc=n_Overlapping/NumberGenes) %>% dplyr::select(Geneset,Description,n_Overlapping,Overlapping_genes,overlap_perc,p_value,padj)
+      output_hgt_filter<-dplyr::left_join(output_hgt_filter,GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% dplyr::mutate(overlap_perc=n_Overlapping/NumberGenes) %>% dplyr::select(Geneset,Description,Geneset_length,n_Overlapping,Overlapping_genes,overlap_perc,p_value,padj)
       if (MSIGDB==TRUE){
         dt_genesets<-DT::datatable(output_hgt_filter %>% dplyr::mutate(Geneset=paste0('<a href="http://software.broadinstitute.org/gsea/msigdb/cards/',Geneset,'">',gsub("_"," ",Geneset),'</a>')),class = 'display', filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE,
                                    options = list(pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = c('csv', 'excel', 'pdf', 'colvis')),
-          colnames=c("Gene Set Name","Description","# Genes in Overlap","Overlapping Genes","Percent of GeneSet overlapping","p-value","FDR q-value"),escape = FALSE) %>%
+          colnames=c("Gene Set Name","Description","# Genes in Gene Set","# Genes in Overlap","Overlapping Genes","Percent of GeneSet overlapping","p-value","FDR q-value"),escape = FALSE) %>%
           DT::formatSignif(c('p_value','padj','overlap_perc'),2) %>% DT::formatStyle('overlap_perc',background = DT::styleColorBar(c(0,1), 'lightblue'),backgroundSize = '98% 88%',backgroundRepeat = 'no-repeat', backgroundPosition = 'center')%>%DT::formatStyle(columns = c(4), fontSize = '60%')
       } 
       else{
         dt_genesets<-DT::datatable(output_hgt_filter,class = 'display', filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE,options = list(
           pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',
-          buttons = c('csv', 'excel', 'pdf', 'colvis'))) %>% DT::formatSignif(c('p_value','padj','overlap_perc'),2)%>%DT::formatStyle(columns = c(4), fontSize = '60%')
+          buttons = c('csv', 'excel', 'pdf', 'colvis'))) %>% DT::formatSignif(c('p_value','padj','overlap_perc'),2)%>%DT::formatStyle(columns = c(5), fontSize = '60%')
       }
       ngenesets<-nrow(output_hgt_filter %>% dplyr::filter(padj<0.05))
     } else {
@@ -263,6 +262,7 @@ HyperGTestGeneEnrichment<-function(gmtfile,testgmtfile,NrCores,ref.numb.genes=45
   resultloop<-as.data.frame(resultloop,stringsAsFactors=FALSE)
   resultloop$p_value<-as.numeric(resultloop$p_value)
   resultloop$n_Overlapping<-as.numeric((resultloop$n_Overlapping))
+  resultloop$Geneset_length<-as.numeric(resultloop$Geneset_length)
   resultloop[,"padj"]<-stats::p.adjust(resultloop[,"p_value"],method='BH')
   return(resultloop)
 }

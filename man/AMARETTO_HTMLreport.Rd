@@ -7,8 +7,7 @@
 AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
   show_row_names = FALSE, SAMPLE_annotation = NULL, ID = NULL,
   hyper_geo_test_bool = FALSE, hyper_geo_reference = NULL,
-  hyper_geo_filters = list(maxGeneLength = 1000, minPval = 1, minQval =
-  1), output_address = "./", MSIGDB = TRUE, driverGSEA = TRUE,
+  output_address = "./", MSIGDB = TRUE, driverGSEA = TRUE,
   phenotype_association_table = NULL)
 }
 \arguments{
@@ -28,13 +27,13 @@ AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
 
 \item{hyper_geo_reference}{GMT file with gene sets to compare with.}
 
-\item{hyper_geo_filters}{filter values for hyper-geometric test, including the max number of reference geneset,max p-value, max q-value.}
-
 \item{output_address}{Output directory for the html files.}
 
 \item{MSIGDB}{TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.}
 
 \item{driverGSEA}{if TRUE, module drivers will also be included in the hypergeometric test.}
+
+\item{hyper_geo_filters}{filter values for hyper-geometric test, including the max number of reference geneset,max p-value, max q-value.}
 }
 \value{
 result
