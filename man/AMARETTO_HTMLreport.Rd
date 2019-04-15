@@ -7,8 +7,8 @@
 AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
   show_row_names = FALSE, SAMPLE_annotation = NULL, ID = NULL,
   hyper_geo_test_bool = FALSE, hyper_geo_reference = NULL,
-  hyper_geo_filters = list(maxGeneLength = 1000, minPval = 0.05, minQval
-  = 0.1), output_address = "./", MSIGDB = TRUE, driverGSEA = TRUE)
+  hyper_geo_filters = list(maxGeneLength = 1000, minPval = 1, minQval =
+  1), output_address = "./", MSIGDB = TRUE, driverGSEA = TRUE)
 }
 \arguments{
 \item{AMARETTOinit}{AMARETTO initialize output}
