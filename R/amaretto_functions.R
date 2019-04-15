@@ -13,12 +13,14 @@
 #' @param pmax 'pmax' variable for glmnet function from glmnet package; the maximum number of variables aver to be nonzero. Should not be changed by user unless she/he fully understands the AMARETTO algorithm and how its parameters choices affect model output.
 #' @param OneRunStop OneRunStop
 #' @param NrCores A numeric variable indicating the number of computer/server cores to use for paralellelization. Default is 1, i.e. no parallelization. Please check your computer or server's computing capacities before increasing this number.  Parallelization is done via the RParallel package. Mac vs. Windows environments may behave differently when using parallelization.
-#' @param random_seeds A numerical vector of length 2, containing two seed numbers for randomization : 1st for kmeans and 2nd for glmnet
+#' @param random_seeds A numeric vector of length 2, containing two seed numbers for randomization : 1st for kmeans and 2nd for glmnet
 #' @param method Perform union or intersection of the driver genes evaluated from the input data matrices and custom driver gene list provided.
+#' @param convergence_cutoff A numeric value (E.g. 0.01) representing the fraction of the total number of genes, in which, The algorithm is considered reaching convergence and will stop, if Nr of Gene-replacements in an iteration falls below this threshold * total number of genes.  
 #'
 #' @return result
 #' @rawNamespace import(callr, except = run)
-#' @import Rcpp
+#' @rawNamespace import(Rcpp, except = .DollarNames)
+#' @rawNamespace import(utils, except = prompt)
 #' @importFrom matrixStats rowVars rowMads
 #' @importFrom stats aov coef cor density dist dnorm hclust kmeans lm na.omit p.adjust phyper prcomp qqline qqnorm qqplot rgamma var
 #' @examples
@@ -33,7 +35,7 @@
 #'}
 #' @export
 AMARETTO_Initialize <- function(ProcessedData = ProcessedData, Driver_list = NULL, NrModules, VarPercentage, PvalueThreshold = 0.001, 
-                                RsquareThreshold = 0.1, pmax = 10, NrCores = 1, OneRunStop = 0, method = "union", random_seeds = NULL) {
+                                RsquareThreshold = 0.1, pmax = 10, NrCores = 1, OneRunStop = 0, method = "union", random_seeds = NULL, convergence_cutoff = 0.01) {
     
     MA_matrix <- ProcessedData[[1]]
     CNV_matrix <- ProcessedData[[2]]
@@ -72,14 +74,16 @@ AMARETTO_Initialize <- function(ProcessedData = ProcessedData, Driver_list = NUL
     AutoRegulation = 2
     Lambda2 = 1e-04
     alpha = 1 - 1e-06
-    Parameters <- list(AutoRegulation = AutoRegulation, OneRunStop = OneRunStop, Lambda2 = Lambda2, Mode = "larsen", pmax = pmax, alpha = alpha)
+    Parameters <- list(AutoRegulation = AutoRegulation, OneRunStop = OneRunStop, Lambda2 = Lambda2,
+                       Mode = "larsen", pmax = pmax, alpha = alpha, NrModules = NrModules, VarPercentage = VarPercentage,
+                       random_seeds = random_seeds, convergence_cutoff = convergence_cutoff)
     RegulatorInfo = CreateRegulatorData(MA_matrix = MA_matrix_Var, CNV_matrix = CNV_matrix, MET_matrix = MET_matrix,
                                         Driver_list = Driver_list, PvalueThreshold = PvalueThreshold, RsquareThreshold = RsquareThreshold, method = method)
     if (length(RegulatorInfo) > 1) {
         RegulatorData = RegulatorInfo$RegulatorData
         Alterations = RegulatorInfo$Alterations
         return(list(MA_matrix_Var = MA_matrix_Var, RegulatorData = RegulatorData, RegulatorAlterations = Alterations,
-                    ModuleMembership = Clusters, Parameters = Parameters, NrCores = NrCores, random_seeds = random_seeds))
+                    ModuleMembership = Clusters, Parameters = Parameters, NrCores = NrCores))
     }
 }
 
@@ -104,9 +108,9 @@ AMARETTO_Run <- function(AMARETTOinit) {
             cat("For give cancer site only one driver is detected. AMARETTO cannot be run with less than two drivers.\n")
         } else {
             cat("Running AMARETTO on", length(rownames(AMARETTOinit$MA_matrix_Var)), "genes and", length(colnames(AMARETTOinit$MA_matrix_Var)), "samples.\n")
-            cat("\tStopping if less then", 0.01 * length(rownames(AMARETTOinit$MA_matrix_Var)), "genes reassigned.\n")
+            cat("\tStopping if less then", AMARETTOinit$Parameters$convergence_cutoff * length(rownames(AMARETTOinit$MA_matrix_Var)), "genes reassigned.\n")
             result = AMARETTO_LarsenBased(AMARETTOinit$MA_matrix_Var, AMARETTOinit$ModuleMembership, AMARETTOinit$RegulatorData,
-                                          AMARETTOinit$Parameters, AMARETTOinit$NrCores,AMARETTOinit$random_seeds)
+                                          AMARETTOinit$Parameters, AMARETTOinit$NrCores)
             result$ModuleData = AMARETTO_CreateModuleData(AMARETTOinit, result)
             result$RegulatoryProgramData = AMARETTO_CreateRegulatorPrograms(AMARETTOinit, result)
             return(result)
