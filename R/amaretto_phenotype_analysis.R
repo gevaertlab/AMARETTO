@@ -73,7 +73,7 @@ AMARETTO_statistical_test<-function(AMARETTOinit,AMARETTOresults,sample_annotati
 #' Title
 #'
 #' @param results_list 
-#'
+#' @import tibble
 #' @return
 #' @export
 #'
