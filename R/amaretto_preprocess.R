@@ -8,7 +8,7 @@
 #' @importFrom limma  strsplit2
 #' @importFrom MultiAssayExperiment experiments
 #' @importFrom stats aov  prcomp  qqline  qqnorm  qqplot  rgamma
-#' @importFrom utils data read.csv  write.table
+#' @importFrom utils data read.csv  write.table install.packages
 #' @return result
 #' @export
 #'
