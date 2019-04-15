@@ -7,8 +7,7 @@
 AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
   show_row_names = FALSE, SAMPLE_annotation = NULL, ID = NULL,
   hyper_geo_test_bool = FALSE, hyper_geo_reference = NULL,
-  hyper_geo_filters = list(maxGeneLength = 1000, minPval = 1, minQval =
-  1), output_address = "./", MSIGDB = TRUE, driverGSEA = TRUE)
+  output_address = "./", MSIGDB = TRUE, driverGSEA = TRUE)
 }
 \arguments{
 \item{AMARETTOinit}{AMARETTO initialize output}
@@ -26,8 +25,6 @@ AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
 \item{hyper_geo_test_bool}{Boolean if a hyper geometric test needs to be performed. If TRUE provide a GMT file in the hyper_geo_reference parameter.}
 
 \item{hyper_geo_reference}{GMT file with gene sets to compare with.}
-
-\item{hyper_geo_filters}{filter values for hyper-geometric test, including the max number of reference geneset,max p-value, max q-value.}
 
 \item{output_address}{Output directory for the html files.}
 
