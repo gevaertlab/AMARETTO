@@ -335,3 +335,33 @@ readGMT<-function(filename){
   names(gmtLines_genes) <- sapply(gmtLines, head, 1)
   return(gmtLines_genes)
 }
+
+#' Title plot_run_history
+#'
+#' @param AMARETTOinit 
+#' @param AMARETTOResults 
+#'
+#' @return plot
+#' @keywords internal
+#'
+#' @examples  plot_run_history(AMARETTOinit,AMARETTOResults)
+plot_run_history<-function(AMARETTOinit,AMARETTOResults){
+  means<-unlist(lapply(AMARETTOResults$run_history$error_history, mean))
+  stds<-unlist(lapply(AMARETTOResults$run_history$error_history, sd))
+  iterationNr<-c(1:length(means))
+  NrReassignGenes<-AMARETTOResults$run_history$NrReassignGenes_history[-1]
+  threshold<-AMARETTOinit$Parameters$convergence_cutoff*nrow(AMARETTOinit$MA_matrix_Var)
+  TotGenesNr<-nrow(AMARETTOinit$MA_matrix_Var)
+  
+  df<-data.frame(iterationNr = iterationNr,
+                 means = means,
+                 stds = stds,
+                 NrReassignGenes = NrReassignGenes,
+                 threshold = threshold,
+                 TotGenesNr = TotGenesNr,
+                 stringsAsFactors = FALSE)
+  p1<-ggplot2::qplot(x = iterationNr, y = means, data = df) + ggplot2::geom_errorbar(aes(x=iterationNr, ymin=means-stds, ymax=means+stds),data=df,width=0.25) + ggplot2::xlab("Iteration Number") + ggplot2::ylab("Mean Square Error") + ggplot2::geom_line() + ggplot2::geom_point() + ggplot2::ylim(0, 1)
+  p2<-ggplot2::qplot(x = iterationNr, y = NrReassignGenes) +ggplot2::geom_hline(yintercept = TotGenesNr, linetype="dashed", color = "blue")+geom_hline(yintercept = threshold, linetype="dashed", color = "red") + xlab("Iteration Number") + ylab("Target Gene Reassignments Number") + ggplot2::geom_line() + ggplot2::geom_point() + ggplot2::scale_y_continuous(trans='log2') 
+  gridExtra::grid.arrange(p1, p2, nrow = 2)
+}
+
