@@ -20,4 +20,3 @@ Title plot_run_history
 \examples{
  plot_run_history(AMARETTOinit,AMARETTOResults)
 }
-\keyword{internal}
