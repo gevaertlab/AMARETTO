@@ -409,18 +409,19 @@ all_module_TIMESERIESEDGE_test<-function(AMARETTOinit,AMARETTOresults,test_sampl
   # cov.time<-TIMESERIESEDGETIME
   # cov.cond<-TIMESERIESEDGECONDITION
   # cov.replicate<-TIMESERIESEDGETIMEREPLICATE
-  edge_obj <- edge::build_study(data = as.matrix(mods), adj.var = cov.cond, tme = cov.time, ind = NULL, sampling = "timecourse")
+  edge_obj <- edge::build_study(data = as.matrix(mods), adj.var = cov.cond, tme = cov.time, ind = NULL,sampling = "timecourse")
   #edge_obj <- build_study(data = as.matrix(mods), adj.var = cov.cond, tme = cov.time, ind = cov.replicate, sampling = "timecourse")
-  de_obj <- edge_obj 
-  full_matrix<-fullModel(de_obj)
-  null_matrix<-nullModel(de_obj)
-  ef_obj <- fit_models(de_obj, stat.type = "lrt")
-  alt_res <- resFull(ef_obj)
-  null_res <- resNull(ef_obj)
-  alt_fitted <- fitFull(ef_obj)
-  null_fitted <- fitNull(ef_obj)
-  de_lrt <- lrt(de_obj, nullDistn = "normal",pi0=1) 
-  de_odp <- odp(de_obj, bs.its = 50, verbose = FALSE,n.mods = 50)
+  #de_obj <- edge_obj 
+  #full_matrix<-fullModel(de_obj)
+  #null_matrix<-nullModel(de_obj)
+  #ef_obj <- fit_models(de_obj, stat.type = "lrt")
+  #alt_res <- resFull(ef_obj)
+  #null_res <- resNull(ef_obj)
+  #alt_fitted <- fitFull(ef_obj)
+  #null_fitted <- fitNull(ef_obj)
+  
+  #de_lrt <- lrt(de_obj, nullDistn = "normal",pi0=1) 
+  de_odp <- odp(edge_obj, bs.its = 50, verbose = FALSE,n.mods = 50)
   #summary(de_odp)
   sig_results <- qvalueObj(de_odp)
   # hist(sig_results)
