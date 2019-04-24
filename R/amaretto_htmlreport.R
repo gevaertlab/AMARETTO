@@ -169,15 +169,32 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   nGenes = length(AMARETTOresults$AllGenes)
   nMod = AMARETTOresults$NrModules
   options('DT.warn.size'=FALSE) # avoid showing datatable size-related warnings.
-  dt_overview<-DT::datatable(ModuleOverviewTable %>% dplyr::mutate(ModuleNr=paste0('<a href="./modules/module',ModuleNr,'.html">Module ',ModuleNr,'</a>')),class = 'display',filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE,options = list(
-    pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = c('csv', 'excel', 'pdf', 'colvis')),escape = FALSE)
+  dt_overview<-DT::datatable(ModuleOverviewTable %>% dplyr::mutate(ModuleNr=paste0('<a href="./modules/module',ModuleNr,'.html">Module ',ModuleNr,'</a>')),class = 'display',filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE,colnames =c("Module","# Target Genes", "# Driver Genes", "# Gene Sets"),options = list(
+     pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = c('csv', 'excel', 'pdf', 'colvis')),escape = FALSE)
   
-  all_targets<-tibble::rownames_to_column(data.frame(AMARETTOresults$ModuleMembership),"Genes") %>% dplyr::rename(Module="ModuleNr") %>% dplyr::mutate(Type="Target")
-  all_regulators<-reshape2::melt(tibble::rownames_to_column(as.data.frame(AMARETTOresults$RegulatoryPrograms),"Module"),id.vars = "Module") %>% dplyr::filter(value>0) %>% dplyr::select(variable,Module) %>% dplyr::mutate(Module=sub("Module_","",Module),Type="Regulator") %>% dplyr::rename(Genes='variable')
+  all_targets<-tibble::rownames_to_column(data.frame(AMARETTOresults$ModuleMembership),"Genes") %>% dplyr::rename(Module="ModuleNr") %>%dplyr::mutate(value=0)%>% dplyr::mutate(Type="Target")%>%select(Genes,Module,value,Type)
+  all_regulators<-reshape2::melt(tibble::rownames_to_column(as.data.frame(AMARETTOresults$RegulatoryPrograms),"Module"),id.vars = "Module") %>% dplyr::filter(value!=0) %>% dplyr::mutate(Module=sub("Module_","",Module),Type="Driver") %>% dplyr::rename(Genes='variable')%>%select(Genes,Module,value,Type)
+
+  
   all_genes<-rbind(all_targets,all_regulators) %>% dplyr::arrange(Genes) %>% dplyr::mutate(Genes=paste0('<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=',Genes,'">',Genes,'</a>')) %>% dplyr::mutate(Module=paste0('<a href="./modules/module',Module,'.html">Module ',Module,'</a>'))
+  all_genes<-all_genes%>%dplyr::mutate(Color=sapply(as.numeric(value), function(x){
+    if(is.na(x)){
+      return("")
+    }
+    else if(x>0){
+      return("darkred")
+    }
+    else if(x<0){
+      return("darkblue")
+    }
+    else {
+      return("darkgreen")
+    }
+  }))%>%dplyr::mutate(Type=paste0('<font color=',Color,'>',Type,'</font>'))%>%select(-Color,-value)
   
-  dt_genes<-DT::datatable(all_genes, class = 'display',filter = 'top',extensions = c('Buttons','KeyTable'), rownames = FALSE,options = list(
+  dt_genes<-DT::datatable(all_genes, class = 'display',filter = 'top',extensions = c('Buttons','KeyTable'), rownames = FALSE,colnames =c("Gene","Module","Gene Type"),options = list(
     pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = c('csv', 'excel', 'pdf', 'colvis')),escape = FALSE)
+  
   if (hyper_geo_test_bool){
     genesetsall<-dplyr::left_join(output_hgt %>% dplyr::filter(padj<0.05 & n_Overlapping>1) %>% dplyr::group_by(Geneset) %>% dplyr::mutate(Testset=paste0('<a href="./modules/module',sub("Module_","",Testset),'.html">',Testset,'</a>')) %>% dplyr::summarise(Modules=paste(Testset,collapse=", ")),GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% dplyr::mutate(Modules=gsub("_"," ",Modules))
     if (MSIGDB==TRUE){
