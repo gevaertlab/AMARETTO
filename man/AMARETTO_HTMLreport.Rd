@@ -33,7 +33,7 @@ AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
 
 \item{driverGSEA}{if TRUE, module drivers will also be included in the hypergeometric test.}
 
-\item{hyper_geo_filters}{filter values for hyper-geometric test, including the max number of reference geneset,max p-value, max q-value.}
+\item{phenotype_association_table}{}
 }
 \value{
 result

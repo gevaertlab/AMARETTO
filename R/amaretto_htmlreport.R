@@ -12,8 +12,8 @@
 #' @param output_address Output directory for the html files.
 #' @param show_row_names if True, sample names will appear in the heatmap
 #' @param driverGSEA if TRUE, module drivers will also be included in the hypergeometric test.
+#' @param phenotype_association_table 
 #' @param MSIGDB TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.
-#' @param hyper_geo_filters filter values for hyper-geometric test, including the max number of reference geneset,max p-value, max q-value.
 #'
 #' @import dplyr
 #' @importFrom doParallel registerDoParallel
