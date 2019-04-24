@@ -76,9 +76,6 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   if (hyper_geo_test_bool){
     GmtFromModules(AMARETTOinit,AMARETTOresults,driverGSEA)
     output_hgt<-HyperGTestGeneEnrichment(hyper_geo_reference, "./Modules_genes.gmt",NrCores)
-    if(!is.null(hyper_geo_filters)){
-      output_hgt<-output_hgt%>%filter(as.numeric(Geneset_length) < hyper_geo_filters$maxGeneLength)%>%filter(as.numeric(p_value) < hyper_geo_filters$minPval)%>%filter(as.numeric(padj) < hyper_geo_filters$minQval)
-    }
     GeneSetDescriptions<-GeneSetDescription(hyper_geo_reference,MSIGDB)
   }
   cat("The hyper geometric test results are calculated.\n")
