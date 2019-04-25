@@ -37,5 +37,14 @@ dt_genesetsall
 ```
 
 <br><br><br>
+<!--
+## Associations of Phenotypes to Regulatory Modules
 
+<br><br><br>
+
+```{r Phenotypes,echo=FALSE}
+phenotype_association_datatable
+```
+<br><br><br>
+--> 
 </center>
