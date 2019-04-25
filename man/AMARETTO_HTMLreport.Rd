@@ -7,7 +7,8 @@
 AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
   show_row_names = FALSE, SAMPLE_annotation = NULL, ID = NULL,
   hyper_geo_test_bool = FALSE, hyper_geo_reference = NULL,
-  output_address = "./", MSIGDB = TRUE, driverGSEA = TRUE)
+  output_address = "./", MSIGDB = TRUE, driverGSEA = TRUE,
+  phenotype_association_table = NULL)
 }
 \arguments{
 \item{AMARETTOinit}{AMARETTO initialize output}
@@ -31,6 +32,8 @@ AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
 \item{MSIGDB}{TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.}
 
 \item{driverGSEA}{if TRUE, module drivers will also be included in the hypergeometric test.}
+
+\item{phenotype_association_table}{}
 }
 \value{
 result
