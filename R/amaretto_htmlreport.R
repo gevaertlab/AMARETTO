@@ -146,7 +146,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
       dt_genesets = dt_genesets),quiet = TRUE)
     print("rmarkdown is done and module html is created :)")
     file.remove(modulemd)
-    file.remove(paste0(full_path,"/AMARETTOhtmls/modules/module",ModuleNr,"_files"))
+    #file.remove(paste0(full_path,"/AMARETTOhtmls/modules/module",ModuleNr,"_files"))
     print("file removed successfully :) Done!")
     #ModuleOverviewTable<-rbind(ModuleOverviewTable,c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),ngenesets))
     return(c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),ngenesets))
@@ -154,7 +154,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     # },error=function(e){message(paste("an error occured for Module", ModuleNr))})
   }
 
-
+  file.remove(paste0(full_path,"/AMARETTOhtmls/modules/module",".*","_files"))
   parallel::stopCluster(cluster)
   cat("The module htmls are finished.\n")
   ModuleOverviewTable<-data.frame(matrix(unlist(ModuleOverviewTable),byrow=TRUE,ncol=4),stringsAsFactors=FALSE)
