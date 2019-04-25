@@ -95,26 +95,26 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     dt_regulators<-DT::datatable(tibble::rownames_to_column(as.data.frame(ModuleRegulators),"RegulatorIDs") %>% dplyr::rename(Weights="ModuleRegulators") %>% dplyr::mutate(RegulatorIDs=paste0('<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=',RegulatorIDs,'">',RegulatorIDs,'</a>'))%>%dplyr::arrange(Weights),
                              class = 'display',filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE, options = list(
                                columnDefs = list(list(width = '200px', targets = "_all")),pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',
-                               buttons = c('csv', 'excel', 'pdf', 'colvis')),escape = 'Weights') %>% DT::formatRound('Weights',3) %>% DT::formatStyle('Weights',color = DT::styleInterval(0, c('darkblue', 'darkred')))
+                               buttons = c('csv', 'excel', 'pdf', 'colvis')),colnames = c("Driver Gene", "Weight"),escape = 'Weight') %>% DT::formatRound('Weights',3) %>% DT::formatStyle('Weights',color = DT::styleInterval(0, c('darkblue', 'darkred')))
     print("dt_regulators is done")
     dt_targets<-DT::datatable(as.data.frame(AMARETTOresults$ModuleMembership) %>% tibble::rownames_to_column("TargetIDs")%>% dplyr::arrange(TargetIDs) %>% dplyr::rename(moduleNr=ModuleNr) %>% dplyr::filter(moduleNr==ModuleNr) %>% dplyr::select(-moduleNr) %>% dplyr::mutate(TargetIDs=paste0('<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=',TargetIDs,'">',TargetIDs,'</a>')),
                              class = 'display', filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE, options = list(
                                columnDefs = list(list(width = '200px', targets = "_all")),pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',
-                               buttons = c('csv', 'excel', 'pdf', 'colvis')),escape = FALSE)
+                               buttons = c('csv', 'excel', 'pdf', 'colvis')),colnames = c("Target Gene"),escape = FALSE)
     print("dt_targets is done")
     if (hyper_geo_test_bool){
       output_hgt_filter<-output_hgt %>% dplyr::filter(Testset==paste0("Module_",as.character(ModuleNr))) %>% dplyr::arrange(padj)
-      output_hgt_filter<-dplyr::left_join(output_hgt_filter,GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% dplyr::mutate(overlap_perc=n_Overlapping/NumberGenes) %>% dplyr::select(Geneset,Description,Geneset_length,n_Overlapping,Overlapping_genes,overlap_perc,p_value,padj)
+      output_hgt_filter<-dplyr::left_join(output_hgt_filter,GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% dplyr::mutate(overlap_perc=n_Overlapping/NumberGenes) %>% dplyr::select(Geneset,Description,Geneset_length,n_Overlapping,Overlapping_genes,overlap_perc,p_value,padj)%>%arrange(padj)
       if (MSIGDB==TRUE){
         dt_genesets<-DT::datatable(output_hgt_filter %>% dplyr::mutate(Geneset=paste0('<a href="http://software.broadinstitute.org/gsea/msigdb/cards/',Geneset,'">',gsub("_"," ",Geneset),'</a>')),class = 'display', filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE,
                                    options = list(pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = c('csv', 'excel', 'pdf', 'colvis')),
-          colnames=c("Gene Set Name","Description","# Genes in Gene Set","# Genes in Overlap","Overlapping Genes","Percent of GeneSet overlapping","p-value","FDR q-value"),escape = FALSE) %>%
-          DT::formatSignif(c('p_value','padj','overlap_perc'),2) %>% DT::formatStyle('overlap_perc',background = DT::styleColorBar(c(0,1), 'lightblue'),backgroundSize = '98% 88%',backgroundRepeat = 'no-repeat', backgroundPosition = 'center')%>%DT::formatStyle(columns = c(4), fontSize = '60%')
+                                   colnames=c("Gene Set Name","Gene Set Description","# Genes in Gene Set","# Genes in Overlap","Genes in Overlap","% Genes in overlap","P-value","FDR Q-value"),escape = FALSE) %>%
+          DT::formatSignif(c('p_value','padj','overlap_perc'),2) %>% DT::formatStyle('overlap_perc',background = DT::styleColorBar(c(0,1), 'lightblue'),backgroundSize = '98% 88%',backgroundRepeat = 'no-repeat', backgroundPosition = 'center')%>%DT::formatStyle(columns = c(5), fontSize = '60%')
       } 
       else{
         dt_genesets<-DT::datatable(output_hgt_filter,class = 'display', filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE,options = list(
           pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',
-          buttons = c('csv', 'excel', 'pdf', 'colvis'))) %>% DT::formatSignif(c('p_value','padj','overlap_perc'),2)%>%DT::formatStyle(columns = c(5), fontSize = '60%')
+          buttons = c('csv', 'excel', 'pdf', 'colvis'))) %>% DT::formatSignif(c('p_value','padj','overlap_perc'),2)%>%DT::formatStyle(columns = c(6), fontSize = '60%')
       }
       ngenesets<-nrow(output_hgt_filter %>% dplyr::filter(padj<0.05))
     } else {
@@ -123,11 +123,10 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     }
     print("hypergeotest is done")
     if (!is.null(phenotype_association_table)){
-      module_number<-ModuleNr
-      module_phenotype_association_datatable<-datatable(phenotype_association_table%>%filter(ModuleNr==paste0("Module ",module_number))%>%
-                                                          select(-ModuleNr),class='display',extensions = 'Buttons',rownames = FALSE,options = list(
-                                                            pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf'),colnames=c("Phenotypes","Statistical Test","p-value","FDR q-value","Descriptive Statistics"),escape = FALSE))%>%
-                                                            formatSignif(c('p.value','q.value'),2)
+      moduleNumber<-ModuleNr
+      module_phenotype_association_datatable<-datatable(phenotype_association_table%>%dplyr::filter(ModuleNr==paste0("Module ",moduleNumber))%>%arrange(q.value)%>%
+                                                          dplyr::select(-ModuleNr),class='display',filter = 'top', extensions = c('Buttons','KeyTable'),rownames = FALSE,options = list(
+                                                            pageLength = 10,lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = c('csv', 'excel', 'pdf','colvis')),colnames=c("Phenotype","Statistics Test","P-value","FDR Q-value","Descriptive Statistics"),escape = FALSE)%>%DT::formatSignif(c('p.value','q.value'),2)
     }
     else{
       module_phenotype_association_datatable<-"Phenotype association resuls were not provided."
@@ -169,8 +168,9 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   nGenes = length(AMARETTOresults$AllGenes)
   nMod = AMARETTOresults$NrModules
   options('DT.warn.size'=FALSE) # avoid showing datatable size-related warnings.
-  dt_overview<-DT::datatable(ModuleOverviewTable %>% dplyr::mutate(ModuleNr=paste0('<a href="./modules/module',ModuleNr,'.html">Module ',ModuleNr,'</a>')),class = 'display',filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE,colnames =c("Module","# Target Genes", "# Driver Genes", "# Gene Sets"),options = list(
-     pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = c('csv', 'excel', 'pdf', 'colvis')),escape = FALSE)
+  
+  dt_overview<-DT::datatable(ModuleOverviewTable %>% dplyr::mutate(ModuleNr=paste0('<a href="./modules/module',ModuleNr,'.html">Module ',ModuleNr,'</a>')),class = 'display',filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE,colnames =c("Module","# Target Genes", "# Driver Genes", "# Gene Sets"),
+                             options = list(pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = c('csv', 'excel', 'pdf', 'colvis')),escape = FALSE)
   
   all_targets<-tibble::rownames_to_column(data.frame(AMARETTOresults$ModuleMembership),"Genes") %>% dplyr::rename(Module="ModuleNr") %>%dplyr::mutate(value=0)%>% dplyr::mutate(Type="Target")%>%select(Genes,Module,value,Type)
   all_regulators<-reshape2::melt(tibble::rownames_to_column(as.data.frame(AMARETTOresults$RegulatoryPrograms),"Module"),id.vars = "Module") %>% dplyr::filter(value!=0) %>% dplyr::mutate(Module=sub("Module_","",Module),Type="Driver") %>% dplyr::rename(Genes='variable')%>%select(Genes,Module,value,Type)
@@ -196,18 +196,24 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = c('csv', 'excel', 'pdf', 'colvis')),escape = FALSE)
   
   if (hyper_geo_test_bool){
-    genesetsall<-dplyr::left_join(output_hgt %>% dplyr::filter(padj<0.05 & n_Overlapping>1) %>% dplyr::group_by(Geneset) %>% dplyr::mutate(Testset=paste0('<a href="./modules/module',sub("Module_","",Testset),'.html">',Testset,'</a>')) %>% dplyr::summarise(Modules=paste(Testset,collapse=", ")),GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% dplyr::mutate(Modules=gsub("_"," ",Modules))
+    
+    genesetsall<-output_hgt %>% dplyr::left_join(GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% dplyr::mutate(Testset=paste0('<a href="./modules/module',sub("Module_","",Testset),'.html">',Testset,'</a>')) %>% dplyr::mutate(Modules=gsub("_"," ",Testset))%>%dplyr::mutate(overlap_perc=n_Overlapping/NumberGenes)
+    genesetsall<-genesetsall%>%select(Modules,Geneset,Description,Geneset_length,n_Overlapping,Overlapping_genes,overlap_perc,p_value,padj)%>%arrange(padj)
+    #genesetsall<-dplyr::left_join(output_hgt %>% dplyr::group_by(Geneset) %>% dplyr::mutate(Testset=paste0('<a href="./modules/module',sub("Module_","",Testset),'.html">',Testset,'</a>')) %>% dplyr::summarise(Modules=paste(Testset,collapse=", ")),GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% dplyr::mutate(Modules=gsub("_"," ",Modules))
     if (MSIGDB==TRUE){
       genesetsall<-dplyr::mutate(genesetsall,Geneset=paste0('<a href="http://software.broadinstitute.org/gsea/msigdb/cards/',Geneset,'">',gsub("_"," ",Geneset),'</a>'))
     }
     dt_genesetsall<-DT::datatable(genesetsall,class = 'display',filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE,
-                              options = list(pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = c('csv', 'excel', 'pdf', 'colvis')),escape = FALSE)
+                              options = list(pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = c('csv', 'excel', 'pdf', 'colvis')),
+                              colnames=c("Module","Gene Set Name","Gene Set Description","# Genes in Gene Set","# Genes in Overlap","Genes in Overlap","% Genes in overlap","P-value","FDR Q-value"),escape = FALSE)%>%
+      DT::formatSignif(c('p_value','padj','overlap_perc'),2) %>% DT::formatStyle('overlap_perc',background = DT::styleColorBar(c(0,1), 'lightblue'),backgroundSize = '98% 88%',backgroundRepeat = 'no-repeat', backgroundPosition = 'center')%>%DT::formatStyle(columns = c(6), fontSize = '60%')
   }else{
     dt_genesetsall<-"Genesets were not analysed as they were not provided."
   }
+  
   if (!is.null(phenotype_association_table)){
-    phenotype_association_datatable<-datatable(phenotype_association_table%>% mutate(ModuleNr=paste0('<a href="./modules/module',gsub("Module ","",ModuleNr),'.html">',ModuleNr,'</a>')),class='display',extensions = 'Buttons',rownames = FALSE,
-                                               options = list(pageLength = 10,dom = 'Bfrtip',buttons = c('csv', 'excel', 'pdf'),colnames=c("ModuleNr","Phenotypes","Statistical Test","p-value","FDR q-value","Descriptive Statistics")),escape = FALSE)%>%formatSignif(c('p.value','q.value'),2)
+    phenotype_association_datatable<-datatable(phenotype_association_table%>% mutate(ModuleNr=paste0('<a href="./modules/module',gsub("Module ","",ModuleNr),'.html">',ModuleNr,'</a>'))%>%arrange(q.value),class='display',filter = 'top', extensions = c('Buttons','KeyTable'),rownames = FALSE,
+                                               options = list(pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = c('csv', 'excel', 'pdf', 'colvis')),colnames=c("Module","Phenotype","Statistics Test","P-value","FDR Q-value","Descriptive Statistics"),escape = FALSE)%>%formatSignif(c('p.value','q.value'),2)
   }
   else{
     phenotype_association_datatable<-"Phenotype association resuls were not provided."

@@ -159,7 +159,7 @@ AMARETTO_unite_results<-function(results_list){
       df<-add_column(df,
                      Phenotypes=paste0(results_list[[i]]$phenotype1," (TIMESERIESEDGECONDITION),",results_list[[i]]$phenotype2," (TIMESERIESEDGETIME)"),
                      Statistical_Test="Time Series Analysis: Edge time course analysis (Likelihood ratio test)")%>%
-        mutate(ModuleNr=paste("Module",ModuleNr))%>%add_column(Descriptive_Statistics=" ")%>%
+        mutate(ModuleNr=paste("Module",ModuleNr))%>%add_column(Descriptive_Statistics=" ")%>%arrange(q.value)
         select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
     }
     united_df<-rbind(united_df,as.data.frame(df))

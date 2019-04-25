@@ -18,14 +18,14 @@ heatmap_module
 ```
 <br><br><br>
 
-## Regulatory Program: Activator and Repressor Driver Genes
+## Activator and Repressor Driver Genes in Regulatory Module
 <br><br><br>
 ```{r regulators, echo=FALSE}
 dt_regulators
 ```
 <br><br><br>
 
-## Regulatory Module: Target Genes
+## Target Genes in Regulatory Module
 <br><br><br>
 ```{r targets, echo=FALSE}
 dt_targets
@@ -40,7 +40,7 @@ dt_genesets
 
 <br><br><br>
 
-## Associations of Phenotypes with Regulatory Module
+## Associations of Phenotypes to Regulatory Module
 
 <br><br><br>
 

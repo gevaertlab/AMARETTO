@@ -38,7 +38,7 @@ dt_genesetsall
 
 <br><br><br>
 
-## Associations of Phenotypes with Regulatory Modules
+## Associations of Phenotypes to Regulatory Modules
 
 <br><br><br>
 
