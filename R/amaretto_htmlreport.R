@@ -146,6 +146,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
       dt_genesets = dt_genesets),quiet = TRUE)
     print("rmarkdown is done and module html is created :)")
     file.remove(modulemd)
+    file.remove(paste0(full_path,"/AMARETTOhtmls/modules/module",ModuleNr,"_files"))
     print("file removed successfully :) Done!")
     #ModuleOverviewTable<-rbind(ModuleOverviewTable,c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),ngenesets))
     return(c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),ngenesets))
@@ -198,7 +199,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   if (hyper_geo_test_bool){
     
     genesetsall<-output_hgt %>% dplyr::left_join(GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% dplyr::mutate(Testset=paste0('<a href="./modules/module',sub("Module_","",Testset),'.html">',Testset,'</a>')) %>% dplyr::mutate(Modules=gsub("_"," ",Testset))%>%dplyr::mutate(overlap_perc=n_Overlapping/NumberGenes)
-    genesetsall<-genesetsall%>%select(Modules,Geneset,Description,Geneset_length,n_Overlapping,Overlapping_genes,overlap_perc,p_value,padj)%>%arrange(padj)
+    genesetsall<-genesetsall%>%select(Modules,Geneset,Description,Geneset_length,n_Overlapping,Overlapping_genes,overlap_perc,p_value,padj)%>%arrange(padj)%>%filter(n_Overlapping>2)
     #genesetsall<-dplyr::left_join(output_hgt %>% dplyr::group_by(Geneset) %>% dplyr::mutate(Testset=paste0('<a href="./modules/module',sub("Module_","",Testset),'.html">',Testset,'</a>')) %>% dplyr::summarise(Modules=paste(Testset,collapse=", ")),GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% dplyr::mutate(Modules=gsub("_"," ",Modules))
     if (MSIGDB==TRUE){
       genesetsall<-dplyr::mutate(genesetsall,Geneset=paste0('<a href="http://software.broadinstitute.org/gsea/msigdb/cards/',Geneset,'">',gsub("_"," ",Geneset),'</a>'))
