@@ -195,9 +195,9 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
       return("darkgreen")
     }
   }))%>%dplyr::mutate(Type=paste0('<font color=',Color,'>',Type,'</font>'))%>%select(-Color,-value)
-  
-  dt_genes<-DT::datatable(all_genes, class = 'display',filter = 'top',extensions = c('Buttons','KeyTable'), rownames = FALSE,colnames =c("Gene","Module","Gene Type"),
-                          options = list(columnDefs = list(list(className = 'dt-head-center', targets = "_all"),list(className = 'text-left', targets = "_all")), pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = buttons_list),escape = FALSE)
+  all_genes<-as.matrix(all_genes)
+  dt_genes<-DT::datatable(all_genes[1:500,], class = 'display',filter = 'top',extensions = c('Buttons','KeyTable'), rownames = FALSE,colnames =c("Gene","Module","Gene Type"),
+                          options = list(data=all_genes, deferRender=TRUE,columnDefs = list(list(className = 'dt-head-center', targets = "_all"),list(className = 'text-left', targets = "_all")), pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = buttons_list),escape = FALSE)
   
   if (hyper_geo_test_bool){
     genesetsall<-output_hgt %>% dplyr::left_join(GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% dplyr::mutate(Testset=paste0('<a href="./modules/module',sub("Module_","",Testset),'.html">',paste0(Testset,paste0(rep("&nbsp",14),collapse = "")),'</a>')) %>% dplyr::mutate(Modules=gsub("_","&nbsp",Testset))%>%dplyr::mutate(overlap_perc=n_Overlapping/NumberGenes)%>%mutate(overlap_perc=signif(overlap_perc, digits = 3))
@@ -206,8 +206,9 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     if (MSIGDB==TRUE){
       genesetsall<-dplyr::mutate(genesetsall,Geneset=paste0('<a href="http://software.broadinstitute.org/gsea/msigdb/cards/',Geneset,'">',gsub("_"," ",Geneset),'</a>'))
     }
-    dt_genesetsall<-DT::datatable(genesetsall,class = 'display',filter = 'top', extensions = c('Buttons'), rownames = FALSE,
-                              options = list(deferRender=TRUE,paging =TRUE, pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = buttons_list,columnDefs = list(list(className = 'dt-head-center', targets = "_all"),list(className = 'text-left', targets = "_all"))),
+    genesetsall<-as.matrix(genesetsall)
+    dt_genesetsall<-DT::datatable(genesetsall[1:10,],class = 'display',filter = 'top', extensions = c('Buttons'), rownames = FALSE,
+                              options = list(data=genesetsall,deferRender=TRUE,paging =TRUE, pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = buttons_list,columnDefs = list(list(className = 'dt-head-center', targets = "_all"),list(className = 'text-left', targets = "_all"))),
                               colnames=c("Module","Gene Set Name","Gene Set Description","# Genes in Gene Set","# Genes in Overlap","Genes in Overlap","% Genes in overlap","P-value","FDR Q-value"),escape = FALSE)%>%
       DT::formatSignif(c('p_value','padj','overlap_perc'),2) %>% DT::formatStyle('overlap_perc',background = DT::styleColorBar(c(0,1), 'lightblue'),backgroundSize = '98% 88%',backgroundRepeat = 'no-repeat', backgroundPosition = 'center')%>%DT::formatStyle(columns = c(6), fontSize = '60%')
   }else{
@@ -367,6 +368,7 @@ readGMT<-function(filename){
 #' @param AMARETTOResults 
 #' @import ggplot2
 #' @importFrom gridExtra grid.arrange
+#' @importFrom stats sd
 #' @return plot
 #' @export
 #'
