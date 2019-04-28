@@ -5,6 +5,16 @@ output:
     theme: cerulean
     highlight: NULL
 ---
+<style>
+  .main-container {
+    max-width:  100% !important;
+    padding-right: 1% !important;
+    padding-left: 1% !important;
+    margin-right: 1% !important;
+    margin-left: 1% !important;
+    table-layout: fixed !important;
+  }
+</style>
 
 <center>
 ## Run Information
@@ -46,5 +56,5 @@ dt_genesetsall
 phenotype_association_datatable
 ```
 <br><br><br>
---> 
+-->
 </center>
