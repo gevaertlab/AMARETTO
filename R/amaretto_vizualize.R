@@ -86,15 +86,17 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
 
   ClustRegulatorData <- t(RegulatorData[,overlapping_samples_clust])
   ClustModuleData <- t(ModuleData[,overlapping_samples_clust])
-  Regwidth <- ncol(ClustRegulatorData)*0.5
-  ha_Reg <- Heatmap(ClustRegulatorData, name = "Gene Expression", column_title = "Regulator Genes\nExpression",cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = grid::gpar(fontsize = 6),top_annotation = ha_drivers,
-                    column_title_gp = grid::gpar(fontsize = 6, fontface = "bold"), col=circlize::colorRamp2(c(-max(abs(ClustRegulatorData)), 0, max(abs(ClustRegulatorData))), c("darkblue", "white", "darkred")),heatmap_legend_param = list(color_bar = "continuous",legend_direction = "horizontal",title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)), width = grid::unit(Regwidth, "cm"))
-
+  
   if(length(ClustModuleData)<50){
     fontsizeMo=6
   } else if (length(ClustModuleData)<200){
     fontsizeMo=4
   } else {fontsizeMo=2}
+  
+  Regwidth <- ncol(ClustRegulatorData)*0.5
+  ha_Reg <- Heatmap(ClustRegulatorData, name = "Gene Expression", column_title = "Regulator Genes\nExpression",cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = grid::gpar(fontsize = fontsizeMo),top_annotation = ha_drivers,
+                    column_title_gp = grid::gpar(fontsize = 6, fontface = "bold"), col=circlize::colorRamp2(c(-max(abs(ClustRegulatorData)), 0, max(abs(ClustRegulatorData))), c("darkblue", "white", "darkred")),heatmap_legend_param = list(color_bar = "continuous",legend_direction = "horizontal",title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)), width = grid::unit(Regwidth, "cm"))
+
 
   ha_Module <- Heatmap(ClustModuleData, name = "", column_title = "Target Genes\nExpression",cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=show_row_names,column_names_gp = grid::gpar(fontsize = fontsizeMo),show_heatmap_legend = FALSE,
                        column_title_gp = grid::gpar(fontsize = 6, fontface = "bold"), col=circlize::colorRamp2(c(-max(abs(ClustModuleData)), 0, max(abs(ClustModuleData))), c("darkblue", "white", "darkred")),heatmap_legend_param = list(color_bar = "continuous",legend_direction = "horizontal",title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
@@ -110,9 +112,9 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
       METData2[which(METData<0)] <- "Hypo-methylated"  # hypo
       METData2[which(METData==0)] <- "Not altered" # nothing
       METData2<-t(METData2)
-      Metwidth=ncol(METData2)*0.5
+      Metwidth=ncol(METData2)*0.7
       Met_col=structure(c("#006992","#d95d39","white"),names=c("Hyper-methylated","Hypo-methylated","Not altered"))
-      ha_Met <- Heatmap(METData2, name = "Methylation State", column_title = "Methylation State", cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = grid::gpar(fontsize = 6),show_heatmap_legend = TRUE,
+      ha_Met <- Heatmap(METData2, name = "Methylation State", column_title = "Methylation", cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = grid::gpar(fontsize = 6),show_heatmap_legend = TRUE,
                         column_title_gp = gpar(fontsize = 6, fontface = "bold"), col = Met_col, width = grid::unit(Metwidth, "cm"),heatmap_legend_param = list(title_gp = gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
       ha_list<- ha_Met + ha_list
     }
@@ -128,9 +130,9 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
       CNVData2[which(CNVData<=(-0.1))] <- "Deleted"  # deletion
       CNVData2[which(CNVData<0.1 & CNVData>(-0.1))] <- "Not altered" # nothing
       CNVData2<-t(CNVData2)
-      CNVwidth=ncol(CNVData2)*0.5
+      CNVwidth=ncol(CNVData2)*0.7
       CNV_col=structure(c("#006992","#d95d39","white"),names=c("Deleted","Amplified","Not altered"))
-      ha_CNV <- Heatmap(CNVData2, name = "CNV State", column_title = "CNV State", cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = grid::gpar(fontsize = 6),show_heatmap_legend = TRUE,
+      ha_CNV <- Heatmap(CNVData2, name = "CNV State", column_title = "CNV", cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = grid::gpar(fontsize = 6),show_heatmap_legend = TRUE,
                         column_title_gp = grid::gpar(fontsize = 6, fontface = "bold"),col = CNV_col,width = grid::unit(CNVwidth, "cm"),heatmap_legend_param = list(title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
       ha_list<-ha_CNV + ha_list
     }
