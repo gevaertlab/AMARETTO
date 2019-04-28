@@ -367,6 +367,7 @@ readGMT<-function(filename){
 #' @param AMARETTOResults 
 #' @import ggplot2
 #' @importFrom gridExtra grid.arrange
+#' @importFrom stats sd
 #' @return plot
 #' @export
 #'
