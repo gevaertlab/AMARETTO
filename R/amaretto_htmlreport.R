@@ -309,7 +309,7 @@ GmtFromModules <- function(AMARETTOinit,AMARETTOresults,driverGSEA){
   ModuleMembership<-tibble::rownames_to_column(as.data.frame(AMARETTOresults$ModuleMembership),"GeneNames")
   if(driverGSEA){
     all_regulators <-reshape2::melt(tibble::rownames_to_column(as.data.frame(AMARETTOresults$RegulatoryPrograms),"Module"), id.vars = "Module") %>%
-      dplyr::filter(value > 0) %>% dplyr::select(variable, Module) %>% dplyr::mutate(Module = sub("Module_", "", Module)) %>% dplyr::rename(GeneNames = "variable")%>% dplyr::rename(ModuleNr = "Module")
+      dplyr::filter(value!=0) %>% dplyr::select(variable, Module) %>% dplyr::mutate(Module = sub("Module_", "", Module)) %>% dplyr::rename(GeneNames = "variable")%>% dplyr::rename(ModuleNr = "Module")
     ModuleMembership<-rbind(ModuleMembership,all_regulators)
   }
   NrModules<-AMARETTOresults$NrModules
