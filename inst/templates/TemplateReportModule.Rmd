@@ -55,7 +55,7 @@ dt_genesets
 <br><br><br>
 
 ```{r module_Phenotypes,echo=FALSE}
-module_phenotype_association_datatable
+dt_phenotype_association
 ```
 
 <br><br><br>

@@ -53,7 +53,7 @@ dt_genesetsall
 <br><br><br>
 
 ```{r Phenotypes,echo=FALSE}
-phenotype_association_datatable
+dt_phenotype_association_all
 ```
 <br><br><br>
 
