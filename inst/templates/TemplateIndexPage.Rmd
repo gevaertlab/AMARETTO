@@ -1,10 +1,17 @@
 ---
 title: <center>AMARETTO Report</center>
+pagetitle: AMARETTO Report
 output: 
   html_document:
+    toc: true
+    toc_depth: 2
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
     theme: cerulean
     highlight: NULL
 ---
+
 <style>
   .main-container {
     max-width:  100% !important;

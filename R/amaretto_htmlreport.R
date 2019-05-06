@@ -62,17 +62,20 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   NrModules <- AMARETTOresults$NrModules
   VarPercentage <- AMARETTOinit$Parameters$VarPercentage
   
-  #set number of cores
+  #set number of cores and check
   NrCores <- AMARETTOinit$NrCores
   MaxCores <- parallel::detectCores(all.tests = FALSE, logical = TRUE)
   
   if(MaxCores < NrCores){
-  stop(paste0("The number of cores that is asked for ",NrCores," is more than what's avalaible. Changes can be made on AMARETTOinit$NrCores."))
+  stop(paste0("The number of cores that is asked for (",NrCores,"), is more than what's avalaible. Changes can be made on AMARETTOinit$NrCores."))
   }
   
+  #check directory
   if (!dir.exists(output_address)){
     stop("Output directory is not existing.")
   }
+  
+  #check gmt file HGT
   if (hyper_geo_test_bool==TRUE){
     if (!file.exists(hyper_geo_reference)){
     stop("GMT for hyper geometric test is not existing.\n")
@@ -86,9 +89,9 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     GmtFromModules(AMARETTOinit, AMARETTOresults, driverGSEA)
     output_hgt <- HyperGTestGeneEnrichment(hyper_geo_reference, "./Modules_genes.gmt", NrCores)
     GeneSetDescriptions <- GeneSetDescription(hyper_geo_reference, MSIGDB)
+    cat("The hyper geometric test results are calculated.\n")
   }
-  cat("The hyper geometric test results are calculated.\n")
-  
+
   #Parallelizing
   cluster <- parallel::makeCluster(c(rep("localhost", NrCores)), type = "SOCK")
   doParallel::registerDoParallel(cluster,cores=NrCores)
@@ -96,30 +99,33 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   full_path <- normalizePath(report_address)
   ModuleOverviewTable <- NULL
   
-  buttons_list <- list(list(extend ='csv'), list(extend ='excel'), list(extend = 'pdf', pageSize = 'A4', orientation = 'landscape'),list(extend ='print'), list(extend ='colvis'))
-  
   ModuleOverviewTable<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT','rmarkdown')) %dopar% {
   #for(ModuleNr in 1:NrModules){
     #get heatmap
     print(paste0("ModuleNr = ",ModuleNr))
-    heatmap_module <- AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, ProcessedData, show_row_names = show_row_names, SAMPLE_annotation=SAMPLE_annotation, ID=ID, ModuleNr=ModuleNr)
+    heatmap_module <- AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, ProcessedData, show_row_names = show_row_names, SAMPLE_annotation=SAMPLE_annotation, ID=ID, ModuleNr=ModuleNr,printHM = FALSE)
     print("The Heatmap is visualised.")
     
     # create datables that are supplied to the RMarkdown file
     ModuleRegulators <- AMARETTOresults$RegulatoryPrograms[ModuleNr,which(AMARETTOresults$RegulatoryPrograms[ModuleNr,] != 0)]
     print("ModuleRegulators are defined.")
+    filename_table <- paste0("regulators_module",ModuleNr)
+    buttons_list <- list(list(extend ='csv',filename=filename_table), list(extend ='excel',filename=filename_table), list(extend = 'pdf', pageSize = 'A4', orientation = 'landscape',filename=filename_table),list(extend ='print'), list(extend ='colvis'))
+    column_markup <- list(list(width = '200px', className = 'dt-head-center', targets = "_all"), list(className = 'text-left', targets = "_all"))
     dt_regulators <- DT::datatable(tibble::rownames_to_column(as.data.frame(ModuleRegulators),"RegulatorIDs") %>% 
                                      dplyr::rename(Weights="ModuleRegulators") %>% 
-                                     mutate(Weights=signif(Weights, digits = 3)) %>% 
+                                     dplyr::mutate(Weights=signif(Weights, digits = 3)) %>% 
                                      dplyr::mutate(RegulatorIDs=paste0('<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=',RegulatorIDs,'">',RegulatorIDs,'</a>')) %>% 
-                                     dplyr::arrange(Weights),
+                                     dplyr::arrange(-Weights),
                                 class = 'display', filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE, 
-                                options = list(columnDefs = list(list(width = '200px', className = 'dt-head-center', targets = "_all"), list(className = 'text-left', targets = "_all")), pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), 
+                                options = list(columnDefs = column_markup, pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), 
                                                keys = TRUE, dom = 'Blfrtip', buttons = buttons_list),
                                colnames = c("Driver Gene", "Weight"), escape = 'Weight') %>% 
                       DT::formatStyle('Weights',color = DT::styleInterval(0, c('darkblue', 'darkred')))
     print("Data tabel of regulators is created.")
     
+    filename_table <- paste0("targets_module",ModuleNr)
+    buttons_list <- list(list(extend ='csv',filename=filename_table), list(extend ='excel',filename=filename_table), list(extend = 'pdf', pageSize = 'A4', orientation = 'landscape',filename=filename_table),list(extend ='print'), list(extend ='colvis'))
     dt_targets <- DT::datatable(as.data.frame(AMARETTOresults$ModuleMembership) %>% 
                                   tibble::rownames_to_column("TargetIDs") %>% 
                                   dplyr::arrange(TargetIDs) %>% 
@@ -128,7 +134,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
                                   dplyr::select(-moduleNr) %>% 
                                   dplyr::mutate(TargetIDs=paste0('<a href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=',TargetIDs,'">',TargetIDs,'</a>')),
                                 class = 'display', filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE, 
-                                options = list(columnDefs = list(list(width = '200px', className = 'dt-head-center', targets = "_all"), list(className = 'text-left', targets = "_all")), pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), 
+                                options = list(columnDefs = column_markup, pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), 
                                                keys = TRUE, dom = 'Blfrtip', buttons = buttons_list),
                                 colnames = c("Target Gene"),escape = FALSE)
     print("Data tabel of targets is created.")
@@ -146,9 +152,11 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
         arrange(padj) %>% 
         mutate(Geneset_length=as.integer(Geneset_length), n_Overlapping=as.integer(n_Overlapping))
       
+      filename_table <- paste0("gsea_module",ModuleNr)
+      buttons_list <- list(list(extend ='csv',filename=filename_table), list(extend ='excel',filename=filename_table), list(extend = 'pdf', pageSize = 'A4', orientation = 'landscape',filename=filename_table),list(extend ='print'), list(extend ='colvis'))
       #create interactive tables
       if (MSIGDB==TRUE){
-        dt_genesets <- DT::datatable(output_hgt_filter %>% 
+              dt_genesets <- DT::datatable(output_hgt_filter %>% 
                                      dplyr::mutate(Geneset=paste0('<a href="http://software.broadinstitute.org/gsea/msigdb/cards/',Geneset,'">',gsub("_"," ",Geneset),'</a>')),
                                    class = 'display', filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE,
                                    options = list(pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = buttons_list,columnDefs = list(list(className = 'dt-head-center', targets = "_all"),list(className = 'text-left', targets = "_all"))),
@@ -156,8 +164,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
                     DT::formatSignif(c('p_value','padj','overlap_perc'),2) %>% 
                     DT::formatStyle('overlap_perc', background = DT::styleColorBar(c(0,1), 'lightblue'), backgroundSize = '98% 88%', backgroundRepeat = 'no-repeat', backgroundPosition = 'center') %>% 
                     DT::formatStyle(columns = c(5), fontSize = '60%')
-      } 
-      else{
+      } else{
         dt_genesets <- DT::datatable(output_hgt_filter,
                                      class = 'display', filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE,
                                      options = list(columnDefs = list(list(className = 'dt-head-center', targets = "_all"), list(className = 'text-left', targets = "_all")), pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip', buttons = buttons_list)) %>% 
@@ -173,34 +180,35 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     
     #created datatable for phenotype associations
     if (!is.null(phenotype_association_table)){
+      filename_table <- paste0("phenotypes_module",ModuleNr)
+      buttons_list <- list(list(extend ='csv',filename=filename_table), list(extend ='excel',filename=filename_table), list(extend = 'pdf', pageSize = 'A4', orientation = 'landscape',filename=filename_table),list(extend ='print'), list(extend ='colvis'))
       dt_phenotype_association <- DT::datatable(phenotype_association_table %>% 
-                                                                dplyr::mutate(p.value = signif(p.value, digits = 3), q.value = signif(q.value, digits = 3)) %>% 
                                                                 dplyr::filter(ModuleNr==paste0("Module ",ModuleNr)) %>% 
+                                                                dplyr::mutate(p.value = signif(p.value, digits = 3), q.value = signif(q.value, digits = 3)) %>% 
                                                                 dplyr::arrange(q.value) %>%
                                                                 dplyr::select(-ModuleNr), class='display', filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE, 
                                                               options = list(pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = buttons_list),
                                                               colnames=c("Phenotype","Statistics Test","P-value","FDR Q-value","Descriptive Statistics"),escape = FALSE) %>% 
                                                 DT::formatSignif(c('p.value','q.value'), 2)
-    }
-    else{
+    } else{
       dt_phenotype_association <- "Phenotype association resuls were not provided."
     }
     print("The datatable with phenotype association results is created.")
     
     #copy the template file, needed when parallelized
-    modulemd<-paste0(full_path,"/AMARETTOhtmls/modules/module",ModuleNr,".rmd")
+    modulemd <- paste0(full_path,"/AMARETTOhtmls/modules/module",ModuleNr,".rmd")
     file.copy(system.file("templates/TemplateReportModule.Rmd",package="AMARETTO"),modulemd)
     print("The copy of the template file is created.")
     
     knitr::knit_meta(class=NULL, clean = TRUE)
-    rmarkdown::render(modulemd,output_file = paste0("module",ModuleNr,".html"), params = list(
+    rmarkdown::render(modulemd, output_file = paste0("module",ModuleNr,".html"), params = list(
       report_address = report_address,
       ModuleNr = ModuleNr,
       heatmap_module = heatmap_module,
       dt_regulators = dt_regulators,
       dt_targets = dt_targets,
       dt_phenotype_association = dt_phenotype_association,
-      dt_genesets = dt_genesets), quiet = TRUE)
+      dt_genesets = dt_genesets), knit_meta=knitr::knit_meta(class=NULL, clean = TRUE),quiet = TRUE)
     print("Rmarkdown created the module html page.")
     
     #remove rmd copy of template
@@ -208,7 +216,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     #file.remove(paste0(full_path,"/AMARETTOhtmls/modules/module",ModuleNr,"_files"))
     print("file removed successfully :) Done!")
     #ModuleOverviewTable<-rbind(ModuleOverviewTable,c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),ngenesets))
-    return(c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),ngenesets))
+    return(c(ModuleNr, length(which(AMARETTOresults$ModuleMembership==ModuleNr)), length(ModuleRegulators), ngenesets))
     dev.off()
     # },error=function(e){message(paste("an error occured for Module", ModuleNr))})
   }
@@ -232,6 +240,9 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   nMod = AMARETTOresults$NrModules
   
   options('DT.warn.size'=FALSE) # avoid showing datatable size-related warnings.
+  
+  filename_table <- "overview_modules"
+  buttons_list <- list(list(extend ='csv',filename=filename_table), list(extend ='excel',filename=filename_table), list(extend = 'pdf', pageSize = 'A4', orientation = 'landscape',filename=filename_table),list(extend ='print'), list(extend ='colvis'))
   
   dt_overview<-DT::datatable(ModuleOverviewTable %>% 
                                dplyr::mutate(ModuleNr=paste0('<a href="./modules/module',ModuleNr,'.html">Module ',ModuleNr,'</a>')), 
@@ -264,7 +275,9 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     dplyr::mutate(Type=paste0('<font color=',Color,'>',Type,'</font>')) %>% 
     dplyr::select(-Color,-value)
   
-  all_genes <- as.matrix(all_genes)
+  filename_table <- "genes_to_modules"
+  buttons_list <- list(list(extend ='csv',filename=filename_table), list(extend ='excel',filename=filename_table), list(extend = 'pdf', pageSize = 'A4', orientation = 'landscape',filename=filename_table),list(extend ='print'), list(extend ='colvis'))
+  
   dt_genes <- DT::datatable(all_genes, 
                           class = 'display', filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE,colnames =c("Gene","Module","Gene Type"),
                           options = list(deferRender=TRUE,columnDefs = list(list(className = 'dt-head-center', targets = "_all"), list(className = 'text-left', targets = "_all")), pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = buttons_list),
@@ -287,6 +300,10 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
       genesetsall <- genesetsall %>% dplyr::mutate(Geneset=paste0('<a href="http://software.broadinstitute.org/gsea/msigdb/cards/',Geneset,'">',gsub("_"," ",Geneset),'</a>'))
     }
     genesetsall<-as.matrix(genesetsall)
+    
+    filename_table <- "gsea_all_modules"
+    buttons_list <- list(list(extend ='csv',filename=filename_table), list(extend ='excel',filename=filename_table), list(extend = 'pdf', pageSize = 'A4', orientation = 'landscape',filename=filename_table),list(extend ='print'), list(extend ='colvis'))
+    
     dt_genesetsall<-DT::datatable(genesetsall[1:10,],class = 'display',filter = 'top', extensions = c('Buttons'), rownames = FALSE,
                               options = list(data=genesetsall,deferRender=TRUE,paging =TRUE, pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = buttons_list,columnDefs = list(list(className = 'dt-head-center', targets = "_all"),list(className = 'text-left', targets = "_all"))),
                               colnames=c("Module","Gene Set Name","Gene Set Description","# Genes in Gene Set","# Genes in Overlap","Genes in Overlap","% Genes in overlap","P-value","FDR Q-value"),
@@ -300,6 +317,9 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   
   #created phenotype table for index page
   if (!is.null(phenotype_association_table)){
+    filename_table <- "phenotypes_all_modules"
+    buttons_list <- list(list(extend ='csv',filename=filename_table), list(extend ='excel',filename=filename_table), list(extend = 'pdf', pageSize = 'A4', orientation = 'landscape',filename=filename_table),list(extend ='print'), list(extend ='colvis'))
+    
     dt_phenotype_association_all <- DT::datatable(phenotype_association_table %>% 
                                                     dplyr::mutate(p.value=signif(p.value, digits = 3), q.value=signif(q.value, digits = 3)) %>% 
                                                     dplyr::mutate(ModuleNr=paste0('<a href="./modules/module',gsub("Module ","",ModuleNr),'.html">',ModuleNr,'</a>'))%>%

@@ -6,7 +6,7 @@
 \usage{
 AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, ProcessedData,
   ModuleNr, show_row_names = FALSE, SAMPLE_annotation = NULL,
-  ID = NULL, order_samples = NULL)
+  ID = NULL, order_samples = NULL, printHM = TRUE)
 }
 \arguments{
 \item{AMARETTOinit}{List output from AMARETTO_Initialize().}
@@ -24,6 +24,8 @@ AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, ProcessedData,
 \item{ID}{Column used as sample name}
 
 \item{order_samples}{Order samples in heatmap by mean or by clustering}
+
+\item{printHM}{Boolean to print heatmap}
 }
 \value{
 result

@@ -10,6 +10,7 @@
 #' @param ID Column used as sample name
 #' @param show_row_names 
 #' @param order_samples Order samples in heatmap by mean or by clustering
+#' @param printHM Boolean to print heatmap
 #'
 #' @importFrom circlize colorRamp2  rand_color
 #' @importFrom grid gpar unit
@@ -31,7 +32,7 @@
 #'
 #' AMARETTO_VisualizeModule(AMARETTOinit = AMARETTOinit,AMARETTOresults = AMARETTOresults,
 #'                          ProcessedData = ProcessedDataLIHC, ModuleNr = 1)
-AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,ModuleNr,show_row_names=FALSE, SAMPLE_annotation=NULL,ID=NULL,order_samples=NULL) {
+AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,ModuleNr,show_row_names=FALSE, SAMPLE_annotation=NULL,ID=NULL,order_samples=NULL,printHM=TRUE) {
   CNV_matrix <- ProcessedData[[2]]
   MET_matrix <- ProcessedData[[3]]
   CNVMet_Alterations <- DriversList_Alterations <- MET <- HGNC_symbol <- CNV <- NULL
@@ -157,5 +158,9 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
       ha_list<-ha_list + ha_anot
     } else {print("The ID is not identified as a column name in the annotation")}
   }
+  if (printHM==TRUE){
   ComplexHeatmap::draw(ha_list,heatmap_legend_side = "bottom",annotation_legend_side="bottom")
+  } else {
+    return(ha_list)
+  }
 }
