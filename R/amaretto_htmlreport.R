@@ -19,13 +19,13 @@
 #' @importFrom doParallel registerDoParallel
 #' @importFrom DT datatable formatRound formatSignif  formatStyle styleColorBar styleInterval
 #' @importFrom reshape2 melt
-#' @importFrom dplyr arrange group_by left_join mutate select summarise  rename  filter 
+#' @importFrom dplyr arrange group_by left_join mutate select summarise rename filter case_when
 #' @importFrom foreach foreach %dopar% %do%
 #' @importFrom parallel makeCluster stopCluster detectCores
 #' @importFrom knitr knit_meta
-#' @importFrom utils  write.table
+#' @importFrom utils write.table
 #' @importFrom tibble rownames_to_column
-#' @importFrom stats  p.adjust  phyper
+#' @importFrom stats p.adjust  phyper
 #' @importFrom rmarkdown render
 #' @return result
 #' @export
