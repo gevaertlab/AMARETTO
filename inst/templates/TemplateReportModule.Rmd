@@ -44,7 +44,7 @@ dt_targets
 
 ## Enrichments of Functional Categories in Regulatory Module
 <br><br><br>
-```{r geneset, echo=FALSE,out.width='25%'}
+```{r geneset, echo=FALSE, out.width='25%'}
 dt_genesets
 ```
 
@@ -54,7 +54,7 @@ dt_genesets
 
 <br><br><br>
 
-```{r module_Phenotypes,echo=FALSE}
+```{r module_Phenotypes, echo=FALSE}
 dt_phenotype_association
 ```
 
