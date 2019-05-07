@@ -214,16 +214,16 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     #remove rmd copy of template
     file.remove(modulemd)
     #file.remove(paste0(full_path,"/AMARETTOhtmls/modules/module",ModuleNr,"_files"))
-    print("file removed successfully :) Done!")
+    print("Markdown copy succesfully removed.")
     #ModuleOverviewTable<-rbind(ModuleOverviewTable,c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),ngenesets))
     return(c(ModuleNr, length(which(AMARETTOresults$ModuleMembership==ModuleNr)), length(ModuleRegulators), ngenesets))
-    dev.off()
     # },error=function(e){message(paste("an error occured for Module", ModuleNr))})
   }
 
-  file_remove<-suppressWarnings(suppressMessages(file.remove(paste0(full_path,"/AMARETTOhtmls/modules/module",c(1:NrModules),"_files"))))
   parallel::stopCluster(cluster)
-  
+  #temp removing of directories created by render, will be solved with new rmarkdown version
+  file_remove<-suppressWarnings(suppressMessages(file.remove(paste0(full_path,"/AMARETTOhtmls/modules/module",c(1:NrModules),"_files"))))
+
   cat("All module htmls are created.\n")
   ModuleOverviewTable <- data.frame(matrix(unlist(ModuleOverviewTable), byrow=TRUE, ncol=4), stringsAsFactors=FALSE)
   colnames(ModuleOverviewTable)<-c("ModuleNr","NrTarGenes","NrRegGenes","SignGS")

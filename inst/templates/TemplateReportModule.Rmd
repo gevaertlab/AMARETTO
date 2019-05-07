@@ -30,7 +30,7 @@ output:
 ## Regulatory Module Heatmap Visualization
 <br><br><br>
 ```{r moduleheatmap, echo=FALSE, fig.height = 12, fig.width = 16, fig.align = "center"}
-library(ComplexHeatmap)
+suppressMessages(library(ComplexHeatmap))
 ComplexHeatmap::draw(heatmap_module,heatmap_legend_side = "bottom",annotation_legend_side="bottom")
 ```
 <br><br><br>
