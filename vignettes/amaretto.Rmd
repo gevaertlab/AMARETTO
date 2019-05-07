@@ -1,50 +1,29 @@
 ---
-title: "Introduction to _AMARETTO_"
-author:
-  - name: Jayendra Shinde
-    affiliation: Stanford Center for Biomedical Informatics Research (BMIR), Department of Medicine and Biomedical Data Science, 1265 Welch Rd, Stanford, CA, USA
-  - name: Celine Everaert
-    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Boston and Cambridge, MA, USA
-  - name: Shaimaa Bakr
-    affiliation: Stanford Center for Biomedical Informatics Research (BMIR), Department of Medicine and Biomedical Data Science, 1265 Welch Rd, Stanford, CA, USA
-  - name: Mohsen Nabian
-    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Boston and Cambridge, MA, USA
-  - name: Jishu Xu
-    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Boston and Cambridge, MA, USA
-  - name: Vincent Carey
-    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Boston and Cambridge, MA, USA
-  - name: Nathalie Pochet
-    affiliation: Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Boston and Cambridge, MA, USA
-    email: npochet@broadinstitute.org
-    footnote: Corresponding Author
-  - name: Olivier Gevaert
-    affiliation: Stanford Center for Biomedical Informatics Research (BMIR), Department of Medicine and Biomedical Data Science, 1265 Welch Rd, Stanford, CA, USA
-    email: olivier.gevaert@stanford.edu
-    footnote: Corresponding Author
-
-
+title: "_AMARETTO_"
+author: Jayendra Shinde<sup>1</sup>, Celine Everaert<sup>2</sup>, Shaimaa Bakr<sup>1</sup>, Mohsen         Nabian<sup>2</sup>, Jishu Xu<sup>2</sup>,Vincent Carey<sup>2</sup>, 
+        Nathalie Pochet<sup>2</sup><sup>*</sup>, Olivier Gevaert<sup>1</sup><sup>**</sup></br></br>
+        <sup>1</sup> Stanford Center for Biomedical Informatics Research (BMIR), Department of Medicine and Biomedical Data Science, 1265 Welch Rd, Stanford, CA, USA</br></br>
+        <sup>2</sup> Brigham and Women's Hospital, Harvard Medical School, Broad Institute of MIT and Harvard, Boston and Cambridge, MA, USA</br></br>
+        <sup>*</sup>npochet@broadinstitute.org</br>
+        <sup>**</sup>olivier.gevaert@stanford.edu</br>
 date: "`r BiocStyle::doc_date()`"
-output:
-  BiocStyle::pdf_document:
-      toc_newpage: true
-geometry: margin = 1in
-fontsize: 8pt
-papersize: a4
-graphics: yes
-fig_caption: yes
-abstract: |
-     Integrating an increasing number of available multi-omics cancer data remains one of the main challenges to improve our understanding of cancer. One of the main challenges is using multi-omics data for identifying novel cancer driver genes. We have developed an algorithm, called AMARETTO, that integrates copy number, DNA methylation and gene expression data to identify a set of driver genes by analyzing cancer samples and connects them to clusters of co-expressed genes, which we define as modules. We applied AMARETTO in a pancancer setting to identify cancer driver genes and their modules on multiple cancer sites. AMARETTO captures modules enriched in angiogenesis, cell cycle and EMT, and modules that accurately predict survival and molecular subtypes. This allows AMARETTO to identify novel cancer driver genes directing canonical cancer pathways.
 
-package: Report issues on [https://github.com/gevaertlab/AMARETTO](https://github.com/gevaertlab/AMARETTO)
-vignette: |
-  %\VignetteIndexEntry{amaretto.Rmd}
+vignette: >
+  %\VignetteIndexEntry{"1. Introduction"}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  \usepackage[utf8]{BiocStyle}
-  
-  
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(progress = FALSE)
+```
+
+Please use [Github issues](https://github.com/gevaertlab/AMARETTO/issues) if you want to file bug reports or feature requests.
+
+# Abstract
+
+Integrating an increasing number of available multi-omics cancer data remains one of the main challenges to improve our understanding of cancer. One of the main challenges is using multi-omics data for identifying novel cancer driver genes. We have developed an algorithm, called AMARETTO, that integrates copy number, DNA methylation and gene expression data to identify a set of driver genes by analyzing cancer samples and connects them to clusters of co-expressed genes, which we define as modules. We applied AMARETTO in a pancancer setting to identify cancer driver genes and their modules on multiple cancer sites. AMARETTO captures modules enriched in angiogenesis, cell cycle and EMT, and modules that accurately predict survival and molecular subtypes. This allows AMARETTO to identify novel cancer driver genes directing canonical cancer pathways.
 
 # Introduction
 The package *AMARETTO* contains functions to use the statistical algorithm AMARETTO, an algorithm to identify cancer drivers by integrating a variety of omics data from cancer and normal tissue. Due to the increasing availability of multi-omics data sets, there is a need for computational methods that integrate multi-omics data set and create knowl-edge. Especially in the field of cancer research, large international projects such as The Cancer Genome Atlas (TCGA) and the International Cancer Genome Consortium (ICGC) are producing large quantities of multi-omics data for each cancer site. However it remains unknown which profile is the most meaningful and how to effciently integrate different omics profiles. AMARETTO is an algorithm to unravel cancer drivers by reducing the data dimensionality into cancer modules. AMARETTO first models the effects of genomic/epigenomic data on disease specific gene expression. AMARETTO's second step involves constructing co-expressed modules to connect the cancer drivers with their downstream targets. We applied AMARETTO to several cancer sites of the TCGA project allowing to identify several cancer driver genes of interest, including novel genes in addition to known drivers of cancer. This package also includes functionality to access TCGA data directly so the user can immediately run AMARETTO on the most recent version of the data.
@@ -53,8 +32,7 @@ The package *AMARETTO* contains functions to use the statistical algorithm AMARE
 
 # Installation Instructions
 
-To install AMARETTO is to first download the appropriate file for your platform from the Bioconductor
-website http://www.bioconductor.org/. For Windows, start R and select the Packages menu, then Install package from local zip file. Find and highlight the location of the zip file and click on open. For Linux/Unix, use the usual command R CMD INSTALL or install from bioconductor
+To install AMARETTO first download the appropriate file for your platform from the Bioconductor website http://www.bioconductor.org/. For Windows, start R and select the Packages menu, then Install package from local zip file. Find and highlight the location of the zip file and click on open. For Linux/Unix, use the usual command R CMD INSTALL or install from bioconductor
 
 The package can be installed from the GitHub repository :
 
@@ -186,7 +164,7 @@ AMARETTO_VisualizeModule(AMARETTOinit = AMARETTOinit,
                          ProcessedData = ProcessedDataLIHC, 
                          ModuleNr = ModuleNr)
 
-#-------------------------------------------------------------------------------
+
 
 ```    
 
@@ -220,49 +198,31 @@ AMARETTO_HTMLreport(AMARETTOinit = AMARETTOinit,,
 
 # Appendix 
 
-\begin{center}
-\begin{tabular}{|l|l|l|l|}
-\hline
-Cancer code & Cancer site  \\
-\hline
-\\
-BLCA & bladder urothelial carcinoma  \\
-BRCA & breast invasive carcinoma  \\
-CESC & cervical squamous cell carcinoma and endocervical adenocarcinoma\\
-CHOL & cholangiocarcinoma\\
-COAD & colon adenocarcinoma \\
-ESCA & esophageal carcinoma\\
-GBM & glioblastoma multiforme\\
-HNSC & head and neck squamous cell carcinoma \\
-KIRC & kidney renal clear cell carcinoma  \\
-KIRP & kidney renal papillary cell carcinoma\\
-LAML & acute myeloid leukemia \\
-LGG & brain lower grade glioma\\
-LIHC & liver hepatocellular carcinoma\\
-LUAD & lung adenocarcinoma \\
-LUSC & lung squamous cell carcinoma \\
-OV & ovarian serous cystadenocarcinoma \\
-PAAD & pancreatic adenocarcinoma\\
-PCPG & pheochromocytoma and paraganglioma\\
-READ & rectum adenocarcinoma \\
-SARC & sarcoma\\
-STAD & stomach adenocarcinoma\\
-THCA & thyroid carcinoma\\
-THYM & thymoma\\
-UCEC & endometrial carcinoma \\
-\\
-%\hdashline
-COADREAD & colon cancer + rectal cancer \\
-\hline
-\end{tabular}
-\end{center}
+```{r, eval = TRUE, echo = FALSE,size = 8}
+TCGA_codes <- c("BLCA BRCA CESC CHOL COAD ESCA GBM HNSC KIRC KIRP LAML LGG LIHC LUAD LUSC OV PAAD PCPG READ SARC STAD THCA THYM UCEC")
+TCGA_codes <- strsplit(TCGA_codes,split = " ")[[1]]
+TCGA_cancers <- c("bladder urothelial carcinoma","breast invasive carcinoma", "cervical squamous cell carcinoma and endocervical adenocarcinoma",
+                  "cholangiocarcinoma","colon adenocarcinoma","esophageal carcinoma", "glioblastoma multiforme",
+                  "head and neck squamous cell carcinoma","kidney renal clear cell carcinoma",
+                  "kidney renal papillary cell carcinoma", "acute myeloid leukemia",
+                  "brain lower grade glioma","liver hepatocellular carcinoma",
+                  "lung adenocarcinoma","lung squamous cell carcinoma", 
+                  "arian serous cystadenocarcinoma ", "pancreatic adenocarcinoma",
+                  "pheochromocytoma and paraganglioma","rectum adenocarcinoma",
+                  "sarcoma","stomach adenocarcinoma","thyroid carcinoma",
+                  "thymoma","endometrial carcinoma")
 
+tcga_table <- data.frame(TCGA_codes=TCGA_codes,TCGA_cancers=TCGA_cancers)
+knitr::kable(tcga_table)
+
+```
 
 
 \newpage
 
-# Session info {.unnumbered}
 
-```{r sessionInfo, echo=FALSE}
+# Session Information
+******
+```{r sessionInfo}
 sessionInfo()
 ```

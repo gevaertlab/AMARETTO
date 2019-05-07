@@ -1,0 +1,13 @@
+html_document:
+  self_contained: true
+  number_sections: no
+  theme: flatly
+  highlight: tango
+  mathjax: null
+  toc: true
+  toc_float: true
+  toc_depth: 3
+  css: include/site.css
+  includes:
+    in_header: include/header.html
+    after_body: include/after_body.html
