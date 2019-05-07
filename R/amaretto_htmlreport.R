@@ -183,7 +183,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
       filename_table <- paste0("phenotypes_module",ModuleNr)
       buttons_list <- list(list(extend ='csv',filename=filename_table), list(extend ='excel',filename=filename_table), list(extend = 'pdf', pageSize = 'A4', orientation = 'landscape',filename=filename_table),list(extend ='print'), list(extend ='colvis'))
       dt_phenotype_association <- DT::datatable(phenotype_association_table %>% 
-                                                                dplyr::filter(ModuleNr==paste0("Module ",ModuleNr)) %>% 
+                                                                dplyr::filter(ModuleNr==paste0("Module ",!!ModuleNr)) %>% 
                                                                 dplyr::mutate(p.value = signif(p.value, digits = 3), q.value = signif(q.value, digits = 3)) %>% 
                                                                 dplyr::arrange(q.value) %>%
                                                                 dplyr::select(-ModuleNr), class='display', filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE, 
