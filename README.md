@@ -43,7 +43,7 @@ Install from the GitHub repository using devtools:
 ## Running AMARETTO
 
 * The AMARETTO_EXAMPLE folder contains an example R script for a typical AMARETTO analysis. Please try!
-* [*Introduction to AMARETTO*](https://nbviewer.jupyter.org/github/gevaertlab/AMARETTO/blob/master/vignettes/amaretto.pdf) provides a comprehensive example of the AMARETTO workflow with detailed  explanations of each function.</br> 
+* [*Introduction to AMARETTO*](https://bioconductor.org/packages/release/bioc/vignettes/AMARETTO/inst/doc/amaretto.pdf) provides a comprehensive example of the AMARETTO workflow with detailed  explanations of each function.</br> 
 * Detailed information on `AMARETTO` package functions can be obtained in the help files. For example, to view the help file for the function `AMARETTO` in a R session, use `?AMARETTO`.
 
 ## References
