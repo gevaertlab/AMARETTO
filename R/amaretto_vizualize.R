@@ -153,8 +153,14 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
         names(newcol)<-unique(SAMPLE_annotation_fil[,sample_column])
         col<-c(col,newcol)
       }
-      ha_anot<-Heatmap(SAMPLE_annotation_fil, name="Sample Annotation", column_title = "Sample\nAnnotation", column_title_gp = grid::gpar(fontsize = 6, fontface = "bold"), col=col, show_row_names=FALSE,width = unit(ncol(SAMPLE_annotation_fil) * 2, "mm"),
-                       column_names_gp = gpar(fontsize = 6),heatmap_legend_param = list(title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
+      fsize<-6
+      wsize=ncol(SAMPLE_annotation_fil) * 3
+      if (ncol(SAMPLE_annotation_fil)>50){
+        fsize<-5
+        wsize=ncol(SAMPLE_annotation_fil) * 2
+      }
+      ha_anot<-Heatmap(SAMPLE_annotation_fil, name="Sample Annotation", column_title = "Sample\nAnnotation", column_title_gp = grid::gpar(fontsize = 5, fontface = "bold"), col=col, show_row_names=FALSE,width = unit(wsize, "mm"),
+                       column_names_gp = gpar(fontsize = fsize),heatmap_legend_param = list(title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
       ha_list<-ha_list + ha_anot
     } else {print("The ID is not identified as a column name in the annotation")}
   }
