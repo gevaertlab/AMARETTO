@@ -1,0 +1,31 @@
+---
+title: <center>AMARETTO Report</center>
+pagetitle: AMARETTO Report
+output: 
+  html_document:
+    theme: cerulean
+    highlight: NULL
+---
+
+<style>
+  .main-container {
+    max-width:  100% !important;
+    padding-right: 1% !important;
+    padding-left: 1% !important;
+    margin-right: 1% !important;
+    margin-left: 1% !important;
+    table-layout: fixed !important;
+  }
+</style>
+
+<center>
+## Associations of Phenotypes to Regulatory Modules
+
+<br><br><br>
+
+```{r Phenotypes,echo=FALSE}
+dt_phenotype_association_all
+```
+<br><br><br>
+
+</center>
