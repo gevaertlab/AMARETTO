@@ -2,7 +2,7 @@
 % Please edit documentation in R/amaretto_phenotype_analysis.R
 \name{create_feature_matrix}
 \alias{create_feature_matrix}
-\title{Title}
+\title{Title create_feature_matrix}
 \usage{
 create_feature_matrix(AMARETTOinit, AMARETTOresults, sample_annotation_df,
   module_number, Sample = "Sample")
@@ -19,5 +19,5 @@ create_feature_matrix(AMARETTOinit, AMARETTOresults, sample_annotation_df,
 \item{Sample}{}
 }
 \description{
-Title
+Title create_feature_matrix
 }

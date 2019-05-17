@@ -8,7 +8,7 @@ AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
   show_row_names = FALSE, SAMPLE_annotation = NULL, ID = NULL,
   hyper_geo_test_bool = FALSE, hyper_geo_reference = NULL,
   output_address = "./", MSIGDB = TRUE, driverGSEA = TRUE,
-  phenotype_association_table = NULL)
+  hyper_geo_test_table = NULL, phenotype_association_table = NULL)
 }
 \arguments{
 \item{AMARETTOinit}{AMARETTO initialize output}
@@ -33,7 +33,9 @@ AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
 
 \item{driverGSEA}{if TRUE, module drivers will also be included in the hypergeometric test.}
 
-\item{phenotype_association_table}{}
+\item{hyper_geo_test_table}{Optional, Table computed by HyperGeoEnrichmentTest(). If given, the hypergeometric testing will be bypassed and the given table will be shown.}
+
+\item{phenotype_association_table}{Optional, Phenotype Association table.}
 }
 \value{
 result

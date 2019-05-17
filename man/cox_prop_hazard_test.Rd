@@ -2,7 +2,7 @@
 % Please edit documentation in R/amaretto_phenotype_analysis.R
 \name{cox_prop_hazard_test}
 \alias{cox_prop_hazard_test}
-\title{Title}
+\title{Title cox_prop_hazard_test}
 \usage{
 cox_prop_hazard_test(xx, time_to_event, right_censoring)
 }
@@ -14,5 +14,5 @@ cox_prop_hazard_test(xx, time_to_event, right_censoring)
 \item{right_censoring}{}
 }
 \description{
-Title
+Title cox_prop_hazard_test
 }

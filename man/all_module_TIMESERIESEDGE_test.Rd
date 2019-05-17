@@ -2,7 +2,7 @@
 % Please edit documentation in R/amaretto_phenotype_analysis.R
 \name{all_module_TIMESERIESEDGE_test}
 \alias{all_module_TIMESERIESEDGE_test}
-\title{Title}
+\title{Title all_module_TIMESERIESEDGE_test}
 \usage{
 all_module_TIMESERIESEDGE_test(AMARETTOinit, AMARETTOresults,
   test_sample_annotations)
@@ -15,5 +15,5 @@ all_module_TIMESERIESEDGE_test(AMARETTOinit, AMARETTOresults,
 \item{test_sample_annotations}{}
 }
 \description{
-Title
+Title all_module_TIMESERIESEDGE_test
 }
