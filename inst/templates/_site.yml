@@ -1,0 +1,26 @@
+name: "my-website"
+navbar:
+  title:
+  type: inverse
+  left:
+    - text: "AMARETTO Report"
+      icon: fa-home
+      href: index.html
+    - text: "Tables"
+      icon: fa-table
+      menu:
+        - text: "Overview of Regulatory Modules"
+          href: index_Overview.html
+        - text: "Assignments of Genes to Regulatory Modules"
+          href: index_AllGenes.html
+        - text: "Enrichments of Functional Categories in Regulatory Modules"
+          href: index_GenesetsEnrichment.html
+        - text: "Associations of Phenotypes to Regulatory Modules"
+          href: index_PhenoAssociation.html
+  right:
+    - text: "AMARETTO"
+      icon: fa-github fa-lg
+      href: https://github.com/gevaertlab/AMARETTO
+    - text: "Community AMARETTO"
+      icon: fa-github fa-lg
+      href: https://github.com/broadinstitute/CommunityAMARETTO
