@@ -3,14 +3,11 @@ title: <center>AMARETTO Report</center>
 pagetitle: AMARETTO Report
 output: 
   html_document:
-    toc: true
-    toc_depth: 2
-    toc_float:
-      collapsed: false
-      smooth_scroll: false
     theme: cerulean
     highlight: NULL
 ---
+
+
 
 <style>
   .main-container {
@@ -39,29 +36,4 @@ Number of Regulatory Modules = `r nMod`
 dt_overview
 ```
 <br><br><br>
-
-## Assignments of Genes to Regulatory Modules
-<br><br><br>
-```{r Genes,echo=FALSE}
-dt_genes
-```
-<br><br><br>
-
-## Enrichments of Functional Categories in Regulatory Modules
-<br><br><br>
-```{r Genesets,echo=FALSE}
-dt_genesetsall
-```
-
-<br><br><br>
-
-## Associations of Phenotypes to Regulatory Modules
-
-<br><br><br>
-
-```{r Phenotypes,echo=FALSE}
-dt_phenotype_association_all
-```
-<br><br><br>
-
 </center>
