@@ -1,0 +1,15 @@
+name: "my-website"
+navbar:
+  title:
+  type: inverse
+  left:
+    - text: "AMARETTO Report"
+      icon: fa-home
+      href: ../index.html
+  right:
+    - text: "AMARETTO"
+      icon: fa-github fa-lg
+      href: https://github.com/gevaertlab/AMARETTO
+    - text: "Community AMARETTO"
+      icon: fa-github fa-lg
+      href: https://github.com/broadinstitute/CommunityAMARETTO
