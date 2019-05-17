@@ -12,8 +12,9 @@
 #' @param output_address Output directory for the html files.
 #' @param show_row_names if True, sample names will appear in the heatmap
 #' @param driverGSEA if TRUE, module drivers will also be included in the hypergeometric test.
-#' @param phenotype_association_table 
+#' @param phenotype_association_table Optional, Phenotype Association table.
 #' @param MSIGDB TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.
+#' @param hyper_geo_test_table Optional, Table computed by HyperGeoEnrichmentTest(). If given, the hypergeometric testing will be bypassed and the given table will be shown. 
 #'
 #' @import dplyr
 #' @importFrom doParallel registerDoParallel
@@ -53,6 +54,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
                                 output_address = './',
                                 MSIGDB = TRUE,
                                 driverGSEA = TRUE,
+                                hyper_geo_test_table = NULL,
                                 phenotype_association_table = NULL){
   
   `%dopar%` <- foreach::`%dopar%`
@@ -85,11 +87,18 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   dir.create(paste0(report_address, "/AMARETTOhtmls/modules"), recursive = TRUE, showWarnings = FALSE)
   cat("The output folder structure is created.\n")
   
-  if (hyper_geo_test_bool){
+  
+  if (hyper_geo_test_bool & is.null(hyper_geo_test_table)){
     GmtFromModules(AMARETTOinit, AMARETTOresults, driverGSEA)
     output_hgt <- HyperGTestGeneEnrichment(hyper_geo_reference, "./Modules_genes.gmt", NrCores)
     GeneSetDescriptions <- GeneSetDescription(hyper_geo_reference, MSIGDB)
+    output_hgt<-dplyr::left_join(output_hgt, GeneSetDescriptions, by=c("Geneset"="GeneSet"))
     cat("The hyper geometric test results are calculated.\n")
+  }
+  
+  # Bypass Hyper-Geometric Testing if it was precomputed.
+  if (!is.null(hyper_geo_test_table)){
+    output_hgt<-hyper_geo_test_table
   }
 
   #Parallelizing
@@ -97,7 +106,12 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   doParallel::registerDoParallel(cluster,cores=NrCores)
 
   full_path <- normalizePath(report_address)
+  unlink(paste0(full_path,"/*"))
+
   ModuleOverviewTable <- NULL
+  
+  yml_file <- paste0(full_path,"/AMARETTOhtmls/modules/_site.yml")
+  file.copy(system.file("templates/module_templates/_site.yml",package="AMARETTO"),yml_file)
   
   ModuleOverviewTable<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT','rmarkdown')) %dopar% {
   #for(ModuleNr in 1:NrModules){
@@ -145,8 +159,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
       output_hgt_filter <- output_hgt %>% 
         dplyr::filter(Testset==paste0("Module_",as.character(ModuleNr))) %>% 
         dplyr::arrange(padj)
-      output_hgt_filter <- dplyr::left_join(output_hgt_filter, GeneSetDescriptions, by=c("Geneset"="GeneSet")) %>% 
-        dplyr::mutate(overlap_perc=n_Overlapping/NumberGenes) %>% 
+      output_hgt_filter <- output_hgt_filter %>% dplyr::mutate(overlap_perc=n_Overlapping/NumberGenes) %>% 
         mutate(overlap_perc=signif(overlap_perc, digits = 3)) %>% 
         dplyr::select(Geneset,Description,Geneset_length, n_Overlapping, Overlapping_genes, overlap_perc, p_value,padj) %>% 
         arrange(padj) %>% 
@@ -197,18 +210,21 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     
     #copy the template file, needed when parallelized
     modulemd <- paste0(full_path,"/AMARETTOhtmls/modules/module",ModuleNr,".rmd")
-    file.copy(system.file("templates/TemplateReportModule.Rmd",package="AMARETTO"),modulemd)
-    print("The copy of the template file is created.")
+    file.copy(system.file("templates/module_templates/TemplateReportModule.Rmd",package="AMARETTO"),modulemd)
     
+    print("The copy of the template file is created.")
+    # output_format<-system.file("templates/module_templates/TemplateReportModule.Rmd",package="AMARETTO")
     knitr::knit_meta(class=NULL, clean = TRUE)
-    rmarkdown::render(modulemd, output_file = paste0("module",ModuleNr,".html"), params = list(
-      report_address = report_address,
-      ModuleNr = ModuleNr,
-      heatmap_module = heatmap_module,
-      dt_regulators = dt_regulators,
-      dt_targets = dt_targets,
-      dt_phenotype_association = dt_phenotype_association,
-      dt_genesets = dt_genesets), knit_meta=knitr::knit_meta(class=NULL, clean = TRUE),quiet = TRUE)
+    rmarkdown::render(modulemd, 
+                      output_file = paste0("module",ModuleNr,".html"),
+                      params = list(
+                      report_address = report_address,
+                      ModuleNr = ModuleNr,
+                      heatmap_module = heatmap_module,
+                      dt_regulators = dt_regulators,
+                      dt_targets = dt_targets,
+                      dt_phenotype_association = dt_phenotype_association,
+                      dt_genesets = dt_genesets), knit_meta=knitr::knit_meta(class=NULL, clean = TRUE),quiet = TRUE)
     print("Rmarkdown created the module html page.")
     
     #remove rmd copy of template
@@ -216,11 +232,13 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     #file.remove(paste0(full_path,"/AMARETTOhtmls/modules/module",ModuleNr,"_files"))
     print("file removed successfully :) Done!")
     #ModuleOverviewTable<-rbind(ModuleOverviewTable,c(ModuleNr,length(which(AMARETTOresults$ModuleMembership==ModuleNr)),length(ModuleRegulators),ngenesets))
+    while (!is.null(dev.list()))  dev.off()
     return(c(ModuleNr, length(which(AMARETTOresults$ModuleMembership==ModuleNr)), length(ModuleRegulators), ngenesets))
-    dev.off()
+    
     # },error=function(e){message(paste("an error occured for Module", ModuleNr))})
   }
-
+  
+  suppressWarnings(suppressMessages(file.remove(paste0(full_path,"/AMARETTOhtmls/modules/_site.yml"))))
   file_remove<-suppressWarnings(suppressMessages(file.remove(paste0(full_path,"/AMARETTOhtmls/modules/module",c(1:NrModules),"_files"))))
   parallel::stopCluster(cluster)
   
@@ -247,7 +265,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   dt_overview<-DT::datatable(ModuleOverviewTable %>% 
                                dplyr::mutate(ModuleNr=paste0('<a href="./modules/module',ModuleNr,'.html">Module ',ModuleNr,'</a>')), 
                              class = 'display', filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE, colnames =c("Module","# Target Genes", "# Driver Genes", "# Gene Sets"),
-                             options = list(pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = buttons_list,columnDefs = list(list(className = 'dt-head-center', targets = "_all"),list(className = 'text-left', targets = "_all"))),
+                             options = list(pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100, 200), keys = TRUE, dom = 'Blfrtip',buttons = buttons_list,columnDefs = list(list(className = 'dt-head-center', targets = "_all"),list(className = 'text-left', targets = "_all"))),
                              escape = FALSE)
   
   all_targets<-tibble::rownames_to_column(data.frame(AMARETTOresults$ModuleMembership),"Genes") %>% 
@@ -285,7 +303,6 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   
   if (hyper_geo_test_bool){
     genesetsall<-output_hgt %>% 
-      dplyr::left_join(GeneSetDescriptions,by=c("Geneset"="GeneSet")) %>% 
       dplyr::mutate(Testset=paste0('<a href="./modules/module',sub("Module_","",Testset),'.html">',paste0(Testset,paste0(rep("&nbsp",14),collapse = "")),'</a>')) %>% 
       dplyr::mutate(Modules=gsub("_","&nbsp",Testset))%>%dplyr::mutate(overlap_perc=n_Overlapping/NumberGenes) %>%
       dplyr::mutate(overlap_perc=signif(overlap_perc, digits = 3))
@@ -304,8 +321,8 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     filename_table <- "gsea_all_modules"
     buttons_list <- list(list(extend ='csv',filename=filename_table), list(extend ='excel',filename=filename_table), list(extend = 'pdf', pageSize = 'A4', orientation = 'landscape',filename=filename_table),list(extend ='print'), list(extend ='colvis'))
     
-    dt_genesetsall<-DT::datatable(genesetsall[1:10,],class = 'display',filter = 'top', extensions = c('Buttons'), rownames = FALSE,
-                              options = list(data=genesetsall,deferRender=TRUE,paging =TRUE, pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = buttons_list,columnDefs = list(list(className = 'dt-head-center', targets = "_all"),list(className = 'text-left', targets = "_all"))),
+    dt_genesetsall<-DT::datatable(genesetsall,class = 'display',filter = 'top', extensions = c('Buttons'), rownames = FALSE,
+                              options = list(deferRender=TRUE,paging =TRUE, pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = buttons_list,columnDefs = list(list(className = 'dt-head-center', targets = "_all"),list(className = 'text-left', targets = "_all"))),
                               colnames=c("Module","Gene Set Name","Gene Set Description","# Genes in Gene Set","# Genes in Overlap","Genes in Overlap","% Genes in overlap","P-value","FDR Q-value"),
                               escape = FALSE) %>%
                     DT::formatSignif(c('p_value','padj','overlap_perc'),2) %>% 
@@ -340,12 +357,28 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     nGenes = nGenes,
     VarPercentage = VarPercentage,
     nMod = nMod,
-    dt_overview = dt_overview,
-    dt_genes=dt_genes,
-    dt_phenotype_association_all=dt_phenotype_association_all,
+    dt_overview = dt_overview),quiet = TRUE)
+  
+  rmarkdown::render(system.file("templates/TemplateIndexPage_Overview.Rmd",package="AMARETTO"), output_dir=paste0(full_path,"/AMARETTOhtmls/"),output_file= "index_Overview.html", params = list(
+    dt_genes = dt_genes),quiet = TRUE)
+  
+  rmarkdown::render(system.file("templates/TemplateIndexPage_AllGenes.Rmd",package="AMARETTO"), output_dir=paste0(full_path,"/AMARETTOhtmls/"),output_file= "index_AllGenes.html", params = list(
+    dt_genes = dt_genes),quiet = TRUE)
+  
+  rmarkdown::render(system.file("templates/TemplateIndexPage_GenesetsEnrichment.Rmd",package="AMARETTO"), output_dir=paste0(full_path,"/AMARETTOhtmls/"),output_file= "index_GenesetsEnrichment.html", params = list(
+    dt_phenotype_association_all = dt_phenotype_association_all),quiet = TRUE)
+  
+  rmarkdown::render(system.file("templates/TemplateIndexPage_PhenoAssociation.Rmd",package="AMARETTO"), output_dir=paste0(full_path,"/AMARETTOhtmls/"),output_file= "index_PhenoAssociation.html", params = list(
     dt_genesetsall = dt_gensesetsall),quiet = TRUE)
   
+  
+  dir.create(paste0(report_address, "/AMARETTOhtmls/Report_data"), recursive = TRUE, showWarnings = FALSE)
+  
+  if (!hyper_geo_test_bool){genesetsall = NULL}
+  report_data <- list(nExp = nExp, nCNV = nCNV, nMET = nMET, nGenes = nGenes, VarPercentage = VarPercentage, nMod = nMod, ModuleOverviewTable = ModuleOverviewTable, all_genes = all_genes, genesetsall = genesetsall, phenotype_association_table = phenotype_association_table)
+  save(report_data, file = paste0(report_address, "/AMARETTOhtmls/Report_data/AMARETTOreport_data.rda"))
   cat("The full report is created and ready to use.\n")
+  return(report_data)
 }
 
 #' Hyper Geometric Geneset Enrichement Test
@@ -516,5 +549,30 @@ plot_run_history <- function(AMARETTOinit,AMARETTOResults){
     ggplot2::scale_y_continuous(trans='log2') 
   
   gridExtra::grid.arrange(p1, p2, nrow = 2)
+}
+
+
+
+
+#' Title HyperGeoEnrichmentTest
+#'
+#' @param AMARETTOinit AMARETTO initialize output
+#' @param AMARETTOresults AMARETTO results output
+#' @param hyper_geo_reference GMT file with gene sets to compare with.
+#' @param driverGSEA if TRUE, module drivers will also be included in the hypergeometric test.
+#' @param MSIGDB TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.
+#' @param NrCores Number of cores for parallel processing. 
+#'
+#' @return Hyper-Geometric Enrichment Test table
+#' @export
+#'
+#' @examples HyperGeoEnrichmentTest<(AMARETTOinit, AMARETTOresults, hyper_geo_reference, driverGSEA=TRUE, MSIGDB=TRUE, NrCores=4)
+HyperGeoEnrichmentTest<-function(AMARETTOinit, AMARETTOresults, hyper_geo_reference, driverGSEA=TRUE, MSIGDB=TRUE, NrCores=4){
+  GmtFromModules(AMARETTOinit, AMARETTOresults, driverGSEA)
+  output_hgt <- HyperGTestGeneEnrichment(hyper_geo_reference, "./Modules_genes.gmt", NrCores)
+  GeneSetDescriptions <- GeneSetDescription(hyper_geo_reference, MSIGDB)
+  output_hgt<-dplyr::left_join(output_hgt, GeneSetDescriptions, by=c("Geneset"="GeneSet"))
+  cat("The hyper geometric test results are calculated.\n")
+  return(output_hgt)
 }
 
