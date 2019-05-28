@@ -4,12 +4,12 @@
 \alias{plot_run_history}
 \title{Title plot_run_history}
 \usage{
-plot_run_history(AMARETTOinit, AMARETTOResults)
+plot_run_history(AMARETTOinit, AMARETTOresults)
 }
 \arguments{
-\item{AMARETTOinit}{}
+\item{AMARETTOinit}{AMARETTO initialize output}
 
-\item{AMARETTOResults}{}
+\item{AMARETTOresults}{AMARETTO results output}
 }
 \value{
 plot
@@ -18,5 +18,13 @@ plot
 Title plot_run_history
 }
 \examples{
- plot_run_history(AMARETTOinit,AMARETTOResults)
+\dontrun{  
+data('ProcessedDataLIHC')
+AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
+                                    NrModules = 2, VarPercentage = 50)
+
+AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
+
+plot_run_history(AMARETTOinit,AMARETTOresults)
+}
 }
