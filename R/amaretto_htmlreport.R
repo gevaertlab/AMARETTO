@@ -124,16 +124,16 @@ AMARETTO_report <- function(AMARETTOinit,
   #                     dt_phenotype_association = dt_phenotype_association,
   #                     dt_genesets = dt_genesets), knit_meta=knitr::knit_meta(class=NULL, clean = TRUE),quiet = TRUE)
   loop_index<-1
-  module_report_address <-list() 
-  module_ModuleNr<-list() 
-  module_heatmap_module<-list() 
-  module_dt_regulators<-list() 
-  module_dt_targets<-list() 
-  module_dt_phenotype_association <-list() 
-  module_dt_genesets<-list() 
+  module_report_address <-vector("list", NrModules)
+  module_ModuleNr<-vector("list", NrModules)
+  module_heatmap_module<-vector("list", NrModules)
+  module_dt_regulators<-vector("list", NrModules)
+  module_dt_targets<-vector("list", NrModules)
+  module_dt_phenotype_association <-vector("list", NrModules)
+  module_dt_genesets<-vector("list", NrModules)
   
-  
-  ModuleOverviewTable<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT','rmarkdown')) %dopar% {
+  Module_Results<-NULL
+  Module_Results<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT','rmarkdown')) %dopar% {
   #for(ModuleNr in 1:NrModules){
     #get heatmap
     
@@ -229,23 +229,32 @@ AMARETTO_report <- function(AMARETTOinit,
     }
     
     
-    module_report_address[[loop_index]]<-report_address
-    module_ModuleNr[[loop_index]]<-ModuleNr
-    module_heatmap_module[[loop_index]]<-heatmap_module
-    module_dt_regulators[[loop_index]]<-dt_regulators
-    module_dt_targets[[loop_index]]<-dt_targets
-    module_dt_phenotype_association[[loop_index]]<-dt_phenotype_association
-    module_dt_genesets[[loop_index]]<-dt_genesets
-    loop_index <- loop_index + 1
+    # module_report_address[[ModuleNr]]<-report_address
+    # module_ModuleNr[[ModuleNr]]<-ModuleNr
+    # module_heatmap_module[[ModuleNr]]<-heatmap_module
+    # module_dt_regulators[[ModuleNr]]<-dt_regulators
+    # module_dt_targets[[ModuleNr]]<-dt_targets
+    # module_dt_phenotype_association[[ModuleNr]]<-dt_phenotype_association
+    # module_dt_genesets[[ModuleNr]]<-dt_genesets
+    
+    return(list(report_address=report_address,
+                        ModuleNr=ModuleNr,
+                        heatmap_module=heatmap_module,
+                        dt_regulators=dt_regulators,
+                        dt_targets=dt_targets,
+                        dt_phenotype_association=dt_phenotype_association,
+                        dt_genesets=dt_genesets))
+                        
+
     }
   
-  Module_Results<-list(module_report_address,module_ModuleNr,module_heatmap_module,module_dt_regulators,module_dt_targets,module_dt_phenotype_association,module_dt_genesets)
 
+  
   parallel::stopCluster(cluster)
   
   cat("All module htmls are created.\n")
-  ModuleOverviewTable <- data.frame(matrix(unlist(ModuleOverviewTable), byrow=TRUE, ncol=4), stringsAsFactors=FALSE)
-  colnames(ModuleOverviewTable)<-c("ModuleNr","NrTarGenes","NrRegGenes","SignGS")
+  #ModuleOverviewTable <- data.frame(matrix(unlist(ModuleOverviewTable), byrow=TRUE, ncol=4), stringsAsFactors=FALSE)
+  #colnames(ModuleOverviewTable)<-c("ModuleNr","NrTarGenes","NrRegGenes","SignGS")
   
   if (!is.null(CNV_matrix)){
     nCNV = ncol(CNV_matrix)
@@ -263,11 +272,15 @@ AMARETTO_report <- function(AMARETTOinit,
   filename_table <- "overview_modules"
   buttons_list <- list(list(extend ='csv',filename=filename_table), list(extend ='excel',filename=filename_table), list(extend = 'pdf', pageSize = 'A4', orientation = 'landscape',filename=filename_table),list(extend ='print'), list(extend ='colvis'))
   
-  dt_overview<-DT::datatable(ModuleOverviewTable %>% 
-                               dplyr::mutate(ModuleNr=paste0('<a href="./modules/module',ModuleNr,'.html">Module ',ModuleNr,'</a>')), 
-                             class = 'display', filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE, colnames =c("Module","# Target Genes", "# Driver Genes", "# Gene Sets"),
-                             options = list(pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100, 200), keys = TRUE, dom = 'Blfrtip',buttons = buttons_list,columnDefs = list(list(className = 'dt-head-center', targets = "_all"),list(className = 'text-left', targets = "_all"))),
-                             escape = FALSE)
+  dt_overview<-NULL
+  
+  # dt_overview<-DT::datatable(ModuleOverviewTable %>% 
+  #                              dplyr::mutate(ModuleNr=paste0('<a href="./modules/module',ModuleNr,'.html">Module ',ModuleNr,'</a>')), 
+  #                            class = 'display', filter = 'top', extensions = c('Buttons','KeyTable'), rownames = FALSE, colnames =c("Module","# Target Genes", "# Driver Genes", "# Gene Sets"),
+  #                            options = list(pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100, 200), keys = TRUE, dom = 'Blfrtip',buttons = buttons_list,columnDefs = list(list(className = 'dt-head-center', targets = "_all"),list(className = 'text-left', targets = "_all"))),
+  #                            escape = FALSE)
+  
+  
   
   all_targets<-tibble::rownames_to_column(data.frame(AMARETTOresults$ModuleMembership),"Genes") %>% 
     dplyr::rename(Module="ModuleNr") %>%
@@ -351,11 +364,20 @@ AMARETTO_report <- function(AMARETTOinit,
   }
   
   
-  All_Results<-list(nExp,nCNV,nMET,nGenes,VarPercentage,nMod,dt_overview,dt_genes,dt_phenotype_association_all,dt_genesetsall)
+  All_Results<-list(nExp=nExp,
+                    nCNV=nCNV,
+                    nMET=nMET,
+                    nGenes=nGenes,
+                    VarPercentage=VarPercentage,
+                    nMod=nMod,
+                    dt_overview=dt_overview,
+                    dt_genes=dt_genes,
+                    dt_phenotype_association_all=dt_phenotype_association_all,
+                    dt_genesetsall=dt_genesetsall)
   
   report_data <- list(All_Results = All_Results , Module_Results = Module_Results)
   
-  save(report_data, file = paste0(report_address, "/AMARETTOhtmls/Report_data/AMARETTOreport_data.rda"))
+  #save(report_data, file = paste0(report_address, "/AMARETTOhtmls/Report_data/AMARETTOreport_data.rda"))
   cat("The full report is created and ready to use.\n")
   return(report_data)
 }
@@ -418,6 +440,25 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
                                 hyper_geo_test_table = NULL,
                                 phenotype_association_table = NULL){
   
+  
+  report_data<-AMARETTO_report(AMARETTOinit,
+                               AMARETTOresults,
+                               ProcessedData,
+                               show_row_names,
+                               SAMPLE_annotation,
+                               ID,
+                               hyper_geo_test_bool,
+                               hyper_geo_reference,
+                               output_address,
+                               MSIGDB,
+                               driverGSEA ,
+                               hyper_geo_test_table ,
+                               phenotype_association_table)
+  
+  
+  
+  print(report_data)
+  
   ###
   # make the S4 objects here. 
   
@@ -432,6 +473,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   #set number of cores and check
   NrCores <- AMARETTOinit$NrCores
   MaxCores <- parallel::detectCores(all.tests = FALSE, logical = TRUE)
+  NrModules <- AMARETTOresults$NrModules
   
   if(MaxCores < NrCores){
     stop(paste0("The number of cores that is asked for (",NrCores,"), is more than what's avalaible. Changes can be made on AMARETTOinit$NrCores."))
@@ -464,8 +506,9 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   yml_file <- paste0(full_path,"/AMARETTOhtmls/modules/_site.yml")
   file.copy(system.file("templates/module_templates/_site.yml",package="AMARETTO"),yml_file)
   
-  ModuleOverviewTable<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT','rmarkdown')) %dopar% {
-    #for(ModuleNr in 1:NrModules){
+  
+  #ModuleOverviewTable<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT','rmarkdown')) %dopar% {
+    for(ModuleNr in 1:NrModules){
     #get heatmap
     print(paste0("ModuleNr = ",ModuleNr))
     print("The Heatmap is visualised.")
@@ -478,6 +521,16 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     print("The copy of the template file is created.")
     # output_format<-system.file("templates/module_templates/TemplateReportModule.Rmd",package="AMARETTO")
     knitr::knit_meta(class=NULL, clean = TRUE)
+    
+    
+    report_address<-report_data$Module_Results$module_report_address[[ModuleNr]]
+    ModuleNr<-report_data$Module_Results$module_ModuleNr[[ModuleNr]]
+    heatmap_module <- report_data$Module_Results$module_heatmap_module[[ModuleNr]]
+    dt_regulators <- report_data$Module_Results$module_dt_regulators[[ModuleNr]]
+    dt_targets <- report_data$Module_Results$module_dt_targets[[ModuleNr]]
+    dt_phenotype_association <- report_data$Module_Results$module_dt_phenotype_association[[ModuleNr]]
+    dt_genesets <- report_data$Module_Results$module_dt_genesets[[ModuleNr]]
+    
     rmarkdown::render(modulemd, 
                       output_file = paste0("module",ModuleNr,".html"),
                       params = list(
@@ -505,6 +558,22 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   file_remove<-suppressWarnings(suppressMessages(file.remove(paste0(full_path,"/AMARETTOhtmls/modules/module",c(1:NrModules),"_files"))))
   parallel::stopCluster(cluster)
   cat("All module htmls are created.\n")
+  
+  
+  #All_Results<-list(nExp,nCNV,nMET,nGenes,VarPercentage,nMod,dt_overview,dt_genes,dt_phenotype_association_all,dt_genesetsall)
+  
+  nExp<-report_data$All_Results$nExp
+  nCNV<-report_data$All_Results$nCNV
+  nMET<-report_data$All_Results$nMET
+  nGenes<-report_data$All_Results$nGenes
+  VarPercentage<-report_data$All_Results$VarPercentage
+  nMod<-report_data$All_Results$nMod
+  dt_overview<-report_data$All_Results$dt_overview
+  dt_genes<-report_data$All_Results$dt_genes
+  dt_phenotype_association_all<-report_data$All_Results$dt_phenotype_association_all
+  dt_genesetsall<-report_data$All_Results$dt_genesetsall
+  
+  
   #Render index page
   rmarkdown::render(system.file("templates/TemplateIndexPage.Rmd",package="AMARETTO"), output_dir=paste0(full_path,"/AMARETTOhtmls/"),output_file= "index.html", params = list(
     nExp = nExp,
