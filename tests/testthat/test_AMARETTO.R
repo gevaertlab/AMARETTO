@@ -2,11 +2,12 @@ library(AMARETTO)
 context("AMARETTO output data objects testing")
 
 data("ProcessedDataLIHC")
-NrModules<-5
-VarPercentage<-10
+NrModules<-10
+VarPercentage<-50
 AMARETTOinit <- AMARETTO_Initialize(ProcessedDataLIHC,
                                     NrModules = NrModules,
-                                    VarPercentage = VarPercentage)
+                                    VarPercentage = VarPercentage,
+                                    random_seeds = c(42,42))
 
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 

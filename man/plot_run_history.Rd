@@ -18,7 +18,6 @@ plot
 Title plot_run_history
 }
 \examples{
-\dontrun{  
 data('ProcessedDataLIHC')
 AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
                                     NrModules = 2, VarPercentage = 50)
@@ -26,5 +25,4 @@ AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
 AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 
 plot_run_history(AMARETTOinit,AMARETTOresults)
-}
 }

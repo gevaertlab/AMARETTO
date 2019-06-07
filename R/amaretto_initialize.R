@@ -175,10 +175,17 @@ geneFiltering <- function(Type, MAdata, Percentage) {
 #' @return result
 #' @export
 #' @examples
-#' data_matrix<-read_gct(my_gctFile.gct)
+#' data_matrix<-read_gct(file_address="")
 read_gct <- function(file_address){
-  data_fr = read.delim(file_address, skip=2, sep="\t", header=TRUE, row.names=1)
-  data_fr <- as.matrix(subset(data_fr, select=-c(Description)))
+  if(file_address==""){
+    print("No gct file address is provided.")
+    return(NULL)
+  }
+  else{
+    data_fr <-read.delim(file_address, skip=2, sep="\t", header=TRUE, row.names=1)
+    data_fr <- as.matrix(subset(data_fr, select=-c(Description)))
+    return(data_fr)
+  }
 }
 
 #' printf

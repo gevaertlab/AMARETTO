@@ -374,7 +374,6 @@ readGMT<-function(filename){
 #' @export
 #'
 #' @examples
-#' \dontrun{  
 #' data('ProcessedDataLIHC')
 #' AMARETTOinit <- AMARETTO_Initialize(ProcessedData = ProcessedDataLIHC,
 #'                                     NrModules = 2, VarPercentage = 50)
@@ -382,7 +381,6 @@ readGMT<-function(filename){
 #' AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
 #' 
 #' plot_run_history(AMARETTOinit,AMARETTOresults)
-#' }
 plot_run_history<-function(AMARETTOinit,AMARETTOresults){
   means<-unlist(lapply(AMARETTOresults$run_history$error_history, mean))
   stds<-unlist(lapply(AMARETTOresults$run_history$error_history, sd))
