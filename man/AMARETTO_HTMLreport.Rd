@@ -33,7 +33,7 @@ AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
 
 \item{driverGSEA}{if TRUE, module drivers will also be included in the hypergeometric test.}
 
-\item{phenotype_association_table}{}
+\item{phenotype_association_table}{a Data Frame, containing all modules phenotype association data. Optional.}
 }
 \value{
 result

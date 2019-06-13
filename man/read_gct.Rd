@@ -7,7 +7,7 @@
 read_gct(file_address)
 }
 \arguments{
-\item{file_address}{}
+\item{file_address}{Address of the input gct file.}
 }
 \value{
 result

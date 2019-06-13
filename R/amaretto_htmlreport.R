@@ -12,7 +12,7 @@
 #' @param output_address Output directory for the html files.
 #' @param show_row_names if True, sample names will appear in the heatmap
 #' @param driverGSEA if TRUE, module drivers will also be included in the hypergeometric test.
-#' @param phenotype_association_table 
+#' @param phenotype_association_table a Data Frame, containing all modules phenotype association data. Optional.
 #' @param MSIGDB TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.
 #'
 #' @import dplyr
@@ -325,7 +325,7 @@ GmtFromModules <- function(AMARETTOinit,AMARETTOresults,driverGSEA){
 #' GeneSetDescription
 #'
 #' @param filename The name of the gmt file.
-#' @param MSIGDB 
+#' @param MSIGDB   If True, the gene set description column will be provided from MSIGDB.
 #'
 #' @importFrom utils data
 #' @return result

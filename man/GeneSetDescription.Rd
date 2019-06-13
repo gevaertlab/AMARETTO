@@ -9,7 +9,7 @@ GeneSetDescription(filename, MSIGDB)
 \arguments{
 \item{filename}{The name of the gmt file.}
 
-\item{MSIGDB}{}
+\item{MSIGDB}{If True, the gene set description column will be provided from MSIGDB.}
 }
 \value{
 result

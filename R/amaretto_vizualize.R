@@ -8,7 +8,7 @@
 #' @param ModuleNr Module number to visualize
 #' @param SAMPLE_annotation Matrix or Dataframe with sample annotation
 #' @param ID Column used as sample name
-#' @param show_row_names 
+#' @param show_row_names If TRUE, row names will be shown on the plot.
 #' @param order_samples Order samples in heatmap by mean or by clustering
 #'
 #' @importFrom circlize colorRamp2  rand_color

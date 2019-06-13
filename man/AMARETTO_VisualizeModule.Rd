@@ -17,7 +17,7 @@ AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, ProcessedData,
 
 \item{ModuleNr}{Module number to visualize}
 
-\item{show_row_names}{}
+\item{show_row_names}{If TRUE, row names will be shown on the plot.}
 
 \item{SAMPLE_annotation}{Matrix or Dataframe with sample annotation}
 

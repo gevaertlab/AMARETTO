@@ -169,7 +169,7 @@ geneFiltering <- function(Type, MAdata, Percentage) {
 #' 
 #' Function to turn a .gct data files into a matrix format
 #'
-#' @param file_address 
+#' @param file_address Address of the input gct file. 
 #'
 #' @importFrom utils read.delim
 #' @return result
