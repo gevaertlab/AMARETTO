@@ -52,7 +52,10 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
                                               DriversList_Alterations=case_when(DriverList==0~"Driver not predefined",
                                                                                 DriverList==1~"Driver predefined"))
 
-  ha_drivers <- ComplexHeatmap::HeatmapAnnotation(df = tibble::column_to_rownames(Alterations,"HGNC_symbol") %>% dplyr::select(CNVMet_Alterations,DriversList_Alterations), col = list(CNVMet_Alterations= c("Copy number alterations"="#eca400","Methylation aberrations"="#006992","Methylation and copy number alterations"="#d95d39","Not Altered"="lightgray"),DriversList_Alterations=c("Driver not predefined"="lightgray","Driver predefined"="#588B5B")),which = "column", height = grid::unit(0.3, "cm"),name="",
+  ha_drivers <- ComplexHeatmap::HeatmapAnnotation(df =tibble::column_to_rownames(Alterations,"HGNC_symbol") %>% dplyr::select(CNVMet_Alterations,DriversList_Alterations) , 
+                                                  col = list(CNVMet_Alterations= c("Copy number alterations"="#eca400","Methylation aberrations"="#006992","Methylation and copy number alterations"="#d95d39","Not Altered"="lightgray"),
+                                                             DriversList_Alterations=c("Driver not predefined"="lightgray","Driver predefined"="#588B5B")),
+                                                  which = "column", height = grid::unit(0.3, "cm"),name="",show_annotation_name = FALSE,
                                   annotation_legend_param = list(title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
 
   overlapping_samples <- colnames(ModuleData)
@@ -148,24 +151,36 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
       cat(ncol(SAMPLE_annotation_fil),"annotations are added")
       #define colors
       col<-c()
-      for (sample_column in colnames(SAMPLE_annotation_fil)[colnames(SAMPLE_annotation_fil) != ID]){
-        newcol<-circlize::rand_color(n=length(unique(SAMPLE_annotation_fil[,sample_column])),luminosity = "bright")
-        names(newcol)<-unique(SAMPLE_annotation_fil[,sample_column])
-        col<-c(col,newcol)
-      }
+      # for (sample_column in colnames(SAMPLE_annotation_fil)[colnames(SAMPLE_annotation_fil) != ID]){
+      #   newcol<-circlize::rand_color(n=length(unique(SAMPLE_annotation_fil[,sample_column])),luminosity = "bright")
+      #   names(newcol)<-unique(SAMPLE_annotation_fil[,sample_column])
+      #   col<-c(col,newcol)
+      # }
       fsize<-6
-      wsize=ncol(SAMPLE_annotation_fil) * 3
+      wsize=2
       if (ncol(SAMPLE_annotation_fil)>50){
         fsize<-5
-        wsize=ncol(SAMPLE_annotation_fil) * 2
+        wsize=1
       }
-      ha_anot<-Heatmap(SAMPLE_annotation_fil, name="Sample Annotation", column_title = "Sample\nAnnotation", column_title_gp = grid::gpar(fontsize = 5, fontface = "bold"), col=col, show_row_names=FALSE,width = unit(wsize, "mm"),
-                       column_names_gp = gpar(fontsize = fsize),heatmap_legend_param = list(title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
-      ha_list<-ha_list + ha_anot
+      
+      for (sample_column in colnames(SAMPLE_annotation_fil)[colnames(SAMPLE_annotation_fil) != ID]){
+        
+        # newcol<-circlize::rand_color(n=length(unique(SAMPLE_annotation_fil[,colnames(SAMPLE_annotation_fil)==sample_column])),luminosity = "bright")
+        # names(newcol)<-unique(SAMPLE_annotation_fil[,colnames(SAMPLE_annotation_fil)==sample_column])
+        
+        ha_anot<-Heatmap(SAMPLE_annotation_fil[,colnames(SAMPLE_annotation_fil)==sample_column], name=sample_column, column_title ="", column_title_gp = grid::gpar(fontsize = 5, fontface = "bold"),  show_row_names=FALSE,width = unit(wsize, "mm"),
+                         column_names_gp = gpar(fontsize = fsize),heatmap_legend_param = list(title_gp = grid::gpar(fontsize = 6),labels_gp = grid::gpar(fontsize = 6),ncol = 1))
+        # ha_anot<-Heatmap(SAMPLE_annotation_fil[,colnames(SAMPLE_annotation_fil)==sample_column], name="Sample Annotation", column_title = "Sample\nAnnotation", column_title_gp = grid::gpar(fontsize = 5, fontface = "bold"), col=col[,k], show_row_names=FALSE,width = unit(wsize, "mm"),
+        #                  column_names_gp = gpar(fontsize = fsize),heatmap_legend_param = list(title_gp = grid::gpar(fontsize = 6),labels_gp = grid::gpar(fontsize = 6),ncol = 4))
+        ha_list<-ha_list + ha_anot
+      }
+      
+      
     } else {print("The ID is not identified as a column name in the annotation")}
   }
   if (printHM==TRUE){
   ComplexHeatmap::draw(ha_list,heatmap_legend_side = "bottom",annotation_legend_side="bottom")
+    
   } else {
     return(ha_list)
   }

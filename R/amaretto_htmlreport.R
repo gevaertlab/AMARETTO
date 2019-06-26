@@ -68,6 +68,8 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   NrCores <- AMARETTOinit$NrCores
   MaxCores <- parallel::detectCores(all.tests = FALSE, logical = TRUE)
   
+  options('DT.warn.size'=FALSE)
+  
   if(MaxCores < NrCores){
   stop(paste0("The number of cores that is asked for (",NrCores,"), is more than what's avalaible. Changes can be made on AMARETTOinit$NrCores."))
   }
@@ -97,9 +99,11 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   }
   
   # Bypass Hyper-Geometric Testing if it was precomputed.
-  if (!is.null(hyper_geo_test_table)){
+  
+  else{
     output_hgt<-hyper_geo_test_table
   }
+  
 
   #Parallelizing
   cluster <- parallel::makeCluster(c(rep("localhost", NrCores)), type = "SOCK")
@@ -116,6 +120,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   ModuleOverviewTable<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT','rmarkdown')) %dopar% {
   #for(ModuleNr in 1:NrModules){
     #get heatmap
+    
     print(paste0("ModuleNr = ",ModuleNr))
     heatmap_module <- AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, ProcessedData, show_row_names = show_row_names, SAMPLE_annotation=SAMPLE_annotation, ID=ID, ModuleNr=ModuleNr,printHM = FALSE)
     print("The Heatmap is visualised.")
@@ -168,6 +173,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
       filename_table <- paste0("gsea_module",ModuleNr)
       buttons_list <- list(list(extend ='csv',filename=filename_table), list(extend ='excel',filename=filename_table), list(extend = 'pdf', pageSize = 'A4', orientation = 'landscape',filename=filename_table),list(extend ='print'), list(extend ='colvis'))
       #create interactive tables
+      options('DT.warn.size'=FALSE)
       if (MSIGDB==TRUE){
               dt_genesets <- DT::datatable(output_hgt_filter %>% 
                                      dplyr::mutate(Geneset=paste0('<a href="http://software.broadinstitute.org/gsea/msigdb/cards/',Geneset,'">',gsub("_"," ",Geneset),'</a>')),
@@ -342,8 +348,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
                                                     dplyr::mutate(ModuleNr=paste0('<a href="./modules/module',gsub("Module ","",ModuleNr),'.html">',ModuleNr,'</a>'))%>%
                                                     dplyr::arrange(q.value), class='display',filter = 'top', extensions = c('Buttons','KeyTable'),rownames = FALSE,
                                                options = list(pageLength = 10, lengthMenu = c(5, 10, 20, 50, 100), keys = TRUE, dom = 'Blfrtip',buttons = buttons_list, columnDefs = list(list(className = 'dt-head-center', targets = "_all"),list(className = 'text-left', targets = "_all"))),colnames=c("Module","Phenotype","Statistics Test","P-value","FDR Q-value","Descriptive Statistics"),
-                                               escape = FALSE) %>% 
-                                    DT::formatSignif(c('p.value','q.value'),2)
+                                               escape = FALSE) %>% DT::formatSignif(c('p.value','q.value'),2)
   }
   else{
     dt_phenotype_association_all <- "Phenotype association resuls were not provided."
