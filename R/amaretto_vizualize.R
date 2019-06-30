@@ -164,12 +164,52 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
       }
       
       for (sample_column in colnames(SAMPLE_annotation_fil)[colnames(SAMPLE_annotation_fil) != ID]){
-        
         # newcol<-circlize::rand_color(n=length(unique(SAMPLE_annotation_fil[,colnames(SAMPLE_annotation_fil)==sample_column])),luminosity = "bright")
         # names(newcol)<-unique(SAMPLE_annotation_fil[,colnames(SAMPLE_annotation_fil)==sample_column])
-        
-        ha_anot<-Heatmap(SAMPLE_annotation_fil[,colnames(SAMPLE_annotation_fil)==sample_column], name=sample_column, column_title ="", column_title_gp = grid::gpar(fontsize = 5, fontface = "bold"),  show_row_names=FALSE,width = unit(wsize, "mm"),
-                         column_names_gp = gpar(fontsize = fsize),heatmap_legend_param = list(title_gp = grid::gpar(fontsize = 6),labels_gp = grid::gpar(fontsize = 6),ncol = 1))
+        annotation_data<-SAMPLE_annotation_fil[,colnames(SAMPLE_annotation_fil)==sample_column]
+        unique_annotations<-as.vector(sort(unique(annotation_data),decreasing = FALSE))
+        #unique_annotations <- unique_annotations[!is.na(unique_annotations)]
+        if (length(unique_annotations)<6 & length(unique_annotations) > 1){
+          
+          annotation_data<-as.factor(annotation_data)
+          if (length(unique_annotations) == 2){
+            colors<- c("darkblue", "darkred")
+          }else if (length(unique_annotations) == 3){
+            colors<- c("darkblue", "darkgreen", "darkred")
+          }else if (length(unique_annotations) == 4){
+            colors<- c("darkblue", "darkgreen", "pink2", "darkred")
+          }else {
+            colors<- c("darkblue", "darkgreen", "pink2","yellow3", "darkred")
+          }
+          print("Hi")
+          print(colors)
+          print(unique_annotations)
+          
+          col_list<-structure(colors,names=unique_annotations)
+          print(col_list)
+          print("bye")
+          # names(colors)<-unique_annotations
+          # print(colors)
+          # print(unique_annotations)
+          # colormap<-circlize::colorRamp2(unique_annotations,colors)
+          # print(colormap)
+          
+          # col_list = list(c("Copy number alterations"="#eca400","Methylation aberrations"="#006992","Methylation and copy number alterations"="#d95d39","Not Altered"="lightgray"),
+          #            DriversList_Alterations=c("Driver not predefined"="lightgray","Driver predefined"="#588B5B"))
+          # 
+          #Met_col=structure(c("#006992","#d95d39","white"),names=c("Hyper-methylated","Hypo-methylated","Not altered"))
+          # col_list <-list(colors)
+          # names(col_list)<-sample_column
+          # 
+          # print(col_list)
+          # col=col_list,
+          ha_anot<-Heatmap(annotation_data, name=sample_column, column_title ="", column_title_gp = grid::gpar(fontsize = 5, fontface = "bold"),col=col_list, show_row_names=FALSE,width = unit(wsize, "mm"),
+                           column_names_gp = gpar(fontsize = fsize),heatmap_legend_param = list(title_gp = grid::gpar(fontsize = 6),labels_gp = grid::gpar(fontsize = 6),ncol = 1))
+        }
+        else{
+          ha_anot<-Heatmap(annotation_data, name=sample_column, column_title ="", column_title_gp = grid::gpar(fontsize = 5, fontface = "bold"),  show_row_names=FALSE,width = unit(wsize, "mm"),
+                           column_names_gp = gpar(fontsize = fsize),heatmap_legend_param = list(title_gp = grid::gpar(fontsize = 6),labels_gp = grid::gpar(fontsize = 6),ncol = 1))
+        }
         # ha_anot<-Heatmap(SAMPLE_annotation_fil[,colnames(SAMPLE_annotation_fil)==sample_column], name="Sample Annotation", column_title = "Sample\nAnnotation", column_title_gp = grid::gpar(fontsize = 5, fontface = "bold"), col=col[,k], show_row_names=FALSE,width = unit(wsize, "mm"),
         #                  column_names_gp = gpar(fontsize = fsize),heatmap_legend_param = list(title_gp = grid::gpar(fontsize = 6),labels_gp = grid::gpar(fontsize = 6),ncol = 4))
         ha_list<-ha_list + ha_anot
