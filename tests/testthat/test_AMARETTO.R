@@ -9,7 +9,8 @@ AMARETTOinit <- AMARETTO_Initialize(ProcessedDataLIHC,
                                     VarPercentage = VarPercentage,
                                     random_seeds = c(42,42))
 
-AMARETTOresults <- AMARETTO_Run(AMARETTOinit)
+tryCatch( { AMARETTOresults <- AMARETTO_Run(AMARETTOinit);}
+          , warning = function(w) { AMARETTOresults <- AMARETTO_Run(AMARETTOinit) })
 
 testthat::test_that("Checking AMARETTO_init object if it is in decent shape",{
   expect_equal(nrow(AMARETTOinit$MA_matrix_Var)>1,TRUE)
