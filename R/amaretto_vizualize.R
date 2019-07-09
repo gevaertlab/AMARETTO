@@ -181,9 +181,15 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
           }else {
             colors<- c("darkblue", "darkgreen", "pink2","yellow3", "darkred")
           }
-          print("Hi")
-          print(colors)
-          print(unique_annotations)
+          
+          unique_annotations<-gsub("^[0]0_","",unique_annotations)
+          unique_annotations<-gsub("^[0]1_","",unique_annotations)
+          
+          annotation_data<-gsub("^[0]0_","",annotation_data)
+          annotation_data<-gsub("^[0]1_","",annotation_data)
+          
+          
+          
           
           col_list<-structure(colors,names=unique_annotations)
           print(col_list)

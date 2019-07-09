@@ -6,7 +6,8 @@
 \usage{
 AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
   show_row_names = FALSE, SAMPLE_annotation = NULL, ID = NULL,
-  hyper_geo_reference = NULL, output_address = "./",
+  hyper_geo_reference = NULL, genetic_pert_hyper_geo_reference = NULL,
+  chem_pert_hyper_geo_reference = NULL, output_address = "./",
   driverGSEA = TRUE, phenotype_association_table = NULL)
 }
 \arguments{

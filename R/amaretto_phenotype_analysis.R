@@ -96,7 +96,7 @@ AMARETTO_unite_results<-function(results_list){
                                                  ", Hazard Ratio: ",Hazard_ratio,
                                                  ", 95% CI: ",statistics_str,
                                                  ", Wald Statistic: ",df$wald.test))%>%
-        select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
+        dplyr::select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
     }
     else if (results_list[[i]]$test_type=="SPEARMANCORRTEST"){
       df<-results_list[[i]]$test_result
@@ -106,7 +106,7 @@ AMARETTO_unite_results<-function(results_list){
         mutate(ModuleNr=paste("Module",ModuleNr))%>%
         add_column(Descriptive_Statistics=paste0("Correlation: ",signif(as.numeric(unlist(df$estimate)), digits=3),
                                                   ", Statistic: ",signif(as.numeric(unlist(df$statistic)), digits=3)))%>%
-        select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
+        dplyr::select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
       
       #%>%select(ModuleNr,p.value,q.value,estimate,statistic,parameter,null.value,alternative,method,data.name)
       
@@ -120,7 +120,7 @@ AMARETTO_unite_results<-function(results_list){
         add_column(Descriptive_Statistics=paste0("Correlation: ",signif(as.numeric(unlist(df$estimate)), digits=3),
                                                   ", 95% CI: ",df$conf.int,
                                                   ", Statistic: ",signif(as.numeric(unlist(df$statistic)), digits=3)))%>%
-        select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
+        dplyr::select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
     }
     
     else if (results_list[[i]]$test_type=="KRUSKALWALLISTEST"){
@@ -130,7 +130,7 @@ AMARETTO_unite_results<-function(results_list){
                      Statistical_Test="Nominal Multi-Class Analysis: Kruskal-Wallis test")%>%
         mutate(ModuleNr=paste("Module",ModuleNr))%>%
         add_column(Descriptive_Statistics=paste0(" Statistic: ",signif(as.numeric(unlist(df$statistic)), digits=3)))%>%
-        select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
+        dplyr::select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
     }
     
     else if (results_list[[i]]$test_type=="WILCOXONRANKSUMTEST"){
@@ -151,7 +151,7 @@ AMARETTO_unite_results<-function(results_list){
                      Statistical_Test="Nominal Two-Class Analysis: Wilcoxon rank sum test")%>%
         mutate(ModuleNr=paste("Module",ModuleNr))%>%
         add_column(Descriptive_Statistics=paste0("Estimate: ",signif(as.numeric(unlist(df$estimate)), digits=3),", 95% CI: ",statistics_str,", Statistics: ",signif(as.numeric(unlist(df$statistic)), digits=3)))%>%
-        select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
+        dplyr::select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
     }
     
     else if (results_list[[i]]$test_type=="WILCOXONRANKSUMTESTPAIRED"){
@@ -161,7 +161,7 @@ AMARETTO_unite_results<-function(results_list){
                      Statistical_Test="Nominal Paired Two-Class Analysis: Wilcoxon rank sum test paired")%>%
         mutate(ModuleNr=paste("Module",ModuleNr))%>%
         add_column(Descriptive_Statistics=paste0("Statistic: ",signif(as.numeric(unlist(df$statistic)), digits=3)))%>%
-        select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
+        dplyr::select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
     }
     
     else if (results_list[[i]]$test_type=="TIMESERIESEDGETIME"){
@@ -169,8 +169,8 @@ AMARETTO_unite_results<-function(results_list){
       df<-add_column(df,
                      Phenotypes=paste0(results_list[[i]]$phenotype1," (TIMESERIESEDGECONDITION),",results_list[[i]]$phenotype2," (TIMESERIESEDGETIME)"),
                      Statistical_Test="Time Series Analysis: Edge time course analysis (Likelihood ratio test)")%>%
-        mutate(ModuleNr=paste("Module",ModuleNr))%>%add_column(Descriptive_Statistics=" ")%>%arrange(q.value)
-        select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
+        dplyr::mutate(ModuleNr=paste("Module",ModuleNr))%>%add_column(Descriptive_Statistics=" ")%>%arrange(q.value)%>%
+        dplyr::select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
     }
     united_df<-rbind(united_df,as.data.frame(df))
   }
@@ -348,9 +348,13 @@ all_module_WILCOXONRANKSUM_test<-function(AMARETTOinit,AMARETTOresults,test_samp
     if(length(unique(df$wilcoxonsum_vector))!=2){
       stop(paste0("There is(are) ",length(unique(df$wilcoxonsum_vector)), " group(s) for ", colnames(test_sample_annotations)[2], ". Requiers two groups. The module Test is skiped."))
     }
-    group1<-df$mean_all[df$wilcoxonsum_vector==unique(df$wilcoxonsum_vector)[1]]
-    group2<-df$mean_all[df$wilcoxonsum_vector==unique(df$wilcoxonsum_vector)[2]]
-    WILCOXONRANKSUMTEST_results <- wilcox.test(x=group1,y=group2, alternative = "two.sided", paired = FALSE, conf.int = TRUE, conf.level = 0.95)
+    group_titles<-as.vector(sort(unique(df$wilcoxonsum_vector),decreasing = FALSE))
+    
+    group1<-df$mean_all[df$wilcoxonsum_vector==group_titles[1]]
+    
+    group2<-df$mean_all[df$wilcoxonsum_vector==group_titles[2]]
+    
+    WILCOXONRANKSUMTEST_results <- wilcox.test(x=group2,y=group1, alternative = "two.sided", paired = FALSE, conf.int = TRUE, conf.level = 0.95)
     df_result<-rbind(df_result,WILCOXONRANKSUMTEST_results)
   }
   df_result<-as.data.frame(df_result,stringsAsFactors=FALSE)%>%rownames_to_column()
@@ -388,7 +392,7 @@ all_module_WILCOXONRANKSUMPAIRED_test<-function(AMARETTOinit,AMARETTOresults,tes
     
     group2<-df$mean_all[df$wilcoxonsum_vector==group_titles[2]]
     
-    WILCOXONRANKSUMTESTPAIRED_results <- wilcox.test(x=group1,y=group2, alternative = "two.sided", paired = TRUE, exact = NULL, correct = TRUE, conf.int = FALSE, conf.level = 0.95)
+    WILCOXONRANKSUMTESTPAIRED_results <- wilcox.test(x=group2,y=group1, alternative = "two.sided", paired = TRUE, exact = NULL, correct = TRUE, conf.int = FALSE, conf.level = 0.95)
     df_result<-rbind(df_result,WILCOXONRANKSUMTESTPAIRED_results)
   }
   df_result<-as.data.frame(df_result,stringsAsFactors=FALSE)%>%rownames_to_column()
