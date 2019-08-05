@@ -27,6 +27,7 @@ Imports:
     BiocFileCache, 
     DT, 
     MultiAssayExperiment, 
+    edgeR,
     circlize, 
     curatedTCGAData, 
     foreach, 

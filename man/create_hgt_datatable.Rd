@@ -13,6 +13,9 @@ create_hgt_datatable(output_hgt, module_table, ModuleNr = 1)
 
 \item{ModuleNr}{The module number.}
 }
+\value{
+result
+}
 \description{
 Title create_hgt_datatable
 }

@@ -435,7 +435,7 @@ all_module_KRUSKALWALLIS_test<-function(AMARETTOinit,AMARETTOresults,test_sample
 #' @param AMARETTOinit 
 #' @param AMARETTOresults 
 #' @param test_sample_annotations 
-#' @import edge
+#' @import edgeR
 #' @return
 #' @export
 #'
