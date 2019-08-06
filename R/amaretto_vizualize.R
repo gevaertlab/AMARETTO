@@ -225,7 +225,12 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
     } else {print("The ID is not identified as a column name in the annotation")}
   }
   if (printHM==TRUE){
-  ComplexHeatmap::draw(ha_list,heatmap_legend_side = "bottom",annotation_legend_side="bottom")
+    if (ncol(SAMPLE_annotation_fil)<50){
+      ComplexHeatmap::draw(ha_list,heatmap_legend_side = "bottom",annotation_legend_side="bottom")
+    }
+    else{
+      ComplexHeatmap::draw(ha_list,heatmap_legend_side = "bottom",annotation_legend_side="bottom",ht_gap = unit(1, "mm"))
+    }
     
   } else {
     return(ha_list)
