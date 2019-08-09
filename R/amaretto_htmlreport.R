@@ -127,7 +127,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   yml_file <- paste0(full_path,"/AMARETTOhtmls/modules/_site.yml")
   file.copy(system.file("templates/module_templates/_site.yml",package="AMARETTO"),yml_file)
   
-  ModuleOverviewTable<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT','rmarkdown')) %dopar% {
+  ModuleOverviewTable<-foreach (ModuleNr = 1:NrModules, .packages = c('AMARETTO','tidyverse','DT','rmarkdown'),.errorhandling='pass') %dopar% {
   #for(ModuleNr in 1:NrModules){
     #get heatmap
     
