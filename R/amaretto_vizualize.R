@@ -97,11 +97,11 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
     fontsizeMo=4
   } else {fontsizeMo=2}
   
-  Regwidth <- ncol(ClustRegulatorData)*0.5
+  Regwidth <- ncol(ClustRegulatorData)*0.2
   ha_Reg <- Heatmap(ClustRegulatorData, name = "Gene Expression", column_title = "Regulator Genes\nExpression",cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = grid::gpar(fontsize = fontsizeMo),top_annotation = ha_drivers,
                     column_title_gp = grid::gpar(fontsize = 6, fontface = "bold"), col=circlize::colorRamp2(c(-max(abs(ClustRegulatorData)), 0, max(abs(ClustRegulatorData))), c("darkblue", "white", "darkred")),heatmap_legend_param = list(color_bar = "continuous",legend_direction = "horizontal",title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)), width = grid::unit(Regwidth, "cm"))
 
-
+  Tarwidth<-ncol(ClustModuleData)*0.2
   ha_Module <- Heatmap(ClustModuleData, name = "", column_title = "Target Genes\nExpression",cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=show_row_names,column_names_gp = grid::gpar(fontsize = fontsizeMo),show_heatmap_legend = FALSE,
                        column_title_gp = grid::gpar(fontsize = 6, fontface = "bold"), col=circlize::colorRamp2(c(-max(abs(ClustModuleData)), 0, max(abs(ClustModuleData))), c("darkblue", "white", "darkred")),heatmap_legend_param = list(color_bar = "continuous",legend_direction = "horizontal",title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
 
