@@ -211,6 +211,7 @@ create_feature_matrix<-function(AMARETTOinit,AMARETTOresults,sample_annotation_d
 #' @examples
 cox_prop_hazard_test<-function(xx,time_to_event,right_censoring){
   df=data.frame(module_mean=xx,COXPROPHAZARDTIMETOEVENT=as.numeric(time_to_event),COXPROPHAZARDRIGHTCENSORING=as.numeric(right_censoring))
+  df=na.omit(df)
   coxph<-coxph(Surv(df$COXPROPHAZARDTIMETOEVENT,df$COXPROPHAZARDRIGHTCENSORING)~df$module_mean)
   coxphs<-summary(coxph)
   p.value<-signif(coxphs$waldtest["pvalue"], digits=5)
