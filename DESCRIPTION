@@ -44,7 +44,8 @@ Imports:
     parallel,
     stats,
     knitr, 
-    utils
+    utils,
+    kableExtra
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1.9000
 LinkingTo: 
