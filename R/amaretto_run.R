@@ -158,7 +158,7 @@ AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data, Clusters, RegulatorData
                       message(warnMessage)
                     }
                     bestNonZeroLambda <- nonZeroLambdas[which(nonZeroCVMs == min(nonZeroCVMs, na.rm = TRUE))]
-                    new_b_o = coef(fit, s = bestNonZeroLambda)
+                    new_b_o = coef(fit, s = bestNonZeroLambda[1])
                     new_b_opt <- c(new_b_o[2:length(b_o)])
                     CurrentUsedRegulators = RegulatorData_rownames[which(new_b_opt != 0)]
                     nrIterations = nrIterations + 1
