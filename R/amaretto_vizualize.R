@@ -51,13 +51,23 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
                                                                            MET==0 & CNV==0 ~"Not Altered"),
                                               DriversList_Alterations=case_when(DriverList==0~"Driver not predefined",
                                                                                 DriverList==1~"Driver predefined"))
-
-  ha_drivers <- ComplexHeatmap::HeatmapAnnotation(df =tibble::column_to_rownames(Alterations,"HGNC_symbol") %>% dplyr::select(CNVMet_Alterations,DriversList_Alterations) , 
+  df_drivers<-tibble::column_to_rownames(Alterations,"HGNC_symbol") %>% dplyr::select(CNVMet_Alterations,DriversList_Alterations)
+  Driver_Genes_Weights=AMARETTOresults$RegulatoryPrograms[ModuleNr,ModuleRegulators]
+  Driver_Genes_Weights<-as.data.frame(Driver_Genes_Weights)
+  df_drivers_annotations<-cbind(df_drivers,Driver_Genes_Weights)
+  
+  ha_drivers <- ComplexHeatmap::HeatmapAnnotation(df =df_drivers_annotations , 
                                                   col = list(CNVMet_Alterations= c("Copy number alterations"="#eca400","Methylation aberrations"="#006992","Methylation and copy number alterations"="#d95d39","Not Altered"="lightgray"),
-                                                             DriversList_Alterations=c("Driver not predefined"="lightgray","Driver predefined"="#588B5B")),
+                                                             DriversList_Alterations=c("Driver not predefined"="lightgray","Driver predefined"="#588B5B"),
+                                                             #Driver_Genes_Weights=circlize::colorRamp2(c(-1,-0.01, 0,0.01, 1), c("darkblue","blue", "white", "red","darkred"))
+                                                             Driver_Genes_Weights=circlize::colorRamp2(c(-max(df_drivers_annotations$Driver_Genes_Weights), 0, max(df_drivers_annotations$Driver_Genes_Weights)), c("blue", "white", "red"))
+                                                             ),
                                                   which = "column", height = grid::unit(0.3, "cm"),name="",show_annotation_name = FALSE,
                                   annotation_legend_param = list(title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
+  
+  
 
+  
   overlapping_samples <- colnames(ModuleData)
   
   # Add NAs for Gene Expression samples not existing in CNV or MET data 
