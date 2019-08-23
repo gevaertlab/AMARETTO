@@ -43,8 +43,24 @@ dt_targets
 
 ## Enrichments of Functional Categories in Regulatory Module
 <br><br><br>
-```{r geneset, echo=FALSE, out.width='25%'}
+```{r module_geneset, echo=FALSE, out.width='25%'}
 dt_genesets
+```
+
+<br><br><br>
+
+## Enrichments of Driver Perturbations in Regulatory Module
+<br><br><br>
+```{r module_geneset2, echo=FALSE, out.width='25%'}
+dt_genesets_genetic_pert
+```
+
+<br><br><br>
+
+## Enrichments of Drug Perturbations in Regulatory Module
+<br><br><br>
+```{r module_geneset3, echo=FALSE, out.width='25%'}
+dt_genesets_chem_pert
 ```
 
 <br><br><br>

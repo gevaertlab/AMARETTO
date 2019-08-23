@@ -6,9 +6,9 @@
 \usage{
 AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
   show_row_names = FALSE, SAMPLE_annotation = NULL, ID = NULL,
-  hyper_geo_test_bool = FALSE, hyper_geo_reference = NULL,
-  output_address = "./", MSIGDB = TRUE, driverGSEA = TRUE,
-  hyper_geo_test_table = NULL, phenotype_association_table = NULL)
+  hyper_geo_reference = NULL, genetic_pert_hyper_geo_reference = NULL,
+  chem_pert_hyper_geo_reference = NULL, output_address = "./",
+  driverGSEA = TRUE, phenotype_association_table = NULL)
 }
 \arguments{
 \item{AMARETTOinit}{AMARETTO initialize output}
@@ -23,17 +23,11 @@ AMARETTO_HTMLreport(AMARETTOinit, AMARETTOresults, ProcessedData,
 
 \item{ID}{ID column of the SAMPLE annotation data frame}
 
-\item{hyper_geo_test_bool}{Boolean if a hyper geometric test needs to be performed. If TRUE provide a GMT file in the hyper_geo_reference parameter.}
-
-\item{hyper_geo_reference}{GMT file with gene sets to compare with.}
+\item{hyper_geo_reference}{Either GMT file address for genesets or computed GSEA dataframe using HyperGeoEnrichmentTest()}
 
 \item{output_address}{Output directory for the html files.}
 
-\item{MSIGDB}{TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.}
-
 \item{driverGSEA}{if TRUE, module drivers will also be included in the hypergeometric test.}
-
-\item{hyper_geo_test_table}{Optional, Table computed by HyperGeoEnrichmentTest(). If given, the hypergeometric testing will be bypassed and the given table will be shown.}
 
 \item{phenotype_association_table}{Optional, Phenotype Association table.}
 }

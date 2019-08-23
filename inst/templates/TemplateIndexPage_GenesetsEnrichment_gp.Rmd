@@ -1,0 +1,29 @@
+---
+title: <center>AMARETTO Report</center>
+pagetitle: AMARETTO Report
+output: 
+  html_document:
+    theme: cerulean
+    highlight: NULL
+---
+<style>
+  .main-container {
+    max-width:  100% !important;
+    padding-right: 1% !important;
+    padding-left: 1% !important;
+    margin-right: 1% !important;
+    margin-left: 1% !important;
+    table-layout: fixed !important;
+  }
+</style>
+
+<center>
+
+## Enrichments of Driver Perturbations in Regulatory Modules
+<br><br><br>
+```{r Genesets2,echo=FALSE}
+dt_genesetsall_genetic_pert
+```
+<br><br><br>
+
+</center>

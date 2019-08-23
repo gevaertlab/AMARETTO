@@ -103,7 +103,7 @@ AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data, Clusters, RegulatorData
     ClusterIDs = sort(ClusterIDs, decreasing = FALSE)
     cnt <- 1:NrClusters
     ptm1 <- proc.time()
-    BetaY_all <- foreach(i = 1:NrClusters, .combine = cbind, .init = list(list(), list(), list()), .packages = "glmnet") %dopar% {
+    BetaY_all <- foreach(i = 1:NrClusters, .combine = cbind, .init = list(list(), list(), list()), .packages = "glmnet",.errorhandling='pass') %dopar% {
             if (length(which(Clusters == ClusterIDs[i])) > 1) {
                 y = apply((Data[which(Clusters == ClusterIDs[i]),]), 2, mean)
             } else {
@@ -130,7 +130,7 @@ AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data, Clusters, RegulatorData
                 message(warnMessage)
             }
             bestNonZeroLambda <- nonZeroLambdas[which(nonZeroCVMs == min(nonZeroCVMs, na.rm = TRUE))]
-            b_o = coef(fit, s = bestNonZeroLambda)
+            b_o = coef(fit, s = bestNonZeroLambda[1])   # Index 1 is because there may be cases with multiple best lambdas.
             b_opt <- c(b_o[2:length(b_o)])
             if (AutoRegulation == 2) {
                 CurrentUsedRegulators = RegulatorData_rownames[which(b_opt != 0, arr.ind = TRUE)]

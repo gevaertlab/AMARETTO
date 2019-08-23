@@ -4,19 +4,15 @@
 \alias{HyperGeoEnrichmentTest}
 \title{Title HyperGeoEnrichmentTest}
 \usage{
-HyperGeoEnrichmentTest(AMARETTOinit, AMARETTOresults, hyper_geo_reference,
-  driverGSEA = TRUE, MSIGDB = TRUE, NrCores = 4)
+HyperGeoEnrichmentTest(AMARETTOresults, hyper_geo_reference,
+  driverGSEA = TRUE, NrCores = 4)
 }
 \arguments{
-\item{AMARETTOinit}{AMARETTO initialize output}
-
 \item{AMARETTOresults}{AMARETTO results output}
 
 \item{hyper_geo_reference}{GMT file with gene sets to compare with.}
 
 \item{driverGSEA}{if TRUE, module drivers will also be included in the hypergeometric test.}
-
-\item{MSIGDB}{TRUE if gene sets were retrieved from MSIGDB. Links will be created in the report.}
 
 \item{NrCores}{Number of cores for parallel processing.}
 }
@@ -27,5 +23,5 @@ Hyper-Geometric Enrichment Test table
 Title HyperGeoEnrichmentTest
 }
 \examples{
-HyperGeoEnrichmentTest<(AMARETTOinit, AMARETTOresults, hyper_geo_reference, driverGSEA=TRUE, MSIGDB=TRUE, NrCores=4)
+HyperGeoEnrichmentTest(AMARETTOresults=NULL, hyper_geo_reference, driverGSEA=TRUE, MSIGDB=TRUE, NrCores=4)
 }

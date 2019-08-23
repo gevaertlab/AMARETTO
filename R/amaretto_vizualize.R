@@ -51,10 +51,23 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
                                                                            MET==0 & CNV==0 ~"Not Altered"),
                                               DriversList_Alterations=case_when(DriverList==0~"Driver not predefined",
                                                                                 DriverList==1~"Driver predefined"))
-
-  ha_drivers <- ComplexHeatmap::HeatmapAnnotation(df = tibble::column_to_rownames(Alterations,"HGNC_symbol") %>% dplyr::select(CNVMet_Alterations,DriversList_Alterations), col = list(CNVMet_Alterations= c("Copy number alterations"="#eca400","Methylation aberrations"="#006992","Methylation and copy number alterations"="#d95d39","Not Altered"="lightgray"),DriversList_Alterations=c("Driver not predefined"="lightgray","Driver predefined"="#588B5B")),which = "column", height = grid::unit(0.3, "cm"),name="",
+  df_drivers<-tibble::column_to_rownames(Alterations,"HGNC_symbol") %>% dplyr::select(CNVMet_Alterations,DriversList_Alterations)
+  Driver_Genes_Weights=AMARETTOresults$RegulatoryPrograms[ModuleNr,ModuleRegulators]
+  Driver_Genes_Weights<-as.data.frame(Driver_Genes_Weights)
+  df_drivers_annotations<-cbind(df_drivers,Driver_Genes_Weights)
+  
+  ha_drivers <- ComplexHeatmap::HeatmapAnnotation(df =df_drivers_annotations , 
+                                                  col = list(CNVMet_Alterations= c("Copy number alterations"="#eca400","Methylation aberrations"="#006992","Methylation and copy number alterations"="#d95d39","Not Altered"="lightgray"),
+                                                             DriversList_Alterations=c("Driver not predefined"="lightgray","Driver predefined"="#588B5B"),
+                                                             #Driver_Genes_Weights=circlize::colorRamp2(c(-1,-0.01, 0,0.01, 1), c("darkblue","blue", "white", "red","darkred"))
+                                                             Driver_Genes_Weights=circlize::colorRamp2(c(-max(df_drivers_annotations$Driver_Genes_Weights), 0, max(df_drivers_annotations$Driver_Genes_Weights)), c("blue", "white", "red"))
+                                                             ),
+                                                  which = "column", height = grid::unit(0.3, "cm"),name="",show_annotation_name = FALSE,
                                   annotation_legend_param = list(title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
+  
+  
 
+  
   overlapping_samples <- colnames(ModuleData)
   
   # Add NAs for Gene Expression samples not existing in CNV or MET data 
@@ -89,16 +102,16 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
   ClustModuleData <- t(ModuleData[,overlapping_samples_clust])
   
   if(length(ClustModuleData)<50){
-    fontsizeMo=6
+    fontsizeMo=5
   } else if (length(ClustModuleData)<200){
     fontsizeMo=4
   } else {fontsizeMo=2}
   
-  Regwidth <- ncol(ClustRegulatorData)*0.5
-  ha_Reg <- Heatmap(ClustRegulatorData, name = "Gene Expression", column_title = "Regulator Genes\nExpression",cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = grid::gpar(fontsize = fontsizeMo),top_annotation = ha_drivers,
+  Regwidth <- ncol(ClustRegulatorData)*0.2
+  ha_Reg <- Heatmap(ClustRegulatorData, name = "Gene Expression", column_title = "Regulator Genes\nExpression",cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = grid::gpar(fontsize = 5),top_annotation = ha_drivers,
                     column_title_gp = grid::gpar(fontsize = 6, fontface = "bold"), col=circlize::colorRamp2(c(-max(abs(ClustRegulatorData)), 0, max(abs(ClustRegulatorData))), c("darkblue", "white", "darkred")),heatmap_legend_param = list(color_bar = "continuous",legend_direction = "horizontal",title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)), width = grid::unit(Regwidth, "cm"))
 
-
+  Tarwidth<-ncol(ClustModuleData)*0.2
   ha_Module <- Heatmap(ClustModuleData, name = "", column_title = "Target Genes\nExpression",cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=show_row_names,column_names_gp = grid::gpar(fontsize = fontsizeMo),show_heatmap_legend = FALSE,
                        column_title_gp = grid::gpar(fontsize = 6, fontface = "bold"), col=circlize::colorRamp2(c(-max(abs(ClustModuleData)), 0, max(abs(ClustModuleData))), c("darkblue", "white", "darkred")),heatmap_legend_param = list(color_bar = "continuous",legend_direction = "horizontal",title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
 
@@ -113,7 +126,7 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
       METData2[which(METData<0)] <- "Hypo-methylated"  # hypo
       METData2[which(METData==0)] <- "Not altered" # nothing
       METData2<-t(METData2)
-      Metwidth=ncol(METData2)*0.7
+      Metwidth=ncol(METData2)*0.4
       Met_col=structure(c("#006992","#d95d39","white"),names=c("Hyper-methylated","Hypo-methylated","Not altered"))
       ha_Met <- Heatmap(METData2, name = "Methylation State", column_title = "Methylation", cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = grid::gpar(fontsize = 6),show_heatmap_legend = TRUE,
                         column_title_gp = gpar(fontsize = 6, fontface = "bold"), col = Met_col, width = grid::unit(Metwidth, "cm"),heatmap_legend_param = list(title_gp = gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
@@ -131,7 +144,7 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
       CNVData2[which(CNVData<=(-0.1))] <- "Deleted"  # deletion
       CNVData2[which(CNVData<0.1 & CNVData>(-0.1))] <- "Not altered" # nothing
       CNVData2<-t(CNVData2)
-      CNVwidth=ncol(CNVData2)*0.7
+      CNVwidth=ncol(CNVData2)*0.4
       CNV_col=structure(c("#006992","#d95d39","white"),names=c("Deleted","Amplified","Not altered"))
       ha_CNV <- Heatmap(CNVData2, name = "CNV State", column_title = "CNV", cluster_rows=FALSE,cluster_columns=TRUE,show_column_dend=FALSE,show_column_names=TRUE,show_row_names=FALSE,column_names_gp = grid::gpar(fontsize = 6),show_heatmap_legend = TRUE,
                         column_title_gp = grid::gpar(fontsize = 6, fontface = "bold"),col = CNV_col,width = grid::unit(CNVwidth, "cm"),heatmap_legend_param = list(title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
@@ -148,24 +161,114 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
       cat(ncol(SAMPLE_annotation_fil),"annotations are added")
       #define colors
       col<-c()
-      for (sample_column in colnames(SAMPLE_annotation_fil)[colnames(SAMPLE_annotation_fil) != ID]){
-        newcol<-circlize::rand_color(n=length(unique(SAMPLE_annotation_fil[,sample_column])),luminosity = "bright")
-        names(newcol)<-unique(SAMPLE_annotation_fil[,sample_column])
-        col<-c(col,newcol)
-      }
+      # for (sample_column in colnames(SAMPLE_annotation_fil)[colnames(SAMPLE_annotation_fil) != ID]){
+      #   newcol<-circlize::rand_color(n=length(unique(SAMPLE_annotation_fil[,sample_column])),luminosity = "bright")
+      #   names(newcol)<-unique(SAMPLE_annotation_fil[,sample_column])
+      #   col<-c(col,newcol)
+      # }
       fsize<-6
-      wsize=ncol(SAMPLE_annotation_fil) * 3
+      wsize=2
       if (ncol(SAMPLE_annotation_fil)>50){
         fsize<-5
-        wsize=ncol(SAMPLE_annotation_fil) * 2
+        wsize=1
       }
-      ha_anot<-Heatmap(SAMPLE_annotation_fil, name="Sample Annotation", column_title = "Sample\nAnnotation", column_title_gp = grid::gpar(fontsize = 5, fontface = "bold"), col=col, show_row_names=FALSE,width = unit(wsize, "mm"),
-                       column_names_gp = gpar(fontsize = fsize),heatmap_legend_param = list(title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
-      ha_list<-ha_list + ha_anot
+      
+      for (sample_column in colnames(SAMPLE_annotation_fil)[colnames(SAMPLE_annotation_fil) != ID]){
+        # newcol<-circlize::rand_color(n=length(unique(SAMPLE_annotation_fil[,colnames(SAMPLE_annotation_fil)==sample_column])),luminosity = "bright")
+        # names(newcol)<-unique(SAMPLE_annotation_fil[,colnames(SAMPLE_annotation_fil)==sample_column])
+        annotation_data<-SAMPLE_annotation_fil[,colnames(SAMPLE_annotation_fil)==sample_column]
+        unique_annotations<-as.vector(sort(unique(annotation_data),decreasing = FALSE))
+        #unique_annotations <- unique_annotations[!is.na(unique_annotations)]
+        if (length(unique_annotations)==1){
+          next
+        }
+        if (length(unique_annotations)<13 & length(unique_annotations) > 1){
+          
+          annotation_data<-as.factor(annotation_data)
+          if (length(unique_annotations) == 2){
+            colors<- c("darkblue", "darkred")
+          }else if (length(unique_annotations) == 3){
+            colors<- c("darkblue", "darkgreen", "darkred")
+          }else if (length(unique_annotations) == 4){
+            colors<- c("darkblue", "darkgreen", "pink2", "darkred")
+          }
+          else if (length(unique_annotations) == 5) {
+            colors<- c("darkblue", "darkgreen", "pink2","yellow3", "darkred")
+          }
+
+          else if (length(unique_annotations) == 6) {
+            colors<- c("darkblue", "darkgreen", "pink2","yellow3", "darkred","coral")
+          }
+          else if (length(unique_annotations) == 7) {
+            colors<- c("darkblue", "darkgreen", "pink2","yellow3", "darkred","coral","black")
+          }
+          else if (length(unique_annotations) == 8) {
+            colors<- c("darkblue", "darkgreen", "pink2","yellow3", "darkred","coral","black","darkorchid")
+          }
+          else if (length(unique_annotations) == 9) {
+            colors<- c("darkblue", "darkgreen", "pink2","yellow3", "darkred","coral","black","darkorchid","green")
+          }
+          else if (length(unique_annotations) == 10) {
+            colors<- c("darkblue", "darkgreen", "pink2","yellow3", "darkred","coral","black","darkorchid","green","darkcyan")
+          }
+          else if (length(unique_annotations) == 11) {
+            colors<- c("darkblue", "darkgreen", "pink2","yellow3", "darkred","coral","black","darkorchid","green","darkcyan","beige")
+          }
+          else if (length(unique_annotations) == 12) {
+            colors<- c("darkblue", "darkgreen", "pink2","yellow3", "darkred","coral","black","darkorchid","green","darkcyan","beige","magenta")
+          }
+          
+          
+          unique_annotations<-gsub("^[0]0_","",unique_annotations)
+          unique_annotations<-gsub("^[0]1_","",unique_annotations)
+          
+          annotation_data<-gsub("^[0]0_","",annotation_data)
+          annotation_data<-gsub("^[0]1_","",annotation_data)
+          
+          
+          
+          
+          col_list<-structure(colors,names=unique_annotations)
+          print(col_list)
+          print("bye")
+          # names(colors)<-unique_annotations
+          # print(colors)
+          # print(unique_annotations)
+          # colormap<-circlize::colorRamp2(unique_annotations,colors)
+          # print(colormap)
+          
+          # col_list = list(c("Copy number alterations"="#eca400","Methylation aberrations"="#006992","Methylation and copy number alterations"="#d95d39","Not Altered"="lightgray"),
+          #            DriversList_Alterations=c("Driver not predefined"="lightgray","Driver predefined"="#588B5B"))
+          # 
+          #Met_col=structure(c("#006992","#d95d39","white"),names=c("Hyper-methylated","Hypo-methylated","Not altered"))
+          # col_list <-list(colors)
+          # names(col_list)<-sample_column
+          # 
+          # print(col_list)
+          # col=col_list,
+          ha_anot<-Heatmap(annotation_data, name=sample_column, column_title ="", column_title_gp = grid::gpar(fontsize = 5, fontface = "bold"),col=col_list, show_row_names=FALSE,width = unit(wsize, "mm"),
+                           column_names_gp = gpar(fontsize = fsize),heatmap_legend_param = list(title_gp = grid::gpar(fontsize = 5),labels_gp = grid::gpar(fontsize = 5),nrow = 1))
+        }
+        else{
+          ha_anot<-Heatmap(annotation_data, name=sample_column, column_title ="", column_title_gp = grid::gpar(fontsize = 5, fontface = "bold"),  show_row_names=FALSE,width = unit(wsize, "mm"),
+                           column_names_gp = gpar(fontsize = fsize),heatmap_legend_param = list(title_gp = grid::gpar(fontsize = 5),labels_gp = grid::gpar(fontsize = 5),nrow = 1))
+        }
+        # ha_anot<-Heatmap(SAMPLE_annotation_fil[,colnames(SAMPLE_annotation_fil)==sample_column], name="Sample Annotation", column_title = "Sample\nAnnotation", column_title_gp = grid::gpar(fontsize = 5, fontface = "bold"), col=col[,k], show_row_names=FALSE,width = unit(wsize, "mm"),
+        #                  column_names_gp = gpar(fontsize = fsize),heatmap_legend_param = list(title_gp = grid::gpar(fontsize = 6),labels_gp = grid::gpar(fontsize = 6),ncol = 4))
+        ha_list<-ha_list + ha_anot
+      }
+      
+      
     } else {print("The ID is not identified as a column name in the annotation")}
   }
   if (printHM==TRUE){
-  ComplexHeatmap::draw(ha_list,heatmap_legend_side = "bottom",annotation_legend_side="bottom")
+    if (ncol(SAMPLE_annotation_fil)<50){
+      ComplexHeatmap::draw(ha_list,heatmap_legend_side = "bottom",annotation_legend_side="bottom")
+    }
+    else{
+      ComplexHeatmap::draw(ha_list,heatmap_legend_side = "bottom",annotation_legend_side="bottom",ht_gap = unit(1, "mm"))
+    }
+    
   } else {
     return(ha_list)
   }

@@ -85,7 +85,7 @@ AMARETTO_unite_results<-function(results_list){
     if (results_list[[i]]$test_type=="COXPROPHAZARD"){
       df<-results_list[[i]]$test_result
       Hazard_ratio<-unlist(purrr::map(strsplit(df$"HR (95% CI for HR)"," "),1))
-      statistics_str<-gsub("\\(","[",unlist(purrr::map(strsplit(df$"HR (95% CI for HR)"," "),1)))
+      statistics_str<-gsub("\\(","[",unlist(purrr::map(strsplit(df$"HR (95% CI for HR)"," "),2)))
       statistics_str<-gsub("\\)","]",statistics_str)
       statistics_str<-gsub("-",",",statistics_str)
       df<-add_column(df,
@@ -96,7 +96,7 @@ AMARETTO_unite_results<-function(results_list){
                                                  ", Hazard Ratio: ",Hazard_ratio,
                                                  ", 95% CI: ",statistics_str,
                                                  ", Wald Statistic: ",df$wald.test))%>%
-        select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
+        dplyr::select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
     }
     else if (results_list[[i]]$test_type=="SPEARMANCORRTEST"){
       df<-results_list[[i]]$test_result
@@ -104,9 +104,9 @@ AMARETTO_unite_results<-function(results_list){
                      Phenotypes=paste0(results_list[[i]]$phenotype," (SPEARMANCORRTEST)"),
                      Statistical_Test="Continuous or Ordinal Analysis: Spearman rank correlation analysis")%>%
         mutate(ModuleNr=paste("Module",ModuleNr))%>%
-        add_column(Descriptive_Statistics=paste0("Correlation: ",unlist(df$estimate),
-                                                  ", Statistic: ",unlist(df$statistic)))%>%
-        select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
+        add_column(Descriptive_Statistics=paste0("Correlation: ",signif(as.numeric(unlist(df$estimate)), digits=3),
+                                                  ", Statistic: ",signif(as.numeric(unlist(df$statistic)), digits=3)))%>%
+        dplyr::select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
       
       #%>%select(ModuleNr,p.value,q.value,estimate,statistic,parameter,null.value,alternative,method,data.name)
       
@@ -117,10 +117,10 @@ AMARETTO_unite_results<-function(results_list){
                      Phenotypes=paste0(results_list[[i]]$phenotype," (PEARSONCORRTEST)"),
                      Statistical_Test="Continuous Analysis: Pearson linear correlation analysis")%>%
         mutate(ModuleNr=paste("Module",ModuleNr))%>%
-        add_column(Descriptive_Statistics=paste0("Correlation: ",unlist(df$estimate),
+        add_column(Descriptive_Statistics=paste0("Correlation: ",signif(as.numeric(unlist(df$estimate)), digits=3),
                                                   ", 95% CI: ",df$conf.int,
-                                                  ", Statistic: ",unlist(df$statistic)))%>%
-        select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
+                                                  ", Statistic: ",signif(as.numeric(unlist(df$statistic)), digits=3)))%>%
+        dplyr::select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
     }
     
     else if (results_list[[i]]$test_type=="KRUSKALWALLISTEST"){
@@ -129,21 +129,29 @@ AMARETTO_unite_results<-function(results_list){
                      Phenotypes=paste0(results_list[[i]]$phenotype," (KRUSKALWALLISTEST)"),
                      Statistical_Test="Nominal Multi-Class Analysis: Kruskal-Wallis test")%>%
         mutate(ModuleNr=paste("Module",ModuleNr))%>%
-        add_column(Descriptive_Statistics=paste0(" Statistic: ",unlist(df$statistic)))%>%
-        select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
+        add_column(Descriptive_Statistics=paste0(" Statistic: ",signif(as.numeric(unlist(df$statistic)), digits=3)))%>%
+        dplyr::select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
     }
     
     else if (results_list[[i]]$test_type=="WILCOXONRANKSUMTEST"){
       df<-results_list[[i]]$test_result
       statistics_str<-gsub("c","",as.character(df$conf.int))
-      statistics_str<-gsub("\\(","[",statistics_str)
-      statistics_str<-gsub("\\)","]",statistics_str)
+      
+      statistics_str<-gsub("\\(","",statistics_str)
+      statistics_str<-gsub("\\)","",statistics_str)
+      #print(statistics_str)
+      statistics_str<-lapply(strsplit(statistics_str,","),as.numeric)
+      statistics_str<-lapply(statistics_str,function(x){signif(x, digits=3)})
+      statistics_str<-lapply(statistics_str,function(x){paste(x,collapse = " , ")})
+      statistics_str<-unlist(statistics_str)
+      statistics_str<-paste0("[",statistics_str,"]")
+      
       df<-add_column(df,
                      Phenotypes=paste0(results_list[[i]]$phenotype," (WILCOXONRANKSUMTEST)"),
                      Statistical_Test="Nominal Two-Class Analysis: Wilcoxon rank sum test")%>%
         mutate(ModuleNr=paste("Module",ModuleNr))%>%
-        add_column(Descriptive_Statistics=paste0("Estimate: ",unlist(df$estimate),", 95% CI: ",statistics_str,", Statistics: ",unlist(df$statistic)))%>%
-        select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
+        add_column(Descriptive_Statistics=paste0("Estimate: ",signif(as.numeric(unlist(df$estimate)), digits=3),", 95% CI: ",statistics_str,", Statistics: ",signif(as.numeric(unlist(df$statistic)), digits=3)))%>%
+        dplyr::select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
     }
     
     else if (results_list[[i]]$test_type=="WILCOXONRANKSUMTESTPAIRED"){
@@ -152,8 +160,8 @@ AMARETTO_unite_results<-function(results_list){
                      Phenotypes=paste0(results_list[[i]]$phenotype," (WILCOXONRANKSUMTESTPAIRED)"),
                      Statistical_Test="Nominal Paired Two-Class Analysis: Wilcoxon rank sum test paired")%>%
         mutate(ModuleNr=paste("Module",ModuleNr))%>%
-        add_column(Descriptive_Statistics=paste0("Statistic: ",unlist(df$statistic)))%>%
-        select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
+        add_column(Descriptive_Statistics=paste0("Statistic: ",signif(as.numeric(unlist(df$statistic)), digits=3)))%>%
+        dplyr::select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
     }
     
     else if (results_list[[i]]$test_type=="TIMESERIESEDGETIME"){
@@ -161,8 +169,8 @@ AMARETTO_unite_results<-function(results_list){
       df<-add_column(df,
                      Phenotypes=paste0(results_list[[i]]$phenotype1," (TIMESERIESEDGECONDITION),",results_list[[i]]$phenotype2," (TIMESERIESEDGETIME)"),
                      Statistical_Test="Time Series Analysis: Edge time course analysis (Likelihood ratio test)")%>%
-        mutate(ModuleNr=paste("Module",ModuleNr))%>%add_column(Descriptive_Statistics=" ")%>%arrange(q.value)
-        select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
+        dplyr::mutate(ModuleNr=paste("Module",ModuleNr))%>%add_column(Descriptive_Statistics=" ")%>%arrange(q.value)%>%
+        dplyr::select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
     }
     united_df<-rbind(united_df,as.data.frame(df))
   }
@@ -203,6 +211,7 @@ create_feature_matrix<-function(AMARETTOinit,AMARETTOresults,sample_annotation_d
 #' @examples
 cox_prop_hazard_test<-function(xx,time_to_event,right_censoring){
   df=data.frame(module_mean=xx,COXPROPHAZARDTIMETOEVENT=as.numeric(time_to_event),COXPROPHAZARDRIGHTCENSORING=as.numeric(right_censoring))
+  df=na.omit(df)
   coxph<-coxph(Surv(df$COXPROPHAZARDTIMETOEVENT,df$COXPROPHAZARDRIGHTCENSORING)~df$module_mean)
   coxphs<-summary(coxph)
   p.value<-signif(coxphs$waldtest["pvalue"], digits=5)
@@ -340,9 +349,13 @@ all_module_WILCOXONRANKSUM_test<-function(AMARETTOinit,AMARETTOresults,test_samp
     if(length(unique(df$wilcoxonsum_vector))!=2){
       stop(paste0("There is(are) ",length(unique(df$wilcoxonsum_vector)), " group(s) for ", colnames(test_sample_annotations)[2], ". Requiers two groups. The module Test is skiped."))
     }
-    group1<-df$mean_all[df$wilcoxonsum_vector==unique(df$wilcoxonsum_vector)[1]]
-    group2<-df$mean_all[df$wilcoxonsum_vector==unique(df$wilcoxonsum_vector)[2]]
-    WILCOXONRANKSUMTEST_results <- wilcox.test(x=group1,y=group2, alternative = "two.sided", paired = FALSE, conf.int = TRUE, conf.level = 0.95)
+    group_titles<-as.vector(sort(unique(df$wilcoxonsum_vector),decreasing = FALSE))
+    
+    group1<-df$mean_all[df$wilcoxonsum_vector==group_titles[1]]
+    
+    group2<-df$mean_all[df$wilcoxonsum_vector==group_titles[2]]
+    
+    WILCOXONRANKSUMTEST_results <- wilcox.test(x=group2,y=group1, alternative = "two.sided", paired = FALSE, conf.int = TRUE, conf.level = 0.95)
     df_result<-rbind(df_result,WILCOXONRANKSUMTEST_results)
   }
   df_result<-as.data.frame(df_result,stringsAsFactors=FALSE)%>%rownames_to_column()
@@ -370,13 +383,17 @@ all_module_WILCOXONRANKSUMPAIRED_test<-function(AMARETTOinit,AMARETTOresults,tes
     featureMatrix<-create_feature_matrix(AMARETTOinit,AMARETTOresults,sample_annotation_df=test_sample_annotations,module_number=module_number,Sample='Sample')
     wilcoxonsum_vector<-featureMatrix%>%dplyr::pull(colnames(test_sample_annotations)[2])  
     df<-data.frame(mean_all=featureMatrix$mean_all,wilcoxonsum_vector=as.factor(wilcoxonsum_vector),stringsAsFactors = FALSE)%>%drop_na()
+    
     if(length(unique(df$wilcoxonsum_vector))!=2){
       stop(paste0("There is(are) ",length(unique(df$wilcoxonsum_vector)), " group(s) for ", colnames(test_sample_annotations)[2], ". Requiers two groups. The module Test is skiped."))
     }
-    group1<-df$mean_all[df$wilcoxonsum_vector==df$wilcoxonsum_vector[[1]]]
-    group2<-df$mean_all[df$wilcoxonsum_vector==df$wilcoxonsum_vector[[2]]]
+    group_titles<-as.vector(sort(unique(df$wilcoxonsum_vector),decreasing = FALSE))
     
-    WILCOXONRANKSUMTESTPAIRED_results <- wilcox.test(x=group1,y=group2, alternative = "two.sided", paired = TRUE, exact = NULL, correct = TRUE, conf.int = FALSE, conf.level = 0.95)
+    group1<-df$mean_all[df$wilcoxonsum_vector==group_titles[1]]
+    
+    group2<-df$mean_all[df$wilcoxonsum_vector==group_titles[2]]
+    
+    WILCOXONRANKSUMTESTPAIRED_results <- wilcox.test(x=group2,y=group1, alternative = "two.sided", paired = TRUE, exact = NULL, correct = TRUE, conf.int = FALSE, conf.level = 0.95)
     df_result<-rbind(df_result,WILCOXONRANKSUMTESTPAIRED_results)
   }
   df_result<-as.data.frame(df_result,stringsAsFactors=FALSE)%>%rownames_to_column()
@@ -419,7 +436,7 @@ all_module_KRUSKALWALLIS_test<-function(AMARETTOinit,AMARETTOresults,test_sample
 #' @param AMARETTOinit 
 #' @param AMARETTOresults 
 #' @param test_sample_annotations 
-#' @import edge
+#' @import edgeR
 #' @return
 #' @export
 #'

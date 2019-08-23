@@ -15,6 +15,10 @@ navbar:
           href: index_AllGenes.html
         - text: "Enrichments of Functional Categories in Regulatory Modules"
           href: index_GenesetsEnrichment.html
+        - text: "Enrichments of Driver Perturbations in Regulatory Modules"
+          href: index_GenesetsEnrichment_gp.html
+        - text: "Enrichments of Drug Perturbations in Regulatory Modules"
+          href: index_GenesetsEnrichment_cp.html
         - text: "Associations of Phenotypes to Regulatory Modules"
           href: index_PhenoAssociation.html
   right:
