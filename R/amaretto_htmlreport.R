@@ -316,19 +316,19 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   if (hyper_geo_test_bool){
     dt_genesetsall <- create_hgt_datatable(output_hgt = output_hgt, module_table = FALSE)
   } else {
-    dt_genesetsall <- "Genesets were not analysed as they were not provided."
+    dt_genesetsall <- data.frame(Hyper_Geometric_Test="Genesets were not analysed as they were not provided.")
   }
   #=============================
   if (genetic_pert_hyper_geo_test_bool){
     dt_genesetsall_genetic_pert <- create_hgt_datatable(output_hgt = genetic_pert_output_hgt, module_table = FALSE)
   } else {
-    dt_genesetsall_genetic_pert <- "Genesets were not analysed as they were not provided."
+    dt_genesetsall_genetic_pert <- data.frame(Hyper_Geometric_Test="Genesets were not analysed as they were not provided.")
   }
   #=============================
   if (chem_pert_hyper_geo_test_bool){
     dt_genesetsall_chem_pert <- create_hgt_datatable(output_hgt = chem_pert_output_hgt, module_table = FALSE)
   } else {
-    dt_genesetsall_chem_pert <- "Genesets were not analysed as they were not provided."
+    dt_genesetsall_chem_pert <- data.frame(Hyper_Geometric_Test="Genesets were not analysed as they were not provided.")
   }
   #=============================
   #created phenotype table for index page
@@ -344,7 +344,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
                                                escape = FALSE) %>% DT::formatSignif(c('p.value','q.value'),2)
   }
   else{
-    dt_phenotype_association_all <- "Phenotype association resuls were not provided."
+    dt_phenotype_association_all <- data.frame(Phenotype_Association="Phenotype association resuls were not provided."
   }
   
   #Render index page
@@ -378,8 +378,22 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   
   dir.create(paste0(report_address, "/AMARETTOhtmls/Report_data"), recursive = TRUE, showWarnings = FALSE)
   
-  report_data <- list(nExp = nExp, nCNV = nCNV, nMET = nMET, nGenes = nGenes, VarPercentage = VarPercentage, nMod = nMod, ModuleOverviewTable = ModuleOverviewTable, all_genes = all_genes)
-  save(report_data, file = paste0(report_address, "/AMARETTOhtmls/Report_data/AMARETTOreport_data.rda"))
+  report_data <- list(nExp = nExp,
+                      nCNV = nCNV,
+                      nMET = nMET,
+                      nGenes = nGenes,
+                      VarPercentage = VarPercentage,
+                      nMod = nMod,
+                      ModuleOverviewTable = ModuleOverviewTable,
+                      all_genes = all_genes,
+                      dt_genesetsall = dt_genesetsall,
+                      dt_genesetsall_genetic_pert = dt_genesetsall_genetic_pert,
+                      dt_genesetsall_chem_pert = dt_genesetsall_chem_pert,
+                      dt_phenotype_association_all = dt_phenotype_association_all,
+                      AMARETTOinit = AMARETTOinit,
+                      AMARETTOresults = AMARETTOresults)
+  
+  saveRDS(report_data, file = paste0(report_address, "/AMARETTOhtmls/Report_data/AMARETTOreport_data.rds"))
   cat("The full report is created and ready to use.\n")
   return(report_data)
 }
