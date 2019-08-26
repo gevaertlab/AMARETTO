@@ -344,7 +344,7 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
                                                escape = FALSE) %>% DT::formatSignif(c('p.value','q.value'),2)
   }
   else{
-    dt_phenotype_association_all <- data.frame(Phenotype_Association="Phenotype association resuls were not provided."
+    dt_phenotype_association_all <- data.frame(Phenotype_Association="Phenotype association resuls were not provided.")
   }
   
   #Render index page
