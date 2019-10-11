@@ -68,7 +68,7 @@ AMARETTO_Initialize <- function(ProcessedData = ProcessedData, Driver_list = NUL
     if(!is.null(random_seeds)){
       set.seed(random_seeds[1])
     }
-    KmeansResults = kmeans(MA_matrix_Var, NrModules, iter.max = 100)
+    KmeansResults = kmeans(MA_matrix_Var, NrModules,nstart=100, iter.max = 100)
     Clusters = as.numeric(KmeansResults$cluster)
     names(Clusters) <- rownames(MA_matrix_Var)
     AutoRegulation = 2
