@@ -658,9 +658,9 @@ driver_genes_summary<-function(AMARETTOresults,weight_threshold=0.001, plot_word
                                                                        Weights=paste(value,collapse=","))
   all_regulators_grouped$frequency<-unlist(lapply(strsplit(all_regulators_grouped$Modules,","),length))
   all_regulators_grouped<-all_regulators_grouped%>%arrange(-frequency)
-  word_cloud<-NA
+  
   if(plot_wordcloud){
-    word_cloud<-wordcloud::wordcloud(as.character(all_regulators_grouped$Genes),
+    wordcloud::wordcloud(as.character(all_regulators_grouped$Genes),
                           as.numeric(all_regulators_grouped$frequency),
                           min.freq=1,
                           max.words=Inf,
@@ -668,8 +668,8 @@ driver_genes_summary<-function(AMARETTOresults,weight_threshold=0.001, plot_word
                           rot.per=.15,
                           colors=brewer.pal(10,"Dark2"))
   }
+
   return(list(all_regulators=all_regulators,
-              all_regulators_grouped=all_regulators_grouped,
-              word_cloud=word_cloud))
+              all_regulators_grouped=all_regulators_grouped))
   
 }
