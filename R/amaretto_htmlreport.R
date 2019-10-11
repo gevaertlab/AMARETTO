@@ -290,6 +290,8 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
     dplyr::filter(value!=0) %>% dplyr::mutate(Module=sub("Module_","",Module),Type="Driver") %>% 
     dplyr::rename(Genes='variable') %>%
     dplyr::select(Genes,Module,value,Type)
+  
+  
 
   all_genes <- rbind(all_targets,all_regulators) %>% 
     dplyr::arrange(Genes) %>% 
@@ -633,4 +635,41 @@ create_hgt_datatable<-function(output_hgt, module_table, ModuleNr = 1){
     }
   
 
+}
+
+#' Title driver_genes_summary
+#' Provide summary of all driver genes in that 
+#'
+#' @param AMARETTOresults 
+#' @param weight_threshold 
+#' @param plot_wordcloud 
+#'
+#' @return all_regulators_grouped
+#' @export
+#'
+#' @examples 
+driver_genes_summary<-function(AMARETTOresults,weight_threshold=0.001, plot_wordcloud=FALSE){
+  all_regulators <- reshape2::melt(tibble::rownames_to_column(as.data.frame(AMARETTOresults$RegulatoryPrograms),"Module"),id.vars = "Module") %>% 
+    dplyr::filter(value!=0) %>% dplyr::mutate(Module=sub("Module_","",Module),Type="Driver") %>% 
+    dplyr::rename(Genes='variable') %>%
+    dplyr::select(Genes,Module,value,Type)
+  
+  all_regulators_grouped<-all_regulators%>%filter(abs(value)>weight_threshold)%>%group_by(Genes)%>%summarise(Modules=paste(Module,collapse = ","),
+                                                                       Weights=paste(value,collapse=","))
+  all_regulators_grouped$frequency<-unlist(lapply(strsplit(all_regulators_grouped$Modules,","),length))
+  all_regulators_grouped<-all_regulators_grouped%>%arrange(-frequency)
+  word_cloud<-NA
+  if(plot_wordcloud){
+    word_cloud<-wordcloud::wordcloud(as.character(all_regulators_grouped$Genes),
+                          as.numeric(all_regulators_grouped$frequency),
+                          min.freq=1,
+                          max.words=Inf,
+                          random.order=FALSE,
+                          rot.per=.15,
+                          colors=brewer.pal(10,"Dark2"))
+  }
+  return(list(all_regulators=all_regulators,
+              all_regulators_grouped=all_regulators_grouped,
+              word_cloud=word_cloud))
+  
 }
