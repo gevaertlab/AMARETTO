@@ -4,8 +4,7 @@
 \alias{AMARETTO_Download}
 \title{AMARETTO_Download}
 \usage{
-AMARETTO_Download(CancerSite = "CHOL",
-  TargetDirectory = TargetDirectory)
+AMARETTO_Download(CancerSite = "CHOL", TargetDirectory = TargetDirectory)
 }
 \arguments{
 \item{CancerSite}{TCGA cancer code for data download}

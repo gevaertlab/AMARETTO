@@ -4,8 +4,17 @@
 \alias{AMARETTO_LearnRegulatoryProgramsLarsen}
 \title{AMARETTO_LearnRegulatoryProgramsLarsen}
 \usage{
-AMARETTO_LearnRegulatoryProgramsLarsen(Data, Clusters, RegulatorData,
-  RegulatorSign, Lambda, AutoRegulation, alpha, pmax, random_seeds)
+AMARETTO_LearnRegulatoryProgramsLarsen(
+  Data,
+  Clusters,
+  RegulatorData,
+  RegulatorSign,
+  Lambda,
+  AutoRegulation,
+  alpha,
+  pmax,
+  random_seeds
+)
 }
 \value{
 result

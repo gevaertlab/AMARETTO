@@ -13,10 +13,6 @@ plot_run_history(AMARETTOinit, AMARETTOResults)
 \item{AMARETTOinit}{}
 
 \item{AMARETTOResults}{}
-
-\item{AMARETTOinit}{}
-
-\item{AMARETTOResults}{}
 }
 \value{
 plot

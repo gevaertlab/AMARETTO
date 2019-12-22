@@ -4,8 +4,15 @@
 \alias{AMARETTO_LarsenBased}
 \title{AMARETTO_LarsenBased}
 \usage{
-AMARETTO_LarsenBased(Data, Clusters, RegulatorData, Parameters, NrCores,
-  random_seeds, convergence_cutoff)
+AMARETTO_LarsenBased(
+  Data,
+  Clusters,
+  RegulatorData,
+  Parameters,
+  NrCores,
+  random_seeds,
+  convergence_cutoff
+)
 }
 \arguments{
 \item{Data}{}

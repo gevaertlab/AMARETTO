@@ -4,9 +4,15 @@
 \alias{CreateRegulatorData}
 \title{CreateRegulatorData}
 \usage{
-CreateRegulatorData(MA_matrix = MA_matrix, CNV_matrix = NULL,
-  MET_matrix = NULL, Driver_list = NULL, PvalueThreshold = 0.001,
-  RsquareThreshold = 0.1, method = "union")
+CreateRegulatorData(
+  MA_matrix = MA_matrix,
+  CNV_matrix = NULL,
+  MET_matrix = NULL,
+  Driver_list = NULL,
+  PvalueThreshold = 0.001,
+  RsquareThreshold = 0.1,
+  method = "union"
+)
 }
 \value{
 result

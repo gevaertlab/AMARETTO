@@ -4,14 +4,22 @@
 \alias{AMARETTO_survivalshiny}
 \title{AMARETTO_survivalshiny}
 \usage{
-AMARETTO_survivalshiny(AMARETTOresults, SurvivalAnnotation, idpatients,
-  idvitalstatus, iddaystodeath, idfollowupdays)
+AMARETTO_survivalshiny(
+  AMARETTOresults,
+  SurvivalAnnotation,
+  idpatients,
+  idvitalstatus,
+  iddaystodeath,
+  idfollowupdays
+)
 }
 \arguments{
 \item{rightcensored}{}
 }
 \value{
 A set of HTMLs, giving caracteristics of the communities
+
+
 }
 \description{
 AMARETTO_survivalshiny

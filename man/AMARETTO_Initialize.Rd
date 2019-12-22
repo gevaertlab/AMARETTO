@@ -4,10 +4,20 @@
 \alias{AMARETTO_Initialize}
 \title{AMARETTO_Initialize (version: reorder and filter MA_Matrix)}
 \usage{
-AMARETTO_Initialize(ProcessedData = ProcessedData, Driver_list = NULL,
-  NrModules, VarPercentage, PvalueThreshold = 0.001,
-  RsquareThreshold = 0.1, pmax = 10, NrCores = 1, OneRunStop = 0,
-  method = "union", random_seeds = NULL, convergence_cutoff = 0.01)
+AMARETTO_Initialize(
+  ProcessedData = ProcessedData,
+  Driver_list = NULL,
+  NrModules,
+  VarPercentage,
+  PvalueThreshold = 0.001,
+  RsquareThreshold = 0.1,
+  pmax = 10,
+  NrCores = 1,
+  OneRunStop = 0,
+  method = "union",
+  random_seeds = NULL,
+  convergence_cutoff = 0.01
+)
 }
 \arguments{
 \item{ProcessedData}{List of Expression, CNV and MethylMix data matrices, with genes in rows and samples in columns.}
@@ -16,7 +26,7 @@ AMARETTO_Initialize(ProcessedData = ProcessedData, Driver_list = NULL,
 
 \item{NrModules}{How many gene co-expression modules should AMARETTO search for? Usually around 100 is acceptable, given the large number of possible driver-passenger gene combinations.}
 
-\item{VarPercentage}{Minimum percentage by variance for filtering of genes; for example, 75\% would indicate that the CreateRegulatorData() function only analyses genes that have a variance above the 75th percentile across all samples.}
+\item{VarPercentage}{Minimum percentage by variance for filtering of genes; for example, 75\\% would indicate that the CreateRegulatorData() function only analyses genes that have a variance above the 75th percentile across all samples.}
 
 \item{PvalueThreshold}{Threshold used to find relevant driver genes with CNV alterations: maximal p-value.}
 

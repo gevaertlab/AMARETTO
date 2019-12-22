@@ -4,8 +4,13 @@
 \alias{AMARETTO_ReassignGenesToClusters}
 \title{AMARETTO_ReassignGenesToClusters}
 \usage{
-AMARETTO_ReassignGenesToClusters(Data, RegulatorData, Beta, Clusters,
-  AutoRegulation)
+AMARETTO_ReassignGenesToClusters(
+  Data,
+  RegulatorData,
+  Beta,
+  Clusters,
+  AutoRegulation
+)
 }
 \value{
 result

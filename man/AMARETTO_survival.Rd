@@ -4,15 +4,26 @@
 \alias{AMARETTO_survival}
 \title{AMARETTO_survival}
 \usage{
-AMARETTO_survival(AMARETTOresults, SurvivalAnnotation, idpatients,
-  idvitalstatus, iddaystodeath, idfollowupdays, daystoyears,
-  rightcensored = FALSE, printHR = FALSE, printsurv = FALSE)
+AMARETTO_survival(
+  AMARETTOresults,
+  SurvivalAnnotation,
+  idpatients,
+  idvitalstatus,
+  iddaystodeath,
+  idfollowupdays,
+  daystoyears,
+  rightcensored = FALSE,
+  printHR = FALSE,
+  printsurv = FALSE
+)
 }
 \arguments{
 \item{printsurv}{}
 }
 \value{
 A set of HTMLs, giving caracteristics of the communities
+
+
 }
 \description{
 AMARETTO_survival

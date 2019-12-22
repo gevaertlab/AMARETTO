@@ -47,7 +47,7 @@ Imports:
     utils,
     kableExtra
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.1.1.9000
+RoxygenNote: 7.0.2
 LinkingTo: 
     Rcpp
 VignetteBuilder: knitr

@@ -4,8 +4,11 @@
 \alias{all_modules_cox_prop_hazard_test}
 \title{Title}
 \usage{
-all_modules_cox_prop_hazard_test(AMARETTOinit, AMARETTOresults,
-  test_sample_annotations)
+all_modules_cox_prop_hazard_test(
+  AMARETTOinit,
+  AMARETTOresults,
+  test_sample_annotations
+)
 }
 \arguments{
 \item{AMARETTOinit}{}
@@ -13,6 +16,9 @@ all_modules_cox_prop_hazard_test(AMARETTOinit, AMARETTOresults,
 \item{AMARETTOresults}{}
 
 \item{test_sample_annotations}{}
+}
+\value{
+
 }
 \description{
 Title

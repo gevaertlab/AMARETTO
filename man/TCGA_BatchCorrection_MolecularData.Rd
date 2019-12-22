@@ -4,8 +4,11 @@
 \alias{TCGA_BatchCorrection_MolecularData}
 \title{TCGA_BatchCorrection_MolecularData}
 \usage{
-TCGA_BatchCorrection_MolecularData(GEN_Data = GEN_Data,
-  BatchData = BatchData, MinInBatch = MinInBatch)
+TCGA_BatchCorrection_MolecularData(
+  GEN_Data = GEN_Data,
+  BatchData = BatchData,
+  MinInBatch = MinInBatch
+)
 }
 \value{
 result

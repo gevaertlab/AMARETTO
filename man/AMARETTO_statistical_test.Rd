@@ -4,8 +4,12 @@
 \alias{AMARETTO_statistical_test}
 \title{Title}
 \usage{
-AMARETTO_statistical_test(AMARETTOinit, AMARETTOresults,
-  sample_annotations, phenotype_tests)
+AMARETTO_statistical_test(
+  AMARETTOinit,
+  AMARETTOresults,
+  sample_annotations,
+  phenotype_tests
+)
 }
 \arguments{
 \item{AMARETTOinit}{}
@@ -15,6 +19,9 @@ AMARETTO_statistical_test(AMARETTOinit, AMARETTOresults,
 \item{sample_annotations}{}
 
 \item{phenotype_tests}{}
+}
+\value{
+
 }
 \description{
 Title

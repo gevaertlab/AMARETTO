@@ -4,11 +4,22 @@
 \alias{AMARETTO_PhenAssociation}
 \title{AMARETTO_PhenoAssociation}
 \usage{
-AMARETTO_PhenAssociation(AMARETTOresults, annotation, idpatients,
-  phenotypetests, printplots = FALSE, pdfname = "phenotypes.pdf")
+AMARETTO_PhenAssociation(
+  AMARETTOresults,
+  annotation,
+  idpatients,
+  phenotypetests,
+  printplots = FALSE,
+  pdfname = "phenotypes.pdf"
+)
 }
 \arguments{
 \item{pdfname}{}
+}
+\value{
+
+
+
 }
 \description{
 AMARETTO_PhenoAssociation

@@ -5,21 +5,11 @@
 \alias{HyperGTestGeneEnrichment}
 \title{Hyper Geometric Geneset Enrichement Test}
 \usage{
-HyperGTestGeneEnrichment(gmtfile, testgmtfile, NrCores,
-  ref.numb.genes = 45956)
+HyperGTestGeneEnrichment(gmtfile, testgmtfile, NrCores, ref.numb.genes = 45956)
 
-HyperGTestGeneEnrichment(gmtfile, testgmtfile, NrCores,
-  ref.numb.genes = 45956)
+HyperGTestGeneEnrichment(gmtfile, testgmtfile, NrCores, ref.numb.genes = 45956)
 }
 \arguments{
-\item{gmtfile}{The gmt file with reference gene set.}
-
-\item{testgmtfile}{The gmt file with gene sets to test. In our case, the gmt file of the modules.}
-
-\item{NrCores}{Number of cores used for parallelization.}
-
-\item{ref.numb.genes}{The total number of genes teste, standard equal to 45 956 (MSIGDB standard).}
-
 \item{gmtfile}{The gmt file with reference gene set.}
 
 \item{testgmtfile}{The gmt file with gene sets to test. In our case, the gmt file of the modules.}

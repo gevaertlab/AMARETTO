@@ -11,8 +11,6 @@ readGMT(filename)
 }
 \arguments{
 \item{filename}{}
-
-\item{filename}{}
 }
 \value{
 result

@@ -13,6 +13,9 @@ cox_prop_hazard_test(xx, time_to_event, right_censoring)
 
 \item{right_censoring}{}
 }
+\value{
+
+}
 \description{
 Title cox_prop_hazard_test
 }

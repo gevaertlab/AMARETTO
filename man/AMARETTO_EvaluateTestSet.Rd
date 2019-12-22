@@ -4,9 +4,11 @@
 \alias{AMARETTO_EvaluateTestSet}
 \title{AMARETTO_EvaluateTestSet}
 \usage{
-AMARETTO_EvaluateTestSet(AMARETTOresults = AMARETTOresults,
+AMARETTO_EvaluateTestSet(
+  AMARETTOresults = AMARETTOresults,
   MA_Data_TestSet = MA_Data_TestSet,
-  RegulatorData_TestSet = RegulatorData_TestSet)
+  RegulatorData_TestSet = RegulatorData_TestSet
+)
 }
 \arguments{
 \item{AMARETTOresults}{AMARETTO output from AMARETTO_Run().}

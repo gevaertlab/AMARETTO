@@ -15,12 +15,6 @@ create_hgt_datatable(output_hgt, module_table, ModuleNr = 1)
 \item{module_table}{If TRUE, makes the ModuleNr datatable, If FALSE, makes the index page datatable.}
 
 \item{ModuleNr}{The module number.}
-
-\item{output_hgt}{GSEA test dataframe from HyperGeoEnrichmentTest function.}
-
-\item{module_table}{If TRUE, makes the ModuleNr datatable, If FALSE, makes the index page datatable.}
-
-\item{ModuleNr}{The module number.}
 }
 \value{
 result

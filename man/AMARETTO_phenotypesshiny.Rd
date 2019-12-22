@@ -11,6 +11,8 @@ AMARETTO_phenotypesshiny(AMARETTOresults, annotation, idpatients)
 }
 \value{
 A set of HTMLs, giving caracteristics of the communities
+
+
 }
 \description{
 AMARETTO_phenotypesshiny

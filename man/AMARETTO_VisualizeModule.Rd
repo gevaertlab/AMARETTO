@@ -4,9 +4,17 @@
 \alias{AMARETTO_VisualizeModule}
 \title{AMARETTO_VisualizeModule}
 \usage{
-AMARETTO_VisualizeModule(AMARETTOinit, AMARETTOresults, ProcessedData,
-  ModuleNr, show_row_names = FALSE, SAMPLE_annotation = NULL,
-  ID = NULL, order_samples = NULL, printHM = TRUE)
+AMARETTO_VisualizeModule(
+  AMARETTOinit,
+  AMARETTOresults,
+  ProcessedData,
+  ModuleNr,
+  show_row_names = FALSE,
+  SAMPLE_annotation = NULL,
+  ID = NULL,
+  order_samples = NULL,
+  printHM = TRUE
+)
 }
 \arguments{
 \item{AMARETTOinit}{List output from AMARETTO_Initialize().}
