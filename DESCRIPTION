@@ -45,7 +45,12 @@ Imports:
     stats,
     knitr, 
     utils,
-    kableExtra
+    kableExtra,
+    tidyverse,
+    survminer,
+    shinythemes,
+    gtools,
+    curatedTCGAData
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.0.2
 LinkingTo: 
