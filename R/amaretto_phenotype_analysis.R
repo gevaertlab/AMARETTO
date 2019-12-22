@@ -493,6 +493,7 @@ phenotye_add_estimate_column<-function(pheno_tbl){
     mutate(estimate=unlist(map(strsplit(Descriptive_Statistics,","),1)))%>%
     mutate(estimate=ifelse((estimate==" "),"NA NA",estimate))%>%
     mutate(estimate=unlist(map(strsplit(estimate," "),2)))%>%
-    mutate(estimate=as.numeric(estimate))
+    mutate(estimate=as.numeric(estimate))%>%
+    mutate(estimate=ifelse(is.na(estimate),0,estimate))
   return(pheno_tbl_new)
 }
