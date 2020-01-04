@@ -673,3 +673,37 @@ driver_genes_summary<-function(AMARETTOresults,weight_threshold=0.001, plot_word
               all_regulators_grouped=all_regulators_grouped))
   
 }
+
+#' Title genes_amaretto_assignments_all
+#'
+#' @param AMARETTOinit 
+#' @param AMARETTOresults 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+genes_amaretto_assignments_all<-function(AMARETTOinit,AMARETTOresults){
+  all_targets<-tibble::rownames_to_column(data.frame(AMARETTOresults$ModuleMembership),"Genes") %>% 
+    dplyr::rename(Module="ModuleNr") %>%
+    dplyr::mutate(value=0) %>% 
+    dplyr::mutate(Type="Target") %>% 
+    dplyr::select(Genes,Module,value,Type)
+  
+  all_regulators <- reshape2::melt(tibble::rownames_to_column(as.data.frame(AMARETTOresults$RegulatoryPrograms),"Module"),id.vars = "Module") %>% 
+    dplyr::filter(value!=0) %>% dplyr::mutate(Module=sub("Module_","",Module),Type="Driver") %>% 
+    dplyr::rename(Genes='variable') %>%
+    dplyr::select(Genes,Module,value,Type)
+  
+  all_genes <- rbind(all_targets,all_regulators)
+  
+  
+  alterations<- tibble::rownames_to_column(as.data.frame(AMARETTOinit$RegulatorAlterations$Summary),"Genes") %>% dplyr::rename(is_driver="Driver List") %>% dplyr::filter(Genes %in% all_regulators$Genes)
+  
+  all_genes<-all_genes%>%left_join(alterations,by="Genes")
+  
+  all_genes<-all_genes%>%mutate(is_driver=ifelse(is.na(is_driver),0,is_driver))
+  all_genes<-all_genes%>%mutate(CNV=ifelse(is.na(CNV),"no_cnv_data",CNV))
+  all_genes<-all_genes%>%mutate(MET=ifelse(is.na(MET),"no_met_data",MET))
+  return(all_genes)
+}
