@@ -4,8 +4,13 @@
 \alias{create_feature_matrix}
 \title{Title create_feature_matrix}
 \usage{
-create_feature_matrix(AMARETTOinit, AMARETTOresults, sample_annotation_df,
-  module_number, Sample = "Sample")
+create_feature_matrix(
+  AMARETTOinit,
+  AMARETTOresults,
+  sample_annotation_df,
+  module_number,
+  Sample = "Sample"
+)
 }
 \arguments{
 \item{AMARETTOinit}{}
@@ -17,6 +22,9 @@ create_feature_matrix(AMARETTOinit, AMARETTOresults, sample_annotation_df,
 \item{module_number}{}
 
 \item{Sample}{}
+}
+\value{
+
 }
 \description{
 Title create_feature_matrix

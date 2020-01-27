@@ -9,6 +9,9 @@ AMARETTO_unite_results(results_list)
 \arguments{
 \item{results_list}{}
 }
+\value{
+
+}
 \description{
 Title
 }

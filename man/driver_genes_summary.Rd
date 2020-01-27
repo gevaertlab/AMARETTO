@@ -5,8 +5,11 @@
 \title{Title driver_genes_summary
 Provide summary of all driver genes in that}
 \usage{
-driver_genes_summary(AMARETTOresults, weight_threshold = 0.001,
-  plot_wordcloud = FALSE)
+driver_genes_summary(
+  AMARETTOresults,
+  weight_threshold = 0.001,
+  plot_wordcloud = FALSE
+)
 }
 \arguments{
 \item{AMARETTOresults}{}

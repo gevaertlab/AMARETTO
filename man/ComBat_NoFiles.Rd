@@ -4,9 +4,17 @@
 \alias{ComBat_NoFiles}
 \title{ComBat_NoFiles}
 \usage{
-ComBat_NoFiles(dat, saminfo, type = "txt", write = FALSE,
-  covariates = "all", par.prior = TRUE, filter = FALSE, skip = 0,
-  prior.plots = FALSE)
+ComBat_NoFiles(
+  dat,
+  saminfo,
+  type = "txt",
+  write = FALSE,
+  covariates = "all",
+  par.prior = TRUE,
+  filter = FALSE,
+  skip = 0,
+  prior.plots = FALSE
+)
 }
 \value{
 result

@@ -5,21 +5,21 @@
 \alias{HyperGeoEnrichmentTest}
 \title{Title HyperGeoEnrichmentTest}
 \usage{
-HyperGeoEnrichmentTest(AMARETTOresults, hyper_geo_reference,
-  driverGSEA = TRUE, NrCores = 4)
+HyperGeoEnrichmentTest(
+  AMARETTOresults,
+  hyper_geo_reference,
+  driverGSEA = TRUE,
+  NrCores = 4
+)
 
-HyperGeoEnrichmentTest(AMARETTOresults, hyper_geo_reference,
-  driverGSEA = TRUE, NrCores = 4)
+HyperGeoEnrichmentTest(
+  AMARETTOresults,
+  hyper_geo_reference,
+  driverGSEA = TRUE,
+  NrCores = 4
+)
 }
 \arguments{
-\item{AMARETTOresults}{AMARETTO results output}
-
-\item{hyper_geo_reference}{GMT file with gene sets to compare with.}
-
-\item{driverGSEA}{if TRUE, module drivers will also be included in the hypergeometric test.}
-
-\item{NrCores}{Number of cores for parallel processing.}
-
 \item{AMARETTOresults}{AMARETTO results output}
 
 \item{hyper_geo_reference}{GMT file with gene sets to compare with.}

@@ -4,8 +4,11 @@
 \alias{all_module_TIMESERIESEDGE_test}
 \title{Title all_module_TIMESERIESEDGE_test}
 \usage{
-all_module_TIMESERIESEDGE_test(AMARETTOinit, AMARETTOresults,
-  test_sample_annotations)
+all_module_TIMESERIESEDGE_test(
+  AMARETTOinit,
+  AMARETTOresults,
+  test_sample_annotations
+)
 }
 \arguments{
 \item{AMARETTOinit}{}
@@ -13,6 +16,9 @@ all_module_TIMESERIESEDGE_test(AMARETTOinit, AMARETTOresults,
 \item{AMARETTOresults}{}
 
 \item{test_sample_annotations}{}
+}
+\value{
+
 }
 \description{
 Title all_module_TIMESERIESEDGE_test

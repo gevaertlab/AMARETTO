@@ -13,10 +13,6 @@ GmtFromModules(AMARETTOresults, driverGSEA)
 \item{AMARETTOresults}{List output from AMARETTO_Run().}
 
 \item{driverGSEA}{if TRUE , module driver genes will also be added to module target genes for GSEA.}
-
-\item{driverGSEA}{if TRUE , module driver genes will also be added to module target genes for GSEA.}
-
-\item{AMARETTOresults}{List output from AMARETTO_Run().}
 }
 \value{
 result

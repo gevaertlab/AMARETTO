@@ -480,4 +480,20 @@ all_module_TIMESERIESEDGE_test<-function(AMARETTOinit,AMARETTOresults,test_sampl
   return(TIMESERIESEDGE_results)
 }
 
-
+#' Title phenotye_add_estimate_column
+#'
+#' @param pheno_tbl 
+#' @import dplyr
+#' @return
+#' @export
+#'
+#' @examples
+phenotye_add_estimate_column<-function(pheno_tbl){
+  pheno_tbl_new<-pheno_tbl%>%
+    mutate(estimate=unlist(map(strsplit(Descriptive_Statistics,","),1)))%>%
+    mutate(estimate=ifelse((estimate==" "),"NA NA",estimate))%>%
+    mutate(estimate=unlist(map(strsplit(estimate," "),2)))%>%
+    mutate(estimate=as.numeric(estimate))%>%
+    mutate(estimate=ifelse(is.na(estimate),0,estimate))
+  return(pheno_tbl_new)
+}

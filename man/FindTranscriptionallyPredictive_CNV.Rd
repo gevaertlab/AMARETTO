@@ -4,8 +4,12 @@
 \alias{FindTranscriptionallyPredictive_CNV}
 \title{FindTranscriptionallyPredictive_CNV}
 \usage{
-FindTranscriptionallyPredictive_CNV(MA_matrix, CNV_matrix,
-  PvalueThreshold = 0.001, RsquareThreshold = 0.1)
+FindTranscriptionallyPredictive_CNV(
+  MA_matrix,
+  CNV_matrix,
+  PvalueThreshold = 0.001,
+  RsquareThreshold = 0.1
+)
 }
 \value{
 result
