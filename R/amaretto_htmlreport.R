@@ -64,7 +64,6 @@ AMARETTO_HTMLreport <- function(AMARETTOinit,
   NrCores <- AMARETTOinit$NrCores
   MaxCores <- parallel::detectCores(all.tests = FALSE, logical = TRUE)
   
-  dt_phenotype_association<-""
   
   options('DT.warn.size'=FALSE)
   

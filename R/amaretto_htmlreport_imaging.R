@@ -1,4 +1,4 @@
-#' AMARETTO_HTMLreport
+#' AMARETTO_HTMLreport_imaging
 #'
 #' Retrieve an interactive html report, including gene set enrichment analysis if asked for.
 #'
@@ -43,7 +43,7 @@
 #'                     hyper_geo_test_bool=FALSE,
 #'                     output_address='./')
 #'}
-AMARETTO_HTMLreport <- function(AMARETTOinit,
+AMARETTO_HTMLreport_imaging <- function(AMARETTOinit,
                                 AMARETTOresults,
                                 ProcessedData,
                                 show_row_names = FALSE,
