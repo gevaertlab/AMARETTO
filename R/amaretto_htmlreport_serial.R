@@ -249,9 +249,14 @@ AMARETTO_HTMLreport_serial <- function(AMARETTOinit,
     #return(c(ModuleNr, length(which(AMARETTOresults$ModuleMembership==ModuleNr)), length(ModuleRegulators),ngenesets))
     
     # },error=function(e){message(paste("an error occured for Module", ModuleNr))})
+    
     ModuleOverviewTable<-rbind(ModuleOverviewTable,
-                               c(ModuleNr, length(which(AMARETTOresults$ModuleMembership==ModuleNr)), length(ModuleRegulators),ngenesets))
+                               data.frame(ModuleNr,
+                                          length(which(AMARETTOresults$ModuleMembership==ModuleNr)),
+                                          length(ModuleRegulators),
+                                          ngenesets))
     }
+  
   
   suppressWarnings(suppressMessages(file.remove(paste0(full_path,"/AMARETTOhtmls/modules/_site.yml"))))
   file_remove<-suppressWarnings(suppressMessages(file.remove(paste0(full_path,"/AMARETTOhtmls/modules/module",c(1:NrModules),"_files"))))
@@ -260,7 +265,7 @@ AMARETTO_HTMLreport_serial <- function(AMARETTOinit,
   cat("All module htmls are created.\n")
   #ModuleOverviewTable <- data.frame(matrix(unlist(ModuleOverviewTable), byrow=TRUE, ncol=4), stringsAsFactors=FALSE)
   colnames(ModuleOverviewTable)<-c("ModuleNr","NrTarGenes","NrRegGenes","SignGS")
-  
+  print(ModuleOverviewTable)
   if (!is.null(CNV_matrix)){
     nCNV = ncol(CNV_matrix)
   } else {nCNV = NA}
