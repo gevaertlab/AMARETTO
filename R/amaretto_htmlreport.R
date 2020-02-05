@@ -455,22 +455,35 @@ HyperGTestGeneEnrichment<-function(gmtfile,testgmtfile,NrCores,ref.numb.genes=45
 #'
 #' @param driverGSEA if TRUE , module driver genes will also be added to module target genes for GSEA.
 #' @param AMARETTOresults List output from AMARETTO_Run().
+#' @param driverOnly If TRUE, only driver genes are included in Hypergeometric Test.
 #'
 #' @importFrom tibble rownames_to_column
 #' @importFrom reshape2 melt
 #' @importFrom dplyr arrange mutate select rename  filter 
 #' @importFrom utils write.table
 #' @keywords internal
-GmtFromModules <- function(AMARETTOresults,driverGSEA){
-  ModuleMembership <- tibble::rownames_to_column(as.data.frame(AMARETTOresults$ModuleMembership),"GeneNames")
-  if(driverGSEA){
+GmtFromModules <- function(AMARETTOresults,driverGSEA, driverOnly = FALSE){
+  
+  if(driverOnly){
     all_regulators <- reshape2::melt(tibble::rownames_to_column(as.data.frame(AMARETTOresults$RegulatoryPrograms),"Module"), id.vars = "Module") %>%
       dplyr::filter(value!=0) %>% dplyr::select(variable, Module) %>% 
       dplyr::mutate(Module = sub("Module_", "", Module)) %>% 
       dplyr::rename(GeneNames = "variable")%>% 
       dplyr::rename(ModuleNr = "Module")
-    ModuleMembership <- rbind(ModuleMembership, all_regulators)
+    ModuleMembership <- all_regulators 
   }
+  else{
+    ModuleMembership <- tibble::rownames_to_column(as.data.frame(AMARETTOresults$ModuleMembership),"GeneNames")
+    if(driverGSEA){
+      all_regulators <- reshape2::melt(tibble::rownames_to_column(as.data.frame(AMARETTOresults$RegulatoryPrograms),"Module"), id.vars = "Module") %>%
+        dplyr::filter(value!=0) %>% dplyr::select(variable, Module) %>% 
+        dplyr::mutate(Module = sub("Module_", "", Module)) %>% 
+        dplyr::rename(GeneNames = "variable")%>% 
+        dplyr::rename(ModuleNr = "Module")
+      ModuleMembership <- rbind(ModuleMembership, all_regulators)
+    }
+  }
+  
   NrModules <- AMARETTOresults$NrModules
   ModuleMembership <- ModuleMembership %>% dplyr::arrange(GeneNames)
 
@@ -545,18 +558,19 @@ plot_run_history <- function(AMARETTOinit,AMARETTOResults){
 #' @param hyper_geo_reference GMT file with gene sets to compare with.
 #' @param driverGSEA if TRUE, module drivers will also be included in the hypergeometric test.
 #' @param NrCores Number of cores for parallel processing. 
+#' @param driverOnly If TRUE, only driver genes are included in Hypergeometric Test.
 #'
 #' @return Hyper-Geometric Enrichment Test table
 #' @export
 #'
 #' @examples HyperGeoEnrichmentTest(AMARETTOresults=NULL, hyper_geo_reference, driverGSEA=TRUE, MSIGDB=TRUE, NrCores=4)
-HyperGeoEnrichmentTest<-function(AMARETTOresults, hyper_geo_reference, driverGSEA=TRUE, NrCores=4){
+HyperGeoEnrichmentTest<-function(AMARETTOresults, hyper_geo_reference, driverGSEA=TRUE, driverOnly = FALSE, NrCores=4){
   output_hgt_all<-NULL
   for(i in 1:length(hyper_geo_reference)){
     if (is.null(AMARETTOresults)){
       return(1)
     }
-    GmtFromModules(AMARETTOresults, driverGSEA)
+    GmtFromModules(AMARETTOresults, driverGSEA, driverOnly = driverOnly)
     output_hgt <- HyperGTestGeneEnrichment(hyper_geo_reference[i], "./Modules_genes.gmt", NrCores)
     utils::data(MsigdbMapping)
     MsigdbMapping<-MsigdbMapping%>%dplyr::mutate(url=paste0('<a href="http://software.broadinstitute.org/gsea/msigdb/cards/',geneset,'">',gsub("_"," ",geneset),'</a>'))
@@ -634,8 +648,6 @@ create_hgt_datatable<-function(output_hgt, module_table, ModuleNr = 1){
       DT::formatStyle(columns = c(6), fontSize = '60%')
     return(dt_genesetsall)
     }
-  
-
 }
 
 #' Title driver_genes_summary

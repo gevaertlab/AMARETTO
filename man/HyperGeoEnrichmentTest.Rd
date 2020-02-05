@@ -27,6 +27,8 @@ HyperGeoEnrichmentTest(
 \item{driverGSEA}{if TRUE, module drivers will also be included in the hypergeometric test.}
 
 \item{NrCores}{Number of cores for parallel processing.}
+
+\item{driverOnly}{If TRUE, only driver genes are included in Hypergeometric Test.}
 }
 \value{
 Hyper-Geometric Enrichment Test table

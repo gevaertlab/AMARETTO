@@ -13,6 +13,8 @@ GmtFromModules(AMARETTOresults, driverGSEA)
 \item{AMARETTOresults}{List output from AMARETTO_Run().}
 
 \item{driverGSEA}{if TRUE , module driver genes will also be added to module target genes for GSEA.}
+
+\item{driverOnly}{If TRUE, only driver genes are included in Hypergeometric Test.}
 }
 \value{
 result

@@ -38,9 +38,9 @@ Install from the GitHub repository using devtools:
 
     install.packages("devtools")
     library(devtools)
-    devtools::install_github("gevaertlab/AMARETTO")
+    install_github("broadinstitute/CommunityAMARETTO")
 
-## Running AMARETTO
+## Running CommunityAMARETTO
 
 * The AMARETTO_EXAMPLE folder contains an example R script for a typical AMARETTO analysis. Please try!
 * [*Introduction to AMARETTO*](https://nbviewer.jupyter.org/github/gevaertlab/AMARETTO/blob/master/vignettes/amaretto.pdf) provides a comprehensive example of the AMARETTO workflow with detailed  explanations of each function.</br> 
