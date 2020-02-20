@@ -563,7 +563,7 @@ plot_run_history <- function(AMARETTOinit,AMARETTOResults){
 #' @return Hyper-Geometric Enrichment Test table
 #' @export
 #'
-#' @examples HyperGeoEnrichmentTest(AMARETTOresults=NULL, hyper_geo_reference, driverGSEA=TRUE, MSIGDB=TRUE, NrCores=4)
+#' @examples HyperGeoEnrichmentTest(AMARETTOresults=NULL, hyper_geo_reference, driverGSEA=TRUE, driverOnly=TRUE, MSIGDB=TRUE, NrCores=4)
 HyperGeoEnrichmentTest<-function(AMARETTOresults, hyper_geo_reference, driverGSEA=TRUE, driverOnly = FALSE, NrCores=4){
   output_hgt_all<-NULL
   for(i in 1:length(hyper_geo_reference)){
