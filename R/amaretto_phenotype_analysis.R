@@ -66,6 +66,21 @@ AMARETTO_statistical_test<-function(AMARETTOinit,AMARETTOresults,sample_annotati
       final_list[[index_current]]<-list(phenotype1=pheno1,phenotype2=pheno2,test_type="TIMESERIESEDGETIME",test_result=result)
       index_current=index_current+1
     }
+    else if(phenotype_tests[i,2]=="TTESTTWOSAMPLE"){
+      pheno<-as.character(phenotype_tests[i,1])
+      test_sample_annotations<-dplyr::select(sample_annotations,"Sample",pheno)
+      result<-all_module_TTESTTWOSAMPLE_test(AMARETTOinit,AMARETTOresults,test_sample_annotations)
+      final_list[[index_current]]<-list(phenotype=pheno,test_type="TTESTTWOSAMPLE",test_result=result)
+      index_current=index_current+1
+    }
+    else if(phenotype_tests[i,2]=="TTESTPAIRED"){
+      pheno1<-as.character(phenotype_tests[i,1])
+      pheno2<-as.character(phenotype_tests[which(phenotype_tests[,2]=="TTESTPAIRED2"),1])
+      test_sample_annotations<-dplyr::select(sample_annotations,"Sample",pheno1,pheno2)
+      result<-all_module_TTESTPAIRED_test(AMARETTOinit,AMARETTOresults,test_sample_annotations)
+      final_list[[index_current]]<-list(phenotype1=pheno1,phenotype2=pheno2,test_type="TTESTPAIRED",test_result=result)
+      index_current=index_current+1
+    }
   }
   return(final_list)
 }
@@ -170,6 +185,50 @@ AMARETTO_unite_results<-function(results_list){
                      Phenotypes=paste0(results_list[[i]]$phenotype1," (TIMESERIESEDGECONDITION),",results_list[[i]]$phenotype2," (TIMESERIESEDGETIME)"),
                      Statistical_Test="Time Series Analysis: Edge time course analysis (Likelihood ratio test)")%>%
         dplyr::mutate(ModuleNr=paste("Module",ModuleNr))%>%add_column(Descriptive_Statistics=" ")%>%arrange(q.value)%>%
+        dplyr::select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
+    }
+    else if (results_list[[i]]$test_type=="TTESTTWOSAMPLE"){
+      df<-results_list[[i]]$test_result
+      # statistics_str<-gsub("c","",as.character(df$conf.int))
+      # 
+      # statistics_str<-gsub("\\(","",statistics_str)
+      # statistics_str<-gsub("\\)","",statistics_str)
+      # #print(statistics_str)
+      # statistics_str<-lapply(strsplit(statistics_str,","),as.numeric)
+      # statistics_str<-lapply(statistics_str,function(x){signif(x, digits=3)})
+      # statistics_str<-lapply(statistics_str,function(x){paste(x,collapse = " , ")})
+      # statistics_str<-unlist(statistics_str)
+      # statistics_str<-paste0("[",statistics_str,"]")
+      
+      df<-add_column(df,
+                     Phenotypes=paste0(results_list[[i]]$phenotype," (TTESTTWOSAMPLE)"),
+                     Statistical_Test="Nominal Two-Class Analysis: Student's t test")%>%
+        mutate(ModuleNr=paste("Module",ModuleNr))%>%
+        add_column(Descriptive_Statistics=paste0("T-Score: ",signif(as.numeric(df$statistic), digits=3),
+                                                 ", FC: ",signif(as.numeric(df$fold_change), digits=3),
+                                                 ", SNR: ",signif(as.numeric(df$signal_to_noise_ratio), digits=3)))%>%
+        dplyr::select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
+    }
+    else if (results_list[[i]]$test_type=="TTESTPAIRED"){
+      df<-results_list[[i]]$test_result
+      # statistics_str<-gsub("c","",as.character(df$conf.int))
+      # 
+      # statistics_str<-gsub("\\(","",statistics_str)
+      # statistics_str<-gsub("\\)","",statistics_str)
+      # #print(statistics_str)
+      # statistics_str<-lapply(strsplit(statistics_str,","),as.numeric)
+      # statistics_str<-lapply(statistics_str,function(x){signif(x, digits=3)})
+      # statistics_str<-lapply(statistics_str,function(x){paste(x,collapse = " , ")})
+      # statistics_str<-unlist(statistics_str)
+      # statistics_str<-paste0("[",statistics_str,"]")
+      
+      df<-add_column(df,
+                     Phenotypes=paste0(results_list[[i]]$phenotype2," (TTESTPAIRED)"),
+                     Statistical_Test="Nominal Paired Two-Class Analysis: Student's t test")%>%
+        mutate(ModuleNr=paste("Module",ModuleNr))%>%
+        add_column(Descriptive_Statistics=paste0("T-Score: ",signif(as.numeric(df$statistic), digits=3),
+                                                 ", FC: ",signif(as.numeric(df$fold_change), digits=3),
+                                                 ", SNR: ",signif(as.numeric(df$signal_to_noise_ratio), digits=3)))%>%
         dplyr::select(ModuleNr,Phenotypes,Statistical_Test,p.value,q.value,Descriptive_Statistics)
     }
     united_df<-rbind(united_df,as.data.frame(df))
@@ -476,9 +535,119 @@ all_module_TIMESERIESEDGE_test<-function(AMARETTOinit,AMARETTOresults,test_sampl
   p.value<-as.numeric(unlist(sig_results$pvalues))
   p.value<-signif(p.value, digits=5)
   q.value<- p.adjust(p.value,method = "BH")
+  
   TIMESERIESEDGE_results<-data.frame(ModuleNr=1:AMARETTOresults$NrModules,p.value=p.value,q.value=q.value,stringsAsFactors=FALSE)
   return(TIMESERIESEDGE_results)
 }
+
+#' Title all_module_TTESTTWOSAMPLE_test
+#'
+#' @param AMARETTOinit 
+#' @param AMARETTOresults 
+#' @param test_sample_annotations 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+all_module_TTESTTWOSAMPLE_test<-function(AMARETTOinit,AMARETTOresults,test_sample_annotations){
+  df_result<-NULL
+  for (module_number in 1:AMARETTOresults$NrModules){
+    featureMatrix<-create_feature_matrix(AMARETTOinit,AMARETTOresults,sample_annotation_df=test_sample_annotations,module_number=module_number,Sample='Sample')
+    ttest_vector<-featureMatrix%>%dplyr::pull(colnames(test_sample_annotations)[2])  
+    df<-data.frame(mean_all=featureMatrix$mean_all,ttest_vector=as.factor(ttest_vector),stringsAsFactors = FALSE)%>%drop_na()
+    if(length(unique(df$ttest_vector))!=2){
+      stop(paste0("There is(are) ",length(unique(df$ttest_vector)), " group(s) for ", colnames(test_sample_annotations)[2], ". Requiers two groups. The module Test is skiped."))
+    }
+    group_titles<-as.vector(sort(unique(df$ttest_vector),decreasing = FALSE))
+    
+    group1<-df$mean_all[df$ttest_vector==group_titles[1]]
+    
+    group2<-df$mean_all[df$ttest_vector==group_titles[2]]
+    
+    TTESTTWOSAMPLE_results <- t.test(x=group2,y=group1, alternative = "two.sided", paired = FALSE, conf.int = TRUE, conf.level = 0.95)
+    fold_change=mean(group2)-mean(group1)
+    signal_to_noise_ratio=(mean(group2)-mean(group1))/(sd(group2)+sd(group1))
+    TTESTTWOSAMPLE_results<-data.frame(statistic=TTESTTWOSAMPLE_results$statistic,
+                                       parameter=TTESTTWOSAMPLE_results$parameter,
+                                       p.value=TTESTTWOSAMPLE_results$p.value,
+                                       # conf.int=TTESTTWOSAMPLE_results$conf.int[1],
+                                       # estimate=TTESTTWOSAMPLE_results$estimate,
+                                       null.value=TTESTTWOSAMPLE_results$null.value,
+                                       stderr=TTESTTWOSAMPLE_results$stderr,
+                                       alternative=TTESTTWOSAMPLE_results$alternative,
+                                       method=TTESTTWOSAMPLE_results$method,
+                                       fold_change=fold_change,
+                                       signal_to_noise_ratio=signal_to_noise_ratio)
+    
+    
+    
+    df_result<-rbind(df_result,TTESTTWOSAMPLE_results)
+  }
+  df_result<-as.data.frame(df_result,stringsAsFactors=FALSE)%>%rownames_to_column()
+  df_result$p.value<-as.numeric(unlist(df_result$p.value))
+  df_result$p.value<-signif(df_result$p.value, digits=5)
+  q.value<- p.adjust(df_result$p.value,method = "BH")
+  df_result<-add_column(df_result,q.value=q.value,ModuleNr=1:AMARETTOresults$NrModules)
+  return(df_result)
+}
+
+#' Title all_module_TTESTPAIRED_test
+#'
+#' @param AMARETTOinit 
+#' @param AMARETTOresults 
+#' @param test_sample_annotations 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+all_module_TTESTPAIRED_test<-function(AMARETTOinit,AMARETTOresults,test_sample_annotations){
+  df_result<-NULL
+  for (module_number in 1:AMARETTOresults$NrModules){
+    featureMatrix<-create_feature_matrix(AMARETTOinit,AMARETTOresults,sample_annotation_df=test_sample_annotations,module_number=module_number,Sample='Sample')
+    
+    sample_vector<-featureMatrix$Sample
+    genes_mean_vector<-featureMatrix$mean_all
+    ttest_vector_group1<-as.numeric(featureMatrix%>%dplyr::pull(colnames(test_sample_annotations)[2])) 
+    ttest_vector_group2<-featureMatrix%>%dplyr::pull(colnames(test_sample_annotations)[3])
+    
+    genename_df<-data.frame(Sample=sample_vector,genes_mean=genes_mean_vector, stringsAsFactors = FALSE)
+    group1_df<-data.frame(Sample1=sample_vector,group1_orders=ttest_vector_group1, stringsAsFactors = FALSE)%>%drop_na()
+    group2_df<-data.frame(Sample2=sample_vector,group2_orders=ttest_vector_group2, stringsAsFactors = FALSE)%>%drop_na()
+    
+    group1_df<-group1_df%>%left_join(genename_df, by=c("Sample1"="Sample"))%>%rename("genes_mean1"="genes_mean")
+    group2_df<-group2_df%>%left_join(genename_df, by=c("Sample2"="Sample"))%>%rename("genes_mean2"="genes_mean")
+    
+    groups_df<-group1_df%>%left_join(group2_df,by=c("group1_orders"="group2_orders"))
+    
+    group1<-groups_df$genes_mean1
+    group2<-groups_df$genes_mean2
+    
+    TTESTPAIRED_results <- t.test(x=group2,y=group1, paired=TRUE)
+    fold_change=mean(group2)-mean(group1)
+    signal_to_noise_ratio=(mean(group2)-mean(group1))/(sd(group2)+sd(group1))
+    TTESTPAIRED_results<-data.frame(statistic=TTESTPAIRED_results$statistic,
+                                       parameter=TTESTPAIRED_results$parameter,
+                                       p.value=TTESTPAIRED_results$p.value,
+                                       null.value=TTESTPAIRED_results$null.value,
+                                       stderr=TTESTPAIRED_results$stderr,
+                                       alternative=TTESTPAIRED_results$alternative,
+                                       method=TTESTPAIRED_results$method,
+                                       fold_change=fold_change,
+                                       signal_to_noise_ratio=signal_to_noise_ratio)
+    
+    df_result<-rbind(df_result,TTESTPAIRED_results)
+  }
+  df_result<-as.data.frame(df_result,stringsAsFactors=FALSE)%>%rownames_to_column()
+  df_result$p.value<-as.numeric(unlist(df_result$p.value))
+  df_result$p.value<-signif(df_result$p.value, digits=5)
+  q.value<- p.adjust(df_result$p.value,method = "BH")
+  df_result<-add_column(df_result,q.value=q.value,ModuleNr=1:AMARETTOresults$NrModules)
+  return(df_result)
+}
+
+
 
 #' Title phenotye_add_estimate_column
 #'
