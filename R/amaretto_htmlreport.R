@@ -720,3 +720,44 @@ genes_amaretto_assignments_all<-function(AMARETTOinit,AMARETTOresults){
   all_genes<-all_genes%>%mutate(MET=ifelse(is.na(MET),"no_met_data",MET))
   return(all_genes)
 }
+
+
+
+#' Title HubAuthority_scores_AMARETTO
+#'
+#' @param AMARETTOinit 
+#' @param AMARETTOresults 
+#' 
+#' @return a list containing Hub-score authority-score of genes and modules.
+#' @importFrom igraph hub_score authority_score
+#' @export
+#' @examples try(HubAuthority_scores_AMARETTO(AMARETTOinit,AMARETTOresults))
+
+HubAuthority_scores_AMARETTO<-function(AMARETTOinit,AMARETTOresults){
+  ModGenTbl<-genes_amaretto_assignments_all(AMARETTOinit,AMARETTOresults)
+  from<-ModGenTbl$Genes
+  to<-paste0("Module-",ModGenTbl$Module)
+  weight<-ModGenTbl$value
+  df<-data.frame(from=from,to=to,weight=abs(weight))
+  g <- graph_from_data_frame(df, directed=TRUE)
+  ## calculate hub score
+  hub_scores_vector<-hub_score(g, scale = TRUE)
+  hub_scores_vector<-sort(hub_scores_vector$vector,decreasing = TRUE)
+  hub_scores_df<-data.frame(genes=names(hub_scores_vector),
+                            hub_score=hub_scores_vector,
+                            rank=c(1:length(hub_scores_vector)))
+  rownames(hub_scores_df)<-NULL
+  ## calculate authority score
+  authority_scores_vector<-authority_score(g, scale = TRUE)
+  authority_scores_vector<-sort(authority_scores_vector$vector,decreasing = TRUE)
+  authority_scores_df<-data.frame(genes=names(authority_scores_vector),
+                                  hub_score=authority_scores_vector,
+                                  rank=c(1:length(authority_scores_vector)))
+  
+  return(list("hub_score"=hub_scores_df,
+              "authority_score"=authority_scores_df))
+}
+
+
+
+
