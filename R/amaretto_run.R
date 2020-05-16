@@ -199,7 +199,7 @@ AMARETTO_LearnRegulatoryProgramsLarsen <- function(Data, Clusters, RegulatorData
     AutoRegulationReport <- do.call(cbind, BetaY_all[3, 2:tmpPos])
     AutoRegulationReport = t(AutoRegulationReport)
     rownames(AutoRegulationReport) = gsub("result.", "Module_", rownames(AutoRegulationReport))
-    error = y_all - (Beta %*% RegulatorData)
+    error = y_all - (Beta %*% as.matrix(RegulatorData))
     result <- list(Beta = Beta, error = error, AutoRegulationReport = AutoRegulationReport)
     return(result)
 }

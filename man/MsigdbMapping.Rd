@@ -4,7 +4,9 @@
 \name{MsigdbMapping}
 \alias{MsigdbMapping}
 \title{MsigdbMapping}
-\format{List}
+\format{
+List
+}
 \source{
 \url{AMARETTO}
 }

@@ -4,7 +4,9 @@
 \name{ProcessedDataLIHC}
 \alias{ProcessedDataLIHC}
 \title{ProcessedDataLIHC}
-\format{List}
+\format{
+List
+}
 \source{
 \url{AMARETTO}
 }

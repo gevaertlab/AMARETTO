@@ -4,7 +4,9 @@
 \name{Driver_Genes}
 \alias{Driver_Genes}
 \title{Driver_Genes}
-\format{List}
+\format{
+List
+}
 \source{
 \url{AMARETTO}
 }

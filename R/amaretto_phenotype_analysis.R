@@ -17,6 +17,7 @@ AMARETTO_statistical_test<-function(AMARETTOinit,AMARETTOresults,sample_annotati
       pheno1<-as.character(phenotype_tests[i,1])
       pheno2<-as.character(phenotype_tests[which(phenotype_tests[,2]=="COXPROPHAZARDRIGHTCENSORING"),1])
       #kk<-which(phenotype_tests[,2]=="COXPROPHAZARDRIGHTCENSORING")
+      print(pheno1)
       test_sample_annotations<-dplyr::select(sample_annotations,"Sample",pheno1,pheno2)
       result<-all_modules_cox_prop_hazard_test(AMARETTOinit,AMARETTOresults,test_sample_annotations)
       final_list[[index_current]]<-list(phenotype1=pheno1,phenotype2=pheno2,test_type="COXPROPHAZARD",test_result=result)
@@ -24,6 +25,7 @@ AMARETTO_statistical_test<-function(AMARETTOinit,AMARETTOresults,sample_annotati
     }
     else if(phenotype_tests[i,2]=="SPEARMANCORRTEST"){
       pheno<-as.character(phenotype_tests[i,1])
+      print(pheno)
       test_sample_annotations<-dplyr::select(sample_annotations,"Sample",pheno)
       result<-all_modules_SPEARMANCOR_test(AMARETTOinit,AMARETTOresults,test_sample_annotations)
       final_list[[index_current]]<-list(phenotype=pheno,test_type="SPEARMANCORRTEST",test_result=result)
@@ -31,6 +33,7 @@ AMARETTO_statistical_test<-function(AMARETTOinit,AMARETTOresults,sample_annotati
     }
     else if(phenotype_tests[i,2]=="PEARSONCORRTEST"){
       pheno<-as.character(phenotype_tests[i,1])
+      print(pheno)
       test_sample_annotations<-dplyr::select(sample_annotations,"Sample",pheno)
       result<-all_modules_PEARSONCOR_test(AMARETTOinit,AMARETTOresults,test_sample_annotations)
       final_list[[index_current]]<-list(phenotype=pheno,test_type="PEARSONCORRTEST",test_result=result)
@@ -38,6 +41,7 @@ AMARETTO_statistical_test<-function(AMARETTOinit,AMARETTOresults,sample_annotati
     }
     else if(phenotype_tests[i,2]=="WILCOXONRANKSUMTEST"){
       pheno<-as.character(phenotype_tests[i,1])
+      print(pheno)
       test_sample_annotations<-dplyr::select(sample_annotations,"Sample",pheno)
       result<-all_module_WILCOXONRANKSUM_test(AMARETTOinit,AMARETTOresults,test_sample_annotations)
       final_list[[index_current]]<-list(phenotype=pheno,test_type="WILCOXONRANKSUMTEST",test_result=result)
@@ -45,6 +49,7 @@ AMARETTO_statistical_test<-function(AMARETTOinit,AMARETTOresults,sample_annotati
     }
     else if(phenotype_tests[i,2]=="WILCOXONRANKSUMTESTPAIRED"){
       pheno<-as.character(phenotype_tests[i,1])
+      print(pheno)
       test_sample_annotations<-dplyr::select(sample_annotations,"Sample",pheno)
       result<-all_module_WILCOXONRANKSUMPAIRED_test(AMARETTOinit,AMARETTOresults,test_sample_annotations)
       final_list[[index_current]]<-list(phenotype=pheno,test_type="WILCOXONRANKSUMTESTPAIRED",test_result=result)
@@ -52,6 +57,7 @@ AMARETTO_statistical_test<-function(AMARETTOinit,AMARETTOresults,sample_annotati
     }
     else if(phenotype_tests[i,2]=="KRUSKALWALLISTEST"){
       pheno<-as.character(phenotype_tests[i,1])
+      print(pheno)
       test_sample_annotations<-dplyr::select(sample_annotations,"Sample",pheno)
       result<-all_module_KRUSKALWALLIS_test(AMARETTOinit,AMARETTOresults,test_sample_annotations)
       final_list[[index_current]]<-list(phenotype=pheno,test_type="KRUSKALWALLISTEST",test_result=result)
@@ -61,6 +67,7 @@ AMARETTO_statistical_test<-function(AMARETTOinit,AMARETTOresults,sample_annotati
       pheno1<-as.character(phenotype_tests[i,1])
       pheno2<-as.character(phenotype_tests[which(phenotype_tests[,2]=="TIMESERIESEDGECONDITION"),1])
       # kk<-which(phenotype_tests[,2]=="TIMESERIESEDGECONDITION")
+      print(pheno1)
       test_sample_annotations<-dplyr::select(sample_annotations,"Sample",pheno1,pheno2)
       result<-all_module_TIMESERIESEDGE_test(AMARETTOinit,AMARETTOresults,test_sample_annotations)
       final_list[[index_current]]<-list(phenotype1=pheno1,phenotype2=pheno2,test_type="TIMESERIESEDGETIME",test_result=result)
@@ -68,6 +75,7 @@ AMARETTO_statistical_test<-function(AMARETTOinit,AMARETTOresults,sample_annotati
     }
     else if(phenotype_tests[i,2]=="TTESTTWOSAMPLE"){
       pheno<-as.character(phenotype_tests[i,1])
+      print(pheno)
       test_sample_annotations<-dplyr::select(sample_annotations,"Sample",pheno)
       result<-all_module_TTESTTWOSAMPLE_test(AMARETTOinit,AMARETTOresults,test_sample_annotations)
       final_list[[index_current]]<-list(phenotype=pheno,test_type="TTESTTWOSAMPLE",test_result=result)
@@ -76,6 +84,7 @@ AMARETTO_statistical_test<-function(AMARETTOinit,AMARETTOresults,sample_annotati
     else if(phenotype_tests[i,2]=="TTESTPAIRED"){
       pheno1<-as.character(phenotype_tests[i,1])
       pheno2<-as.character(phenotype_tests[which(phenotype_tests[,2]=="TTESTPAIRED2"),1])
+      print(pheno1)
       test_sample_annotations<-dplyr::select(sample_annotations,"Sample",pheno1,pheno2)
       result<-all_module_TTESTPAIRED_test(AMARETTOinit,AMARETTOresults,test_sample_annotations)
       final_list[[index_current]]<-list(phenotype1=pheno1,phenotype2=pheno2,test_type="TTESTPAIRED",test_result=result)
@@ -317,17 +326,20 @@ cox_prop_hazard_test<-function(xx,time_to_event,right_censoring){
 all_modules_cox_prop_hazard_test<-function(AMARETTOinit,AMARETTOresults,test_sample_annotations){
   df_result<-NULL
   for (module_number in 1:AMARETTOresults$NrModules){
+    print(module_number)
     featureMatrix<-create_feature_matrix(AMARETTOinit,AMARETTOresults,sample_annotation_df=test_sample_annotations,module_number=module_number,Sample='Sample')
+    if(is.na(unique(featureMatrix$mean_all))){next}
     time_to_event<-featureMatrix%>%dplyr::pull(colnames(test_sample_annotations)[2])  
     right_censoring<-featureMatrix%>%dplyr::pull(colnames(test_sample_annotations)[3])  
     result<-cox_prop_hazard_test(featureMatrix$mean_all,time_to_event,right_censoring)
     df_result<-rbind(df_result,result)
+    df_result<-cbind(df_result,ModuleNr=module_number)
   }
   df_result<-as.data.frame(df_result,stringsAsFactors=FALSE)%>%rownames_to_column()
   df_result$p.value<-as.numeric(unlist(df_result$p.value))
   df_result$p.value<-signif(df_result$p.value, digits=5)
   q.value<-p.adjust(df_result$p.value,method = "BH")
-  df_result<-add_column(df_result,q.value=q.value,ModuleNr=1:AMARETTOresults$NrModules)
+  df_result<-add_column(df_result,q.value=q.value)
   #result$ModuleNr=module_number
   return(df_result)
 }
@@ -346,17 +358,20 @@ all_modules_cox_prop_hazard_test<-function(AMARETTOinit,AMARETTOresults,test_sam
 all_modules_SPEARMANCOR_test<-function(AMARETTOinit,AMARETTOresults,test_sample_annotations){
   df_result<-NULL
   for (module_number in 1:AMARETTOresults$NrModules){
+    print(module_number)
     featureMatrix<-create_feature_matrix(AMARETTOinit,AMARETTOresults,sample_annotation_df=test_sample_annotations,module_number=module_number,Sample='Sample')
+    if(is.na(unique(featureMatrix$mean_all))){next}
     spearmancorr_vector<-featureMatrix%>%dplyr::pull(colnames(test_sample_annotations)[2])  
     df=data.frame(module_average=featureMatrix$mean_all,SPEARMANCORRTEST=spearmancorr_vector)
     SPEARMANCORRTEST_results <- cor.test(df$module_average,df$SPEARMANCORRTEST, method = "spearman", alternative = "two.sided")
     df_result<-rbind(df_result,SPEARMANCORRTEST_results)
+    df_result<-cbind(df_result,ModuleNr=module_number)
   }
   df_result<-as.data.frame(df_result,stringsAsFactors=FALSE)%>%rownames_to_column()
   df_result$p.value<-as.numeric(unlist(df_result$p.value))
   df_result$p.value<-signif(df_result$p.value, digits=5)
   q.value<- p.adjust(df_result$p.value,method = "BH")
-  df_result<-add_column(df_result,q.value=q.value,ModuleNr=1:AMARETTOresults$NrModules)
+  df_result<-add_column(df_result,q.value=q.value)
   return(df_result)
 }
 
@@ -373,17 +388,20 @@ all_modules_SPEARMANCOR_test<-function(AMARETTOinit,AMARETTOresults,test_sample_
 all_modules_PEARSONCOR_test<-function(AMARETTOinit,AMARETTOresults,test_sample_annotations){
   df_result<-NULL
   for (module_number in 1:AMARETTOresults$NrModules){
+    print(module_number)
     featureMatrix<-create_feature_matrix(AMARETTOinit,AMARETTOresults,sample_annotation_df=test_sample_annotations,module_number=module_number,Sample='Sample')
+    if(is.na(unique(featureMatrix$mean_all))){next}
     pearsoncorr_vector<-featureMatrix%>%dplyr::pull(colnames(test_sample_annotations)[2])  
     df=data.frame(module_average=featureMatrix$mean_all,PEARSONCORRTEST=pearsoncorr_vector)
     PEARSONCORRTEST_results <- cor.test(df$module_average,df$PEARSONCORRTEST, method = "pearson",  conf.level = 0.95, alternative = "two.sided")
     df_result<-rbind(df_result,PEARSONCORRTEST_results)
+    df_result<-cbind(df_result,ModuleNr=module_number)
   }
   df_result<-as.data.frame(df_result,stringsAsFactors=FALSE)%>%rownames_to_column()
   df_result$p.value<-as.numeric(unlist(df_result$p.value))
   df_result$p.value<-signif(df_result$p.value, digits=5)
   q.value<- p.adjust(df_result$p.value,method = "BH")
-  df_result<-add_column(df_result,q.value=q.value,ModuleNr=1:AMARETTOresults$NrModules)
+  df_result<-add_column(df_result,q.value=q.value)
   return(df_result)
 }
 
@@ -401,10 +419,11 @@ all_modules_PEARSONCOR_test<-function(AMARETTOinit,AMARETTOresults,test_sample_a
 all_module_WILCOXONRANKSUM_test<-function(AMARETTOinit,AMARETTOresults,test_sample_annotations){
   df_result<-NULL
   for (module_number in 1:AMARETTOresults$NrModules){
-    
+    print(module_number)
     featureMatrix<-create_feature_matrix(AMARETTOinit,AMARETTOresults,sample_annotation_df=test_sample_annotations,module_number=module_number,Sample='Sample')
+    if(is.na(unique(featureMatrix$mean_all))){next}
     wilcoxonsum_vector<-featureMatrix%>%dplyr::pull(colnames(test_sample_annotations)[2])  
-    df<-data.frame(mean_all=featureMatrix$mean_all,wilcoxonsum_vector=as.factor(wilcoxonsum_vector),stringsAsFactors = FALSE)%>%drop_na()
+    df<-data.frame(mean_all=featureMatrix$mean_all,wilcoxonsum_vector=as.factor(wilcoxonsum_vector),stringsAsFactors = FALSE)%>%drop_na()%>%filter(wilcoxonsum_vector!="NA")%>%filter(wilcoxonsum_vector!="")
     if(length(unique(df$wilcoxonsum_vector))!=2){
       stop(paste0("There is(are) ",length(unique(df$wilcoxonsum_vector)), " group(s) for ", colnames(test_sample_annotations)[2], ". Requiers two groups. The module Test is skiped."))
     }
@@ -416,12 +435,13 @@ all_module_WILCOXONRANKSUM_test<-function(AMARETTOinit,AMARETTOresults,test_samp
     
     WILCOXONRANKSUMTEST_results <- wilcox.test(x=group2,y=group1, alternative = "two.sided", paired = FALSE, conf.int = TRUE, conf.level = 0.95)
     df_result<-rbind(df_result,WILCOXONRANKSUMTEST_results)
+    df_result<-cbind(df_result,ModuleNr=module_number)
   }
   df_result<-as.data.frame(df_result,stringsAsFactors=FALSE)%>%rownames_to_column()
   df_result$p.value<-as.numeric(unlist(df_result$p.value))
   df_result$p.value<-signif(df_result$p.value, digits=5)
   q.value<- p.adjust(df_result$p.value,method = "BH")
-  df_result<-add_column(df_result,q.value=q.value,ModuleNr=1:AMARETTOresults$NrModules)
+  df_result<-add_column(df_result,q.value=q.value)
   return(df_result)
 }
 
@@ -438,10 +458,11 @@ all_module_WILCOXONRANKSUM_test<-function(AMARETTOinit,AMARETTOresults,test_samp
 all_module_WILCOXONRANKSUMPAIRED_test<-function(AMARETTOinit,AMARETTOresults,test_sample_annotations){
   df_result<-NULL
   for (module_number in 1:AMARETTOresults$NrModules){
-    
+    print(module_number)
     featureMatrix<-create_feature_matrix(AMARETTOinit,AMARETTOresults,sample_annotation_df=test_sample_annotations,module_number=module_number,Sample='Sample')
+    if(is.na(unique(featureMatrix$mean_all))){next}
     wilcoxonsum_vector<-featureMatrix%>%dplyr::pull(colnames(test_sample_annotations)[2])  
-    df<-data.frame(mean_all=featureMatrix$mean_all,wilcoxonsum_vector=as.factor(wilcoxonsum_vector),stringsAsFactors = FALSE)%>%drop_na()
+    df<-data.frame(mean_all=featureMatrix$mean_all,wilcoxonsum_vector=as.factor(wilcoxonsum_vector),stringsAsFactors = FALSE)%>%drop_na()%>%filter(wilcoxonsum_vector!="NA")%>%filter(wilcoxonsum_vector!="")
     
     if(length(unique(df$wilcoxonsum_vector))!=2){
       stop(paste0("There is(are) ",length(unique(df$wilcoxonsum_vector)), " group(s) for ", colnames(test_sample_annotations)[2], ". Requiers two groups. The module Test is skiped."))
@@ -454,12 +475,13 @@ all_module_WILCOXONRANKSUMPAIRED_test<-function(AMARETTOinit,AMARETTOresults,tes
     
     WILCOXONRANKSUMTESTPAIRED_results <- wilcox.test(x=group2,y=group1, alternative = "two.sided", paired = TRUE, exact = NULL, correct = TRUE, conf.int = FALSE, conf.level = 0.95)
     df_result<-rbind(df_result,WILCOXONRANKSUMTESTPAIRED_results)
+    df_result<-cbind(df_result,ModuleNr=module_number)
   }
   df_result<-as.data.frame(df_result,stringsAsFactors=FALSE)%>%rownames_to_column()
   df_result$p.value<-as.numeric(unlist(df_result$p.value))
   df_result$p.value<-signif(df_result$p.value, digits=5)
   q.value<- p.adjust(df_result$p.value,method = "BH")
-  df_result<-add_column(df_result,q.value=q.value,ModuleNr=1:AMARETTOresults$NrModules)
+  df_result<-add_column(df_result,q.value=q.value)
   return(df_result)
 }
 
@@ -476,17 +498,20 @@ all_module_WILCOXONRANKSUMPAIRED_test<-function(AMARETTOinit,AMARETTOresults,tes
 all_module_KRUSKALWALLIS_test<-function(AMARETTOinit,AMARETTOresults,test_sample_annotations){
   df_result<-NULL
   for (module_number in 1:AMARETTOresults$NrModules){
+    print(module_number)
     featureMatrix<-create_feature_matrix(AMARETTOinit,AMARETTOresults,sample_annotation_df=test_sample_annotations,module_number=module_number,Sample='Sample')
+    if(is.na(unique(featureMatrix$mean_all))){next}
     kruskalwallis_vector<-featureMatrix%>%dplyr::pull(colnames(test_sample_annotations)[2])  
     df=data.frame(module_average=featureMatrix$mean_all,KRUSKALWALLISTEST=as.factor(kruskalwallis_vector))
     KRUSKALWALLISTEST_results <- kruskal.test(x=df$module_average,g=df$KRUSKALWALLISTEST)
     df_result<-rbind(df_result,KRUSKALWALLISTEST_results)
+    df_result<-cbind(df_result,ModuleNr=module_number)
   }
   df_result<-as.data.frame(df_result,stringsAsFactors=FALSE)%>%rownames_to_column()
   df_result$p.value<-as.numeric(unlist(df_result$p.value))
   df_result$p.value<-signif(df_result$p.value, digits=5)
   q.value<- p.adjust(df_result$p.value,method = "BH")
-  df_result<-df_result%>%mutate(q.value=q.value)%>%mutate(ModuleNr=1:AMARETTOresults$NrModules)
+  df_result<-df_result%>%mutate(q.value=q.value)
   return(df_result)
 }
 
@@ -503,16 +528,18 @@ all_module_KRUSKALWALLIS_test<-function(AMARETTOinit,AMARETTOresults,test_sample
 all_module_TIMESERIESEDGE_test<-function(AMARETTOinit,AMARETTOresults,test_sample_annotations){
   ModulesPhenotypes<-c()
   for (module_number in 1:AMARETTOresults$NrModules){
+    print(module_number)
     featureMatrix<-create_feature_matrix(AMARETTOinit,AMARETTOresults,sample_annotation_df=test_sample_annotations,module_number=module_number,Sample='Sample')
+    #if(is.na(unique(featureMatrix$mean_all))){next}
     ModulesPhenotypes<-cbind(ModulesPhenotypes,featureMatrix$mean_all)
   }
   #View(ModulesPhenotypes)
   mods<-t(ModulesPhenotypes)
   cov.time<-featureMatrix%>%dplyr::pull(colnames(test_sample_annotations)[2])  
   cov.cond<-featureMatrix%>%dplyr::pull(colnames(test_sample_annotations)[3])
-  length(cov.time)
-  length(cov.cond)
-  dim(mods)
+  # length(cov.time)
+  # length(cov.cond)
+  # dim(mods)
   # cov.time<-TIMESERIESEDGETIME
   # cov.cond<-TIMESERIESEDGECONDITION
   # cov.replicate<-TIMESERIESEDGETIMEREPLICATE
@@ -528,11 +555,14 @@ all_module_TIMESERIESEDGE_test<-function(AMARETTOinit,AMARETTOresults,test_sampl
   #null_fitted <- fitNull(ef_obj)
   
   #de_lrt <- lrt(de_obj, nullDistn = "normal",pi0=1) 
-  de_odp <- odp(edge_obj, bs.its = 50, verbose = FALSE,n.mods = 50)
+  #de_odp <- odp(edge_obj, bs.its = 50, verbose = FALSE,n.mods = 50)
   #summary(de_odp)
-  sig_results <- qvalueObj(de_odp)
+  #sig_results <- qvalueObj(de_odp)
   # hist(sig_results)
-  p.value<-as.numeric(unlist(sig_results$pvalues))
+  de_lrt <- lrt(edge_obj,pi0 = 1)
+  p.value = slot(de_lrt,"qvalueObj")$pvalues
+  
+  #p.value<-as.numeric(unlist(sig_results$pvalues))
   p.value<-signif(p.value, digits=5)
   q.value<- p.adjust(p.value,method = "BH")
   
@@ -553,9 +583,11 @@ all_module_TIMESERIESEDGE_test<-function(AMARETTOinit,AMARETTOresults,test_sampl
 all_module_TTESTTWOSAMPLE_test<-function(AMARETTOinit,AMARETTOresults,test_sample_annotations){
   df_result<-NULL
   for (module_number in 1:AMARETTOresults$NrModules){
+    print(module_number)
     featureMatrix<-create_feature_matrix(AMARETTOinit,AMARETTOresults,sample_annotation_df=test_sample_annotations,module_number=module_number,Sample='Sample')
+    if(is.na(unique(featureMatrix$mean_all))){next}
     ttest_vector<-featureMatrix%>%dplyr::pull(colnames(test_sample_annotations)[2])  
-    df<-data.frame(mean_all=featureMatrix$mean_all,ttest_vector=as.factor(ttest_vector),stringsAsFactors = FALSE)%>%drop_na()
+    df<-data.frame(mean_all=featureMatrix$mean_all,ttest_vector=as.factor(ttest_vector),stringsAsFactors = FALSE)%>%drop_na()%>%filter(ttest_vector!="NA")%>%filter(ttest_vector!="")
     if(length(unique(df$ttest_vector))!=2){
       stop(paste0("There is(are) ",length(unique(df$ttest_vector)), " group(s) for ", colnames(test_sample_annotations)[2], ". Requiers two groups. The module Test is skiped."))
     }
@@ -578,7 +610,8 @@ all_module_TTESTTWOSAMPLE_test<-function(AMARETTOinit,AMARETTOresults,test_sampl
                                        alternative=TTESTTWOSAMPLE_results$alternative,
                                        method=TTESTTWOSAMPLE_results$method,
                                        fold_change=fold_change,
-                                       signal_to_noise_ratio=signal_to_noise_ratio)
+                                       signal_to_noise_ratio=signal_to_noise_ratio,
+                                       ModuleNr=module_number)
     
     
     
@@ -588,7 +621,7 @@ all_module_TTESTTWOSAMPLE_test<-function(AMARETTOinit,AMARETTOresults,test_sampl
   df_result$p.value<-as.numeric(unlist(df_result$p.value))
   df_result$p.value<-signif(df_result$p.value, digits=5)
   q.value<- p.adjust(df_result$p.value,method = "BH")
-  df_result<-add_column(df_result,q.value=q.value,ModuleNr=1:AMARETTOresults$NrModules)
+  df_result<-add_column(df_result,q.value=q.value)
   return(df_result)
 }
 
@@ -605,8 +638,9 @@ all_module_TTESTTWOSAMPLE_test<-function(AMARETTOinit,AMARETTOresults,test_sampl
 all_module_TTESTPAIRED_test<-function(AMARETTOinit,AMARETTOresults,test_sample_annotations){
   df_result<-NULL
   for (module_number in 1:AMARETTOresults$NrModules){
+    print(module_number)
     featureMatrix<-create_feature_matrix(AMARETTOinit,AMARETTOresults,sample_annotation_df=test_sample_annotations,module_number=module_number,Sample='Sample')
-    
+    if(is.na(unique(featureMatrix$mean_all))){next}
     sample_vector<-featureMatrix$Sample
     genes_mean_vector<-featureMatrix$mean_all
     ttest_vector_group1<-as.numeric(featureMatrix%>%dplyr::pull(colnames(test_sample_annotations)[2])) 
@@ -635,7 +669,8 @@ all_module_TTESTPAIRED_test<-function(AMARETTOinit,AMARETTOresults,test_sample_a
                                        alternative=TTESTPAIRED_results$alternative,
                                        method=TTESTPAIRED_results$method,
                                        fold_change=fold_change,
-                                       signal_to_noise_ratio=signal_to_noise_ratio)
+                                       signal_to_noise_ratio=signal_to_noise_ratio,
+                                       ModuleNr=module_number)
     
     df_result<-rbind(df_result,TTESTPAIRED_results)
   }
@@ -643,7 +678,7 @@ all_module_TTESTPAIRED_test<-function(AMARETTOinit,AMARETTOresults,test_sample_a
   df_result$p.value<-as.numeric(unlist(df_result$p.value))
   df_result$p.value<-signif(df_result$p.value, digits=5)
   q.value<- p.adjust(df_result$p.value,method = "BH")
-  df_result<-add_column(df_result,q.value=q.value,ModuleNr=1:AMARETTOresults$NrModules)
+  df_result<-add_column(df_result,q.value=q.value)
   return(df_result)
 }
 

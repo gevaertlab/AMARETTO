@@ -4,7 +4,9 @@
 \name{BatchData}
 \alias{BatchData}
 \title{BatchData}
-\format{A data frame with 23263 observations and 3 variables:}
+\format{
+A data frame with 23263 observations and 3 variables:
+}
 \source{
 \url{AMARETTO}
 }
