@@ -698,7 +698,7 @@ driver_genes_summary<-function(AMARETTOresults,weight_threshold=0.001, plot_word
 #' @examples
 genes_amaretto_assignments_all<-function(AMARETTOinit,AMARETTOresults){
   all_targets<-tibble::rownames_to_column(data.frame(AMARETTOresults$ModuleMembership),"Genes") %>% 
-    dplyr::rename(Module="ModuleNr") %>%
+    dplyr::rename(Module="AMARETTOresults.ModuleMembership") %>%
     dplyr::mutate(value=0) %>% 
     dplyr::mutate(Type="Target") %>% 
     dplyr::select(Genes,Module,value,Type)

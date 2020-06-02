@@ -325,6 +325,7 @@ cox_prop_hazard_test<-function(xx,time_to_event,right_censoring){
 #' @examples
 all_modules_cox_prop_hazard_test<-function(AMARETTOinit,AMARETTOresults,test_sample_annotations){
   df_result<-NULL
+  moduleNo_vector<-NULL
   for (module_number in 1:AMARETTOresults$NrModules){
     print(module_number)
     featureMatrix<-create_feature_matrix(AMARETTOinit,AMARETTOresults,sample_annotation_df=test_sample_annotations,module_number=module_number,Sample='Sample')
@@ -333,8 +334,9 @@ all_modules_cox_prop_hazard_test<-function(AMARETTOinit,AMARETTOresults,test_sam
     right_censoring<-featureMatrix%>%dplyr::pull(colnames(test_sample_annotations)[3])  
     result<-cox_prop_hazard_test(featureMatrix$mean_all,time_to_event,right_censoring)
     df_result<-rbind(df_result,result)
-    df_result<-cbind(df_result,ModuleNr=module_number)
+    moduleNo_vector<-c(moduleNo_vector,module_number)
   }
+  df_result<-cbind(df_result,ModuleNr=moduleNo_vector)
   df_result<-as.data.frame(df_result,stringsAsFactors=FALSE)%>%rownames_to_column()
   df_result$p.value<-as.numeric(unlist(df_result$p.value))
   df_result$p.value<-signif(df_result$p.value, digits=5)
@@ -357,6 +359,7 @@ all_modules_cox_prop_hazard_test<-function(AMARETTOinit,AMARETTOresults,test_sam
 #' @examples
 all_modules_SPEARMANCOR_test<-function(AMARETTOinit,AMARETTOresults,test_sample_annotations){
   df_result<-NULL
+  moduleNo_vector<-NULL
   for (module_number in 1:AMARETTOresults$NrModules){
     print(module_number)
     featureMatrix<-create_feature_matrix(AMARETTOinit,AMARETTOresults,sample_annotation_df=test_sample_annotations,module_number=module_number,Sample='Sample')
@@ -365,8 +368,9 @@ all_modules_SPEARMANCOR_test<-function(AMARETTOinit,AMARETTOresults,test_sample_
     df=data.frame(module_average=featureMatrix$mean_all,SPEARMANCORRTEST=spearmancorr_vector)
     SPEARMANCORRTEST_results <- cor.test(df$module_average,df$SPEARMANCORRTEST, method = "spearman", alternative = "two.sided")
     df_result<-rbind(df_result,SPEARMANCORRTEST_results)
-    df_result<-cbind(df_result,ModuleNr=module_number)
+    moduleNo_vector<-c(moduleNo_vector,module_number)
   }
+  df_result<-cbind(df_result,ModuleNr=moduleNo_vector)
   df_result<-as.data.frame(df_result,stringsAsFactors=FALSE)%>%rownames_to_column()
   df_result$p.value<-as.numeric(unlist(df_result$p.value))
   df_result$p.value<-signif(df_result$p.value, digits=5)
@@ -387,6 +391,7 @@ all_modules_SPEARMANCOR_test<-function(AMARETTOinit,AMARETTOresults,test_sample_
 #' @examples
 all_modules_PEARSONCOR_test<-function(AMARETTOinit,AMARETTOresults,test_sample_annotations){
   df_result<-NULL
+  moduleNo_vector<-NULL
   for (module_number in 1:AMARETTOresults$NrModules){
     print(module_number)
     featureMatrix<-create_feature_matrix(AMARETTOinit,AMARETTOresults,sample_annotation_df=test_sample_annotations,module_number=module_number,Sample='Sample')
@@ -395,8 +400,9 @@ all_modules_PEARSONCOR_test<-function(AMARETTOinit,AMARETTOresults,test_sample_a
     df=data.frame(module_average=featureMatrix$mean_all,PEARSONCORRTEST=pearsoncorr_vector)
     PEARSONCORRTEST_results <- cor.test(df$module_average,df$PEARSONCORRTEST, method = "pearson",  conf.level = 0.95, alternative = "two.sided")
     df_result<-rbind(df_result,PEARSONCORRTEST_results)
-    df_result<-cbind(df_result,ModuleNr=module_number)
+    moduleNo_vector<-c(moduleNo_vector,module_number)
   }
+  df_result<-cbind(df_result,ModuleNr=moduleNo_vector)
   df_result<-as.data.frame(df_result,stringsAsFactors=FALSE)%>%rownames_to_column()
   df_result$p.value<-as.numeric(unlist(df_result$p.value))
   df_result$p.value<-signif(df_result$p.value, digits=5)
@@ -418,6 +424,7 @@ all_modules_PEARSONCOR_test<-function(AMARETTOinit,AMARETTOresults,test_sample_a
 #' @examples
 all_module_WILCOXONRANKSUM_test<-function(AMARETTOinit,AMARETTOresults,test_sample_annotations){
   df_result<-NULL
+  moduleNo_vector<-NULL
   for (module_number in 1:AMARETTOresults$NrModules){
     print(module_number)
     featureMatrix<-create_feature_matrix(AMARETTOinit,AMARETTOresults,sample_annotation_df=test_sample_annotations,module_number=module_number,Sample='Sample')
@@ -435,8 +442,9 @@ all_module_WILCOXONRANKSUM_test<-function(AMARETTOinit,AMARETTOresults,test_samp
     
     WILCOXONRANKSUMTEST_results <- wilcox.test(x=group2,y=group1, alternative = "two.sided", paired = FALSE, conf.int = TRUE, conf.level = 0.95)
     df_result<-rbind(df_result,WILCOXONRANKSUMTEST_results)
-    df_result<-cbind(df_result,ModuleNr=module_number)
+    moduleNo_vector<-c(moduleNo_vector,module_number)
   }
+  df_result<-cbind(df_result,ModuleNr=moduleNo_vector)
   df_result<-as.data.frame(df_result,stringsAsFactors=FALSE)%>%rownames_to_column()
   df_result$p.value<-as.numeric(unlist(df_result$p.value))
   df_result$p.value<-signif(df_result$p.value, digits=5)
@@ -457,6 +465,7 @@ all_module_WILCOXONRANKSUM_test<-function(AMARETTOinit,AMARETTOresults,test_samp
 #' @examples
 all_module_WILCOXONRANKSUMPAIRED_test<-function(AMARETTOinit,AMARETTOresults,test_sample_annotations){
   df_result<-NULL
+  moduleNo_vector<-NULL
   for (module_number in 1:AMARETTOresults$NrModules){
     print(module_number)
     featureMatrix<-create_feature_matrix(AMARETTOinit,AMARETTOresults,sample_annotation_df=test_sample_annotations,module_number=module_number,Sample='Sample')
@@ -475,8 +484,9 @@ all_module_WILCOXONRANKSUMPAIRED_test<-function(AMARETTOinit,AMARETTOresults,tes
     
     WILCOXONRANKSUMTESTPAIRED_results <- wilcox.test(x=group2,y=group1, alternative = "two.sided", paired = TRUE, exact = NULL, correct = TRUE, conf.int = FALSE, conf.level = 0.95)
     df_result<-rbind(df_result,WILCOXONRANKSUMTESTPAIRED_results)
-    df_result<-cbind(df_result,ModuleNr=module_number)
+    moduleNo_vector<-c(moduleNo_vector,module_number)
   }
+  df_result<-cbind(df_result,ModuleNr=moduleNo_vector)
   df_result<-as.data.frame(df_result,stringsAsFactors=FALSE)%>%rownames_to_column()
   df_result$p.value<-as.numeric(unlist(df_result$p.value))
   df_result$p.value<-signif(df_result$p.value, digits=5)
@@ -497,6 +507,7 @@ all_module_WILCOXONRANKSUMPAIRED_test<-function(AMARETTOinit,AMARETTOresults,tes
 #' @examples
 all_module_KRUSKALWALLIS_test<-function(AMARETTOinit,AMARETTOresults,test_sample_annotations){
   df_result<-NULL
+  moduleNo_vector<-NULL
   for (module_number in 1:AMARETTOresults$NrModules){
     print(module_number)
     featureMatrix<-create_feature_matrix(AMARETTOinit,AMARETTOresults,sample_annotation_df=test_sample_annotations,module_number=module_number,Sample='Sample')
@@ -505,8 +516,9 @@ all_module_KRUSKALWALLIS_test<-function(AMARETTOinit,AMARETTOresults,test_sample
     df=data.frame(module_average=featureMatrix$mean_all,KRUSKALWALLISTEST=as.factor(kruskalwallis_vector))
     KRUSKALWALLISTEST_results <- kruskal.test(x=df$module_average,g=df$KRUSKALWALLISTEST)
     df_result<-rbind(df_result,KRUSKALWALLISTEST_results)
-    df_result<-cbind(df_result,ModuleNr=module_number)
+    moduleNo_vector<-c(moduleNo_vector,module_number)
   }
+  df_result<-cbind(df_result,ModuleNr=moduleNo_vector)
   df_result<-as.data.frame(df_result,stringsAsFactors=FALSE)%>%rownames_to_column()
   df_result$p.value<-as.numeric(unlist(df_result$p.value))
   df_result$p.value<-signif(df_result$p.value, digits=5)
