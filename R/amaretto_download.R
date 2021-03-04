@@ -36,10 +36,9 @@ AMARETTO_Download <- function(CancerSite = "CHOL",
         dir.create(TargetDirectory, showWarnings = FALSE)
     TCGA_acronym_uppercase = toupper(CancerSite)
     assays <- c("RNASeq2GeneNorm")
-    MAEO <- suppressMessages(curatedTCGAData::curatedTCGAData(CancerSite, 
-        assays, FALSE))
-    saveRDS(MAEO, file = paste0(TargetDirectory, CancerSite, 
-        "_RNASeq_MAEO.rds"))
+    MAEO <-  MAEO <- suppressMessages(curatedTCGAData::curatedTCGAData(
+        CancerSite, assays, version = "1.1.38", dry.run = FALSE
+    ))
     
     dataType = "analyses"
     dataFileTag = "CopyNumber_Gistic2.Level_4"
