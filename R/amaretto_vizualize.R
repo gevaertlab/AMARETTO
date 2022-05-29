@@ -51,7 +51,7 @@ AMARETTO_VisualizeModule <- function(AMARETTOinit,AMARETTOresults,ProcessedData,
                                               DriversList_Alterations=case_when(DriverList==0~"Driver not predefined",
                                                                                 DriverList==1~"Driver predefined"))
 
-  ha_drivers <- ComplexHeatmap::HeatmapAnnotation(df = tibble::column_to_rownames(Alterations,"HGNC_symbol") %>% dplyr::select(CNVMet_Alterations,DriversList_Alterations), col = list(CNVMet_Alterations= c("Copy number alterations"="#eca400","Methylation aberrations"="#006992","Methylation and copy number alterations"="#d95d39","Not Altered"="lightgray"),DriversList_Alterations=c("Driver not predefined"="lightgray","Driver predefined"="#588B5B")),which = "column", height = grid::unit(0.3, "cm"),name="",
+  ha_drivers <- ComplexHeatmap::HeatmapAnnotation(df = tibble::column_to_rownames(Alterations,"HGNC_symbol") %>% dplyr::select(CNVMet_Alterations,DriversList_Alterations), col = list(CNVMet_Alterations= c("Copy number alterations"="#eca400","Methylation aberrations"="#006992","Methylation and copy number alterations"="#d95d39","Not Altered"="lightgray"),DriversList_Alterations=c("Driver not predefined"="lightgray","Driver predefined"="#588B5B")),which = "column", height = grid::unit(0.3, "cm"),name="HeatMap",
                                   annotation_legend_param = list(title_gp = grid::gpar(fontsize = 8),labels_gp = grid::gpar(fontsize = 6)))
 
   overlapping_samples <- colnames(ModuleData)
