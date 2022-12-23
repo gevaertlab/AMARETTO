@@ -39,7 +39,6 @@ AMARETTO_Download <- function(CancerSite = "CHOL",
     MAEO <- suppressMessages(curatedTCGAData::curatedTCGAData(
         CancerSite, assays, version = "1.1.38", dry.run = FALSE
     ))
-        "_RNASeq_MAEO.rds"))
     
     dataType = "analyses"
     dataFileTag = "CopyNumber_Gistic2.Level_4"
