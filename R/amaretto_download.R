@@ -40,6 +40,8 @@ AMARETTO_Download <- function(CancerSite = "CHOL",
         CancerSite, assays, version = "1.1.38", dry.run = FALSE
     ))
     
+    saveRDS(MAEO, file = paste0(TargetDirectory, CancerSite, "_RNASeq_MAEO.rds"))
+    
     dataType = "analyses"
     dataFileTag = "CopyNumber_Gistic2.Level_4"
     message("Searching CNV data for:", CancerSite, 
