@@ -96,7 +96,7 @@ The data preprocessing step will take care of preprocessing the gene expression 
 
 ```{r AMARETTO_Preprocess, message= FALSE,results='hide',eval=FALSE}
 #-------------------------------------------------------------------------------
-
+load("../inst/extdata/MethylStates.rda")
 ProcessedData <- AMARETTO_Preprocess(DataSetDirectories = DataSetDirectories,
                                     BatchData = BatchData)
 
