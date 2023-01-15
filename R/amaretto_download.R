@@ -107,11 +107,21 @@ get_firehoseData <- function(TargetDirectory = "./",
         message("\t Printing gdacURL.\n")
         print(gdacURL)
         urlData <- web.lnk <- httr::GET(gdacURL)
+        message("\t Printing urlData \n")
+        print(urlData)
         urlData <- limma::strsplit2(urlData, paste(dataType, 
             "__", sep = ""))
+        message("\t Printing urlData \n")
+        print(urlData)
         urlData <- urlData[, 2:dim(urlData)[2]]
+        message("\t Printing urlData \n")
+        print(urlData)
         urlData <- limma::strsplit2(urlData, "/")
+        message("\t Printing urlData \n")
+        print(urlData)
         urlData <- urlData[, 1]
+        message("\t Printing urlData \n")
+        print(urlData)
         urlData <- as.POSIXct(strptime(urlData, "%Y_%m_%d"))
         message("\t Printing urlData \n")
         print(urlData)
@@ -119,6 +129,7 @@ get_firehoseData <- function(TargetDirectory = "./",
         print(dateData)
         lastDate <- dateData[match(summary(dateData)[which(names(summary(dateData)) == 
             "Max.")], dateData)]
+        print(lastDate)
         lastDate <- gsub("-", "_", as.character(lastDate))
         lastDateCompress <- gsub("_", "", lastDate)
         gdacURL <- paste(gdacURL, dataType, "__", lastDate, 
