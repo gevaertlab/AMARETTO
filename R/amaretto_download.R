@@ -104,6 +104,8 @@ get_firehoseData <- function(TargetDirectory = "./",
     if (TCGA_acronym_uppercase %in% cancers_acronyms) {
         
         gdacURL_orig <- gdacURL
+        message("\t Printing gdacURL.\n")
+        print(gdacURL)
         urlData <- web.lnk <- httr::GET(gdacURL)
         urlData <- limma::strsplit2(urlData, paste(dataType, 
             "__", sep = ""))
