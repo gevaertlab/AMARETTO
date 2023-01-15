@@ -113,7 +113,10 @@ get_firehoseData <- function(TargetDirectory = "./",
         urlData <- limma::strsplit2(urlData, "/")
         urlData <- urlData[, 1]
         urlData <- as.POSIXct(strptime(urlData, "%Y_%m_%d"))
+        message("\t Printing urlData \n")
+        print(urlData)
         dateData <- as.Date(as.character(urlData[which(!is.na(urlData))]))
+        print(dateData)
         lastDate <- dateData[match(summary(dateData)[which(names(summary(dateData)) == 
             "Max.")], dateData)]
         lastDate <- gsub("-", "_", as.character(lastDate))
