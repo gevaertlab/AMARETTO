@@ -156,6 +156,8 @@ get_firehoseData <- function(TargetDirectory = "./",
             #lastDate <- dateData[match(summary(dateData)[which(names(summary(dateData)) == 
               #  "Max.")], dateData)]
             lastDate<-max(dateData)
+            print(lastDate)
+            
             lastDate <- gsub("-", "_", as.character(lastDate))
             lastDateCompress <- gsub("_", "", lastDate)
             gdacURL <- paste(gdacURL_orig, dataType, 
